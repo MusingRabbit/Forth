@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "RockRaiders.Util/1.0.0": {
+        "runtime": {
+          "RockRaiders.Util.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "RockRaiders.Util/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

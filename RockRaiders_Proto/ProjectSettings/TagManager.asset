@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - PickupItem
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Level
+  - Water
+  - UI
+  - Asteroid_Mesh_Rock
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Level
+    uniqueID: 2196112329
+    locked: 0
+  - name: Ignore Raycast
+    uniqueID: 1849728249
+    locked: 0
+  - name: Water
+    uniqueID: 2013479047
+    locked: 0
+  - name: Level
+    uniqueID: 3478179635
+    locked: 0
+  - name: TransparentFX
+    uniqueID: 1386630237
+    locked: 0
+  - name: UI
+    uniqueID: 592810063
+    locked: 0
