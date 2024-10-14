@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorState 
+    public class ActorState : MonoBehaviour
     {
         public SelectedWeapon SelectedWeapon { get; set; }
 

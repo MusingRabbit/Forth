@@ -44,7 +44,7 @@ public class ActorNetwork : NetworkBehaviour
     private NetworkVariable<ActorNetData> m_playerState;
 
     private PlayerController m_controller;
-    private ActorController m_actorController;
+    private ActorController2D m_actorController;
     private Crosshair m_crosshair;
     private ActorSpawnManager m_actorBuilder;
 
@@ -76,7 +76,7 @@ public class ActorNetwork : NetworkBehaviour
 
     private void Start()
     {
-        m_actorController = this.GetComponent<ActorController>();
+        m_actorController = this.GetComponent<ActorController2D>();
         m_crosshair = m_actorController.Crosshair.GetComponent<Crosshair>();
 
         if (m_controller == null)

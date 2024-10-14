@@ -16,9 +16,11 @@ public enum ActionState
 
 public enum ControllerActions
 {
-    Trigger=0,                  // Actions / Triggers whatever is equiped
+    Trigger = 0,                  // Actions / Triggers whatever is equiped
     Jump,                       // Causes the player character to jump
     Crouch,                     // Causes the player to crouch
+    ThrustUp,                   // Causes the player to thrust upward
+    ThrustDown,                 // Causes the player to thrust downward
     Use,                        // Causes the player character to use environmental object
     Drop,                       // Causes the player character to drop whatever is in their hand
     Throw,                      // Causes the player character to throw whatever is in their hand

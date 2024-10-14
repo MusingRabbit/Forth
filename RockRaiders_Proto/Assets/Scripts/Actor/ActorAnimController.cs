@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorAnimController
+    public class ActorAnimController : MonoBehaviour
     {
         private const string ANIM_IDLE = "Idle";
         private const string ANIM_CROUCH_IDLE = "Actor_Crouch_Idle";
@@ -35,11 +35,11 @@ namespace Assets.Scripts.Actor
         private const string ANIM_FLOAT_MAINWEP = "Float_MainWep";
         private const string ANIM_FLOAT_EMPTY = "Float_Empty";
 
+        [SerializeField]
         private Animator m_animator;
 
-        public ActorAnimController(Animator animator)
+        public ActorAnimController()
         {
-            m_animator = animator;
         }
 
         public void PlayAnimationForActorState(ActorState state)

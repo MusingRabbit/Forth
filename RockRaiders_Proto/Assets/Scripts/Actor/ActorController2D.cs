@@ -28,7 +28,7 @@ public struct ProcSurfaceRotationResult
     public Vector3 normalRight;
 }
 
-public class ActorController : MonoBehaviour
+public class ActorController2D : MonoBehaviour
 { 
     [SerializeAs("Animator")]
     [SerializeField]
@@ -66,8 +66,6 @@ public class ActorController : MonoBehaviour
     private GameObject m_neck;
     private GameObject m_rArm;
     private GameObject m_lArm;
-    private GameObject m_sideArmHolster;
-    private GameObject m_mainWeaponHolster;
     private GameObject m_RHGrip;
 
     private bool m_facingRight = true;
@@ -142,7 +140,7 @@ public class ActorController : MonoBehaviour
         }
     }
 
-    public ActorController()
+    public ActorController2D()
     {
         m_maxWalkSpeed = 10.0f;
         m_gravStrength = 9.8f;
@@ -189,8 +187,6 @@ public class ActorController : MonoBehaviour
         m_head = m_body.FindChild("UpperBody.Head");
         m_rArm = m_body.FindChild("UpperBody.RArm.UpperArmGroup");
         m_lArm = m_body.FindChild("UpperBody.LArm.UpperArmGroup");
-        m_sideArmHolster = m_body.FindChild("SidearmHolster");
-        m_mainWeaponHolster = m_body.FindChild("MainWeaponHolster");
         m_RHGrip = m_body.FindChild("RH_Grip");
 
         m_rigidBody = this.gameObject.GetComponent<Rigidbody>();
@@ -203,7 +199,7 @@ public class ActorController : MonoBehaviour
         m_animator = this.GetComponent<Animator>();
         m_network = this.GetComponent<ActorNetwork>();
 
-        m_animController = new ActorAnimController(m_animator);
+        m_animController = this.GetComponent<ActorAnimController>();
     }
 
     public virtual void FixedUpdate()
@@ -241,7 +237,7 @@ public class ActorController : MonoBehaviour
             this.UpdateActorArmRotation();
         }
 
-        this.UpdateStoredItemWorldPos();
+        this.UpdateSelectedWeaponWorldPos();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -548,30 +544,7 @@ public class ActorController : MonoBehaviour
 
         weaponObj.GetComponent<Rigidbody>().isKinematic = true;
         weaponObj.GetComponent<Rigidbody>().detectCollisions = false;
-        weaponObj.transform.position = m_sideArmHolster.transform.position;
-        weaponObj.transform.rotation = m_sideArmHolster.transform.rotation;
         weapon.Owner = this.gameObject;
-    }
-
-    private void UpdateStoredItemWorldPos()
-    {
-        var sideArmObj = m_state.Inventory.GetSideArm();
-
-        if (sideArmObj != null)
-        {
-            sideArmObj.transform.position = m_sideArmHolster.transform.position;
-            sideArmObj.transform.rotation = m_sideArmHolster.transform.rotation;
-        }
-
-        var mainWeaponObj = m_state.Inventory.GetMainWeapon();
-
-        if (mainWeaponObj != null)
-        {
-            mainWeaponObj.transform.position = m_mainWeaponHolster.transform.position;
-            mainWeaponObj.transform.rotation = m_mainWeaponHolster.transform.rotation;
-        }
-
-        this.UpdateSelectedWeaponWorldPos();
     }
 
     private void OrientToCrosshair()

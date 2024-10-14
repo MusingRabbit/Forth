@@ -2298,9 +2298,6 @@ GameObject:
   - component: {fileID: 3567866041812562764}
   - component: {fileID: 4278557109685041831}
   - component: {fileID: 5081212574051940991}
-  - component: {fileID: 8433751606343218582}
-  - component: {fileID: 5748848897108461325}
-  - component: {fileID: 4640539382041040411}
   m_Layer: 0
   m_Name: Actor_Spaceman_Prototype_2D
   m_TagString: Player
@@ -2370,7 +2367,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 120
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &5081212574051940991
 MonoBehaviour:
@@ -2393,51 +2390,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &8433751606343218582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3567866041812562767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3553b522b01c7e44ace77bf01e2f0c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_animator: {fileID: 3567866041812562764}
-  m_moveForce: 10
-  m_maxSpeed: 20
-  m_maxWalkSpeed: 3
-  m_gravStrength: 20
-  m_crosshair: {fileID: 0}
-  m_team: 0
-  m_jumpForce: 20
---- !u!114 &5748848897108461325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3567866041812562767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ca600afd053f8947bc1c7d25b444b43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4640539382041040411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3567866041812562767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c289cabd2530a604ab8f47dbd193c270, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_serverAuth: 0
 --- !u!1 &7819250581761659795
 GameObject:
   m_ObjectHideFlags: 0

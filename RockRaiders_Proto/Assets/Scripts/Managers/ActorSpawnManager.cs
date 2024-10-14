@@ -153,7 +153,7 @@ namespace Assets.Scripts.Factory
             followObj.Offset = new Vector3(0, 0, 0);
             followObj.IsLookingAtTarget = false;
 
-            var actorController = actor.GetComponent<ActorController>();
+            var actorController = actor.GetComponent<ActorController2D>();
             var crosshairObj = gameUI.FindChild("Crosshair"); 
 
             if (crosshairObj == null)
@@ -179,7 +179,7 @@ namespace Assets.Scripts.Factory
 
         private GameObject GetSpawnPoint(GameObject actor)
         {
-            var playerController = actor.GetComponent<ActorController>();
+            var playerController = actor.GetComponent<ActorController2D>();
             var spawmPoints = m_spawnPoints.Select(x => x.GetComponent<SpawnPoint>()).Where(x => x.Team == playerController.Team).ToList();
             var rndIdx = Random.Range(0, spawmPoints.Count - 1);
             return spawmPoints[rndIdx].gameObject;
