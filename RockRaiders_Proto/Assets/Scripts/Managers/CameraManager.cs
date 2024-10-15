@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     [SerializeField]
-    private List<Camera> m_cameras;
+    private List<Camera> m_cameras; 
 
     private Camera m_currCamera;
 
@@ -56,7 +56,10 @@ public class CameraManager : MonoBehaviour
     {
         foreach (var camera in m_cameras)
         {
-            camera.enabled = false;
+            if (camera != null)
+            {
+                camera.enabled = false;
+            }
         }
     }
 

@@ -273,7 +273,7 @@ public class ActorController2D : MonoBehaviour
         var rayOrigin = new Vector3(currPos.x, currPos.y - 0.2f, currPos.z);
         var rotOffset = Quaternion.Euler(0, 90, 0);// flipRotation ? Quaternion.Euler(0, -90, 0) : Quaternion.Euler(0, 90, 0);
 
-        var groundTouchedRay = new Ray(rayOrigin, -m_body.transform.up);
+        //var groundTouchedRay = new Ray(rayOrigin, -m_body.transform.up);
 
         var args = new ArcCastArgs
         {
@@ -295,14 +295,14 @@ public class ActorController2D : MonoBehaviour
             m_surfaceInfo = hitInfo;
         }
 
-        if (touchingGround)
-        {
-            Debug.DrawRay(rayOrigin, groundTouchedRay.direction, Color.red, 0.0f, false);
-        }
-        else
-        {
-            Debug.DrawRay(rayOrigin, groundTouchedRay.direction, Color.green, 0.0f, false);
-        }
+        //if (touchingGround)
+        //{
+        //    Debug.DrawRay(rayOrigin, groundTouchedRay.direction, Color.red, 0.0f, false);
+        //}
+        //else
+        //{
+        //    Debug.DrawRay(rayOrigin, groundTouchedRay.direction, Color.green, 0.0f, false);
+        //}
 
         m_inProximity = touchingGround;
         
@@ -453,7 +453,7 @@ public class ActorController2D : MonoBehaviour
             if (m_floating == false)
             {
                 var rhsGameObj = info.info.collider.gameObject;
-                var latchObj = rhsGameObj.FindChild("LatchObject");
+                var latchObj = rhsGameObj.FindChild("Body");
                 if (latchObj != null)
                 {
                     m_network.SetParent(latchObj);

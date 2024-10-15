@@ -10,6 +10,8 @@ namespace Assets.Scripts.Actor
 {
     public class ActorState : MonoBehaviour
     {
+        public Team Team { get; set; }
+
         public SelectedWeapon SelectedWeapon { get; set; }
 
         public ActorInventory Inventory { get; set; }
@@ -22,7 +24,11 @@ namespace Assets.Scripts.Actor
         public ActorState()
         {
             this.SelectedWeapon = SelectedWeapon.None;
-            this.Inventory = new ActorInventory();
+        }
+
+        private void Start()
+        {
+            this.Inventory = this.GetComponent<ActorInventory>();
         }
 
         public GameObject GetSelectedWeapon()

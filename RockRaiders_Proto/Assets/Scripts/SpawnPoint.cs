@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,8 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            var meshRenderer = this.GetComponent<MeshRenderer>();
+            var debugMeshObj = this.gameObject.FindChild("DebugMesh");
+            var meshRenderer = debugMeshObj.GetComponent<MeshRenderer>();
             meshRenderer.enabled = false;
         }
 

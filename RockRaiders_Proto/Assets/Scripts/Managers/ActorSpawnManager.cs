@@ -123,12 +123,13 @@ namespace Assets.Scripts.Factory
 
             var cameraSystem = m_cameraManagerObj.GetComponent<CameraManager>();
             var cameraObj = new GameObject();
-            cameraObj.AddComponent<FollowObject>();
+            cameraObj.AddComponent<ActorCamera>();
 
-            var followObj = cameraObj.GetComponent<FollowObject>();
-            followObj.Target = actor;
-            followObj.Offset = new Vector3(0, 0, -20);
-            followObj.IsLookingAtTarget = true;
+            var tpc = cameraObj.GetComponent<ActorCamera>();
+            tpc.Target = actor;
+            tpc.Distance = 5.0f;
+            tpc.Offset = new Vector3(0, 10.0f, 0);
+            
 
             cameraObj.AddComponent<Camera>();
 
@@ -153,7 +154,7 @@ namespace Assets.Scripts.Factory
             followObj.Offset = new Vector3(0, 0, 0);
             followObj.IsLookingAtTarget = false;
 
-            var actorController = actor.GetComponent<ActorController2D>();
+            var actorController = actor.GetComponent<ActorController>();
             var crosshairObj = gameUI.FindChild("Crosshair"); 
 
             if (crosshairObj == null)
@@ -161,26 +162,26 @@ namespace Assets.Scripts.Factory
                 throw new NullReferenceException("Crosshair is null!");
             }
 
-            actorController.Crosshair = gameUI.FindChild("Crosshair");
-            var crosshair = actorController.Crosshair.GetComponent<Crosshair>();
+            //actorController.Crosshair = gameUI.FindChild("Crosshair");
+            //var crosshair = actorController.Crosshair.GetComponent<Crosshair>();
 
-            if (isLocal)
-            {
-                crosshair.Actor = actor;
-                crosshair.Camera = cameraSystem.GetSelectedCamera();
-                crosshair.PlayerController = actor.GetComponent<PlayerController>();
-            }
-            else
-            {
-                crosshair.enabled = false;  
-            }
+            //if (isLocal)
+            //{
+            //    crosshair.Actor = actor;
+            //    crosshair.Camera = cameraSystem.GetSelectedCamera();
+            //    crosshair.PlayerController = actor.GetComponent<PlayerController>();
+            //}
+            //else
+            //{
+            //    crosshair.enabled = false;  
+            //}
 
         }
 
         private GameObject GetSpawnPoint(GameObject actor)
         {
-            var playerController = actor.GetComponent<ActorController2D>();
-            var spawmPoints = m_spawnPoints.Select(x => x.GetComponent<SpawnPoint>()).Where(x => x.Team == playerController.Team).ToList();
+            var controller = actor.GetComponent<ActorController>();
+            var spawmPoints = m_spawnPoints.Select(x => x.GetComponent<SpawnPoint>()).Where(x => x.Team == controller.Team).ToList();
             var rndIdx = Random.Range(0, spawmPoints.Count - 1);
             return spawmPoints[rndIdx].gameObject;
         }
@@ -190,14 +191,14 @@ namespace Assets.Scripts.Factory
             this.AddActorNetworkComponent(actor);
             this.RegisterActorOnInputManager(actor);
             this.CreateActorCamera(actor, true);
-            this.CreateActorUI(actor, true);
+            //this.CreateActorUI(actor, true);
         }
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
             this.AddActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
-            this.CreateActorUI(actor, false);
+            //this.CreateActorUI(actor, false);
         }
     }
 }

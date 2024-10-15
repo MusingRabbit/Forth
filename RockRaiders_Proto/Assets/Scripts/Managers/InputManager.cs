@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    [SerializeField]
     private PlayerController m_controller;
 
     public InputManager()
@@ -40,9 +41,12 @@ public class InputManager : MonoBehaviour
     private void UpdateControllerLookAxis()
     {
         //var currEvent = Event.current;
-        var mousePos = Input.mousePosition;
+        //var mousePos = Input.mousePosition;
+        var mouseX = Input.GetAxis("Mouse X");
+        var mouseY = Input.GetAxis("Mouse Y");
+        m_controller.LookAxis = new Vector2(mouseX, mouseY);
 
-        m_controller.LookAxis = new Vector2(mousePos.x, mousePos.y);
+       //Debug.Log("Look Axis : " + m_controller.LookAxis);
     }
 
     private void ProcessInputs()

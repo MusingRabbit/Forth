@@ -44,9 +44,9 @@ public class ActorNetwork : NetworkBehaviour
     private NetworkVariable<ActorNetData> m_playerState;
 
     private PlayerController m_controller;
-    private ActorController2D m_actorController;
-    private Crosshair m_crosshair;
-    private ActorSpawnManager m_actorBuilder;
+    private ActorController m_actorController;
+    //private Crosshair m_crosshair;
+    private ActorSpawnManager m_actorManager;
 
     [SerializeField]
     private bool m_serverAuth;
@@ -55,11 +55,11 @@ public class ActorNetwork : NetworkBehaviour
     {
         get
         {
-            return m_actorBuilder;
+            return m_actorManager;
         }
         set
         {
-            m_actorBuilder = value;
+            m_actorManager = value;
         }
     }
 
@@ -76,8 +76,8 @@ public class ActorNetwork : NetworkBehaviour
 
     private void Start()
     {
-        m_actorController = this.GetComponent<ActorController2D>();
-        m_crosshair = m_actorController.Crosshair.GetComponent<Crosshair>();
+        m_actorController = this.GetComponent<ActorController>();
+        //m_crosshair = m_actorController.Crosshair.GetComponent<Crosshair>();
 
         if (m_controller == null)
         {
@@ -93,13 +93,13 @@ public class ActorNetwork : NetworkBehaviour
         }
         else
         {
-            var crosshair = m_actorController.GetComponent<Crosshair>();
+            //var crosshair = m_actorController.GetComponent<Crosshair>();
             var state = m_playerState.Value;
             this.transform.position = state.Position;
             this.transform.rotation = state.Rotation;
             m_controller.SetStateFromNetPlayerController(state.Controller);
-            m_crosshair.gameObject.transform.position = state.CrosshairPosition;
-            m_crosshair.enabled = false;
+            //m_crosshair.gameObject.transform.position = state.CrosshairPosition;
+            //m_crosshair.enabled = false;
 
             m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
         }
@@ -112,7 +112,7 @@ public class ActorNetwork : NetworkBehaviour
             Position = this.transform.position,
             Rotation = this.transform.rotation,
             Controller = m_controller.GetNetPlayerController(),
-            CrosshairPosition = m_crosshair.transform.position,
+            //CrosshairPosition = m_crosshair.transform.position,
             SelectedWeapon = (int)m_actorController.State.SelectedWeapon
         };
 
@@ -174,15 +174,20 @@ public class ActorNetwork : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (m_actorManager == null)
+        {
+            return;
+        }
+
         m_controller = this.GetComponent<PlayerController>();
 
         if (this.IsOwner)
         {
-            m_actorBuilder.PrepareLocalPlayerActor(this.gameObject);
+            m_actorManager.PrepareLocalPlayerActor(this.gameObject);
         }
         else
         {
-            m_actorBuilder.PrepareRemotePlayerActor(this.gameObject);
+            m_actorManager.PrepareRemotePlayerActor(this.gameObject);
         }
 
         base.OnNetworkSpawn();
