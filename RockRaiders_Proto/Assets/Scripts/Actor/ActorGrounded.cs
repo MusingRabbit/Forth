@@ -31,7 +31,7 @@ namespace Assets.Scripts.Actor
         [SerializeField]
         private float m_rotationSpeed;
 
-        private bool m_crouchToggle;
+        private bool m_crouch;
 
         private PlayerController m_controller;
         private ActorState m_state;
@@ -117,17 +117,20 @@ namespace Assets.Scripts.Actor
             m_state.IsMoving = m_moveVector.magnitude > 0.0f;
 
             m_jumpTimer.Tick();
-            m_state.IsCrouched = m_crouchToggle;
+            m_state.IsCrouched = m_crouch;
 
-            this.UpdateSurfaceRotaion();
+            if (m_groundRay.Hit)
+            {
+                this.UpdateSurfaceRotaion();
+                this.UpdateMovement();
+            }
 
-            this.UpdateMovement();
+            m_crouch = false;
         }
 
         private void UpdateSurfaceRotaion()
         {
-            if (m_groundRay.Hit)
-            {
+
                 m_surfaceInfo = this.GetSurfaceRotationInfo();
 
                 //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
@@ -141,7 +144,6 @@ namespace Assets.Scripts.Actor
 
 
                 this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
-            }
         }
 
         private void UpdateMovement()
@@ -232,7 +234,7 @@ namespace Assets.Scripts.Actor
             return result;
         }
 
-        internal void Jump()
+        public void Jump()
         {
             if (m_canJump)
             {
@@ -250,9 +252,9 @@ namespace Assets.Scripts.Actor
             m_canJump = true;
         }
 
-        internal void ToggleCrouch()
+        public void Crouch()
         {
-            m_crouchToggle = !m_crouchToggle;
+            m_crouch = true;
         }
 
         private void OnCollisionEnter(Collision collision)

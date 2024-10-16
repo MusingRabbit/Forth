@@ -100,17 +100,22 @@ public class InputManager : MonoBehaviour
             m_controller.SetActionState(ControllerActions.Jump, ActionState.Active);
         }
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            m_controller.SetActionState(ControllerActions.ThrustUp, ActionState.Active);
+        }
+
         if (Input.GetKey(KeyCode.Mouse0))
         {
             m_controller.SetActionState(ControllerActions.Trigger, ActionState.Active);
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(KeyCode.X))
         {
             m_controller.SetActionState(ControllerActions.GravBoots, ActionState.Active);
         }
 
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKey(KeyCode.LeftControl))
         {
             m_controller.SetActionState(ControllerActions.Crouch);
         }

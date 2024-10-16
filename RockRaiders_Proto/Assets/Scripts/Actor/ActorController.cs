@@ -90,23 +90,12 @@ public class ActorController : MonoBehaviour
 
         if (m_groundRay.Hit)
         {
-            //var rhsGameObj = m_groundRay.HitInfo.collider?.gameObject;
-            //if (rhsGameObj != null)
-            //{
-            //    this.transform.parent = rhsGameObj.transform.parent.transform;
-            //    //m_network.SetParent(latchObj);
-            //}
-
-
             m_grounded.enabled = true;
             m_floating.enabled = false;
             m_state.IsFloating = false;
         }
         else
         {
-            //this.transform.parent = null;
-            //m_network.SetParent(null);
-
             m_grounded.enabled = false;
             m_floating.enabled = true;
             m_state.IsFloating = true;
@@ -135,8 +124,11 @@ public class ActorController : MonoBehaviour
                 case ControllerActions.Jump:
                     this.Jump();
                     break;
+                case ControllerActions.ThrustUp:
+                    this.ThrustUp();
+                    break;
                 case ControllerActions.Crouch:
-                    this.ToggleCrouch();
+                    this.Crouch();
                     break;
                 case ControllerActions.Use:
                     break;
@@ -183,11 +175,24 @@ public class ActorController : MonoBehaviour
         }
     }
 
-    private void ToggleCrouch()
+    private void ThrustUp()
+    {
+        if (m_floating.enabled)
+        {
+            m_floating.ThrustUp();
+        }
+    }
+
+    private void Crouch()
     {
         if (m_grounded.enabled)
         {
-            m_grounded.ToggleCrouch();
+            m_grounded.Crouch();
+        }
+
+        if (m_floating.enabled)
+        {
+            m_floating.ThrustDown();
         }
     }
 

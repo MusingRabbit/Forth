@@ -97,9 +97,19 @@ namespace Assets.Scripts.Actor
                 m_rigidBody.AddForce(moveDir * (m_moveForce * Time.deltaTime), ForceMode.Force);
             }
 
-            m_rigidBody.AddForce(-m_rigidBody.velocity * (0.95f * Time.deltaTime), ForceMode.Force);
+            m_rigidBody.AddForce(-m_rigidBody.velocity * (m_moveForce * 0.3f * Time.deltaTime), ForceMode.Force);
 
             this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
+        }
+
+        public void ThrustUp()
+        {
+            m_rigidBody.AddForce(this.transform.up.normalized * m_moveForce * Time.deltaTime, ForceMode.Force);
+        }
+
+        public void ThrustDown()
+        {
+            m_rigidBody.AddForce(-this.transform.up.normalized * m_moveForce * Time.deltaTime, ForceMode.Force);
         }
 
     }

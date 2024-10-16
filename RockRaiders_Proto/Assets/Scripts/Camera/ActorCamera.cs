@@ -124,6 +124,7 @@ namespace Assets.Scripts
 
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+            this.transform.parent = m_body.transform;
         }
 
         private void Update()
@@ -152,7 +153,6 @@ namespace Assets.Scripts
                 {
                     var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
                     var distance = m_body.transform.rotation * new Vector3(0, 0, m_distance);
-                    this.transform.parent = m_body.transform;
 
                     m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
                     m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
