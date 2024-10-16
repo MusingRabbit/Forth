@@ -37,6 +37,9 @@ namespace Assets.Scripts
 
         private float m_rotX, m_rotY;
 
+        private Vector3 m_tgtPos;
+        private Quaternion m_tgtRot;
+
         public GameObject Target
         {
             get
@@ -115,9 +118,6 @@ namespace Assets.Scripts
             this.transform.rotation = m_targetActor.transform.rotation;
             m_body = m_targetActor.gameObject.FindChild("Body");
 
-
-
-
             m_controller = m_targetActor.GetComponent<PlayerController>();
             m_state = m_targetActor.GetComponent<ActorState>();
             m_hasController = m_controller != null;
@@ -143,8 +143,10 @@ namespace Assets.Scripts
 
                     var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
                     var focusPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y);
-                    this.transform.position = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
-                    this.transform.rotation = tgtRotation;
+                    m_tgtPos = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
+                    m_tgtRot = tgtRotation;
+
+                    this.transform.rotation = Quaternion.Lerp(this.transform.rotation, m_tgtRot, 50 * Time.deltaTime);
                 }
                 else
                 {
@@ -152,13 +154,18 @@ namespace Assets.Scripts
                     this.transform.parent = m_body.transform;
 
                     m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
-                    m_rotY += m_controller.LookAxis.x * m_rotationSpeed;
+                    m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
 
-                    var tgtRotation = Quaternion.Euler(0, m_rotY, 0);
+                    Debug.Log("m_rotX:" + m_rotX);
+                    Debug.Log("m_rotY:" + m_rotX);
 
-                    this.transform.position = (m_body.transform.position + offset - (tgtRotation * new Vector3(0, 0, m_distance)));
-                    this.transform.rotation = m_body.transform.rotation * tgtRotation;
+                    var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
 
+                    m_tgtPos = (m_body.transform.position - (tgtRotation * m_body.transform.forward)) + offset;
+                    m_tgtRot = m_body.transform.localRotation * tgtRotation;
+
+
+                    this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, m_tgtRot, 50 * Time.deltaTime);
 
                     //this.transform.rotation = m_targetActor.transform.rotation;
                     //
@@ -185,6 +192,9 @@ namespace Assets.Scripts
                     //this.transform.position = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
                     //this.transform.rotation = tgtRotation;
                 }
+
+                
+                this.transform.position = Vector3.Lerp(this.transform.position, m_tgtPos, 50 * Time.deltaTime);
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 using static Assets.Scripts.Util.PhysicsExtensions;
+using static UnityEditor.PlayerSettings;
 
 namespace Assets.Scripts.Scan
 {
@@ -36,6 +37,8 @@ namespace Assets.Scripts.Scan
         [SerializeField]
         private bool m_debugDraw;
 
+        private List<PointData> m_scanResult;
+
         public ScanArms()
         {
             m_armCount = 11;
@@ -44,6 +47,7 @@ namespace Assets.Scripts.Scan
             m_weightByDist = false;
             m_arcAngle = 270;
             m_arcResolution = 4;
+            m_scanResult = new List<PointData>();
         }
 
         public override List<PointData> GetPoints()
@@ -53,13 +57,14 @@ namespace Assets.Scripts.Scan
 
         private List<PointData> Scan(bool drawDebug = false)
         {
-            var result = new List<PointData>();
+            m_scanResult.Clear();
 
             var arcRadius = m_armLength / m_armPoints;
 
             for (int i = 0; i < m_armCount; i++)
             {
-                var angle = 360 * i / m_armCount;
+                var angle = (270 * i / m_armCount) - (270/2);
+                angle = angle < 0 ? 360 + angle : angle;
                 var pos = this.transform.position;
                 var rot = this.transform.rotation * Quaternion.Euler(0, angle, 0);
 
@@ -77,24 +82,23 @@ namespace Assets.Scripts.Scan
                 for (int j = 0; j < m_armPoints && PhysicsExtensions.ArcCast(args, out var hitInfo); j++)
                 {
                     float weight = m_weightByDist ? 1 - (float)j / m_armPoints : 1;
-                    
-                    if (drawDebug)
-                    {
-                        //Gizmos.DrawLine(pos, hitInfo.point);
-                    }
 
                     pos = hitInfo.point;
                     rot.MatchUp(hitInfo.normal);
-                    result.Add(new PointData { Position = pos, Rotation = rot * Quaternion.Euler(0, -angle, 0), Weight = weight, Normal = hitInfo.normal });
-
-                    if (drawDebug)
-                    {
-                        //Gizmos.DrawSphere(pos, 0.1f);
-                    }
+                    m_scanResult.Add(new PointData { Position = pos, Rotation = rot * Quaternion.Euler(0, -angle, 0), Weight = weight, Normal = hitInfo.normal, Centre=args.Centre });
                 }
             }
 
-            return result;
+            return m_scanResult;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            foreach (var item in m_scanResult)
+            {
+                Gizmos.DrawSphere(item.Position, 0.1f);
+                Gizmos.DrawLine(item.Centre, item.Position);
+            }
         }
     }
 }

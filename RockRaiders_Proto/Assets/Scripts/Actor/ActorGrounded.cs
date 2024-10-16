@@ -49,8 +49,10 @@ namespace Assets.Scripts.Actor
 
         [SerializeField]
         private ActorCamera m_camera;
+
         private SurfaceRotationInfo m_surfaceInfo;
         private Quaternion m_tgtSurfRot;
+        private Quaternion m_tgtLookatRot;
         private Vector3 m_moveVector;
 
 
@@ -80,7 +82,7 @@ namespace Assets.Scripts.Actor
 
         public ActorGrounded()
         {
-            m_jumpTimer = new Assets.Scripts.Timer();
+            m_jumpTimer = new Timer();
             m_jumpTimer.SetTimeSpan(TimeSpan.FromSeconds(m_jumpTimeout));
             m_jumpTimer.OnTimerElapsed += this.JumpTimer_OnTimerElapsed;
             m_canJump = true;
@@ -130,9 +132,14 @@ namespace Assets.Scripts.Actor
             m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
 
 
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtSurfRot, m_rotationSpeed * Time.deltaTime);
+            m_tgtLookatRot = m_camera.PlanarRotaion;
 
-            return this.transform.rotation == m_tgtSurfRot;
+            var rotation = m_tgtSurfRot * m_tgtLookatRot;
+
+
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+
+            return this.transform.rotation == rotation;
         }
 
         private void UpdatePlanarRotation()
@@ -155,8 +162,9 @@ namespace Assets.Scripts.Actor
 
             if (m_groundRay.Hit)
             {
-                var gravity = m_groundRay.Normal.normalized * (-m_gravStrength);
-                m_rigidBody.AddForce(gravity, ForceMode.Force);
+
+                var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
+                m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
 
                 m_rigidBody.AddForce(m_moveVector * (m_moveSpeed * Time.deltaTime), ForceMode.Impulse);
             }
