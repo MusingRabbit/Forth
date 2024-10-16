@@ -148,10 +148,18 @@ namespace Assets.Scripts
                 }
                 else
                 {
+                    var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
                     this.transform.parent = m_body.transform;
-                    //this.transform.rotation = m_body.transform.rotation;
-                    this.transform.position = m_body.transform.position - (m_body.transform.forward * m_distance);
-                    this.transform.LookAt(m_body.transform.position + new Vector3(m_offset.x, m_offset.y), m_body.transform.up);
+
+                    m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
+                    m_rotY += m_controller.LookAxis.x * m_rotationSpeed;
+
+                    var tgtRotation = Quaternion.Euler(0, m_rotY, 0);
+
+                    this.transform.position = (m_body.transform.position + offset - (tgtRotation * new Vector3(0, 0, m_distance)));
+                    this.transform.rotation = m_body.transform.rotation * tgtRotation;
+
+
                     //this.transform.rotation = m_targetActor.transform.rotation;
                     //
                     //var camPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y, -m_distance);
@@ -172,7 +180,7 @@ namespace Assets.Scripts
 
                     //m_rotY += m_controller.LookAxis.x * m_rotationSpeed;
 
-                    //var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
+                    //
                     //focusPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y);
                     //this.transform.position = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
                     //this.transform.rotation = tgtRotation;

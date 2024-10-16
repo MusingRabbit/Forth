@@ -137,11 +137,7 @@ namespace Assets.Scripts.Actor
 
         private void UpdatePlanarRotation()
         {
-            var v1 = this.transform.rotation.eulerAngles;
-            var v2 = m_camera.PlanarRotaion.eulerAngles;
-            v1.y = v2.y;
 
-            this.transform.rotation = Quaternion.Euler(v1);
         }
 
         private void UpdateMovement()
