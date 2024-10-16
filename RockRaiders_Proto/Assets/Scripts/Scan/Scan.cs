@@ -12,6 +12,7 @@ namespace Assets.Scripts.Scan
         public Vector3 Position;
         public Vector3 Normal;
         public Vector3 Centre;
+        public float Height;
         public Quaternion Rotation;
         public float Weight;
     }

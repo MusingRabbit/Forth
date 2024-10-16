@@ -51,7 +51,7 @@ namespace Assets.Scripts.Actor
         {
             if (state.IsMoving)
             {
-                if (state.IsFloating)
+                if (state.IsFloating || state.FeetOnGround == false)
                 {
                     return this.GetFloatAnimation(state);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Actor
@@ -55,6 +56,7 @@ namespace Assets.Scripts.Actor
         private Quaternion m_tgtLookatRot;
         private Vector3 m_moveVector;
 
+        private Dictionary<int, Collision> m_colDict;
 
         public GameObject Body
         {
@@ -82,6 +84,8 @@ namespace Assets.Scripts.Actor
 
         public ActorGrounded()
         {
+            m_colDict = new Dictionary<int, Collision>();
+
             m_jumpTimer = new Timer();
             m_jumpTimer.SetTimeSpan(TimeSpan.FromSeconds(m_jumpTimeout));
             m_jumpTimer.OnTimerElapsed += this.JumpTimer_OnTimerElapsed;
@@ -115,36 +119,29 @@ namespace Assets.Scripts.Actor
             m_jumpTimer.Tick();
             m_state.IsCrouched = m_crouchToggle;
 
-            if (this.UpdateSurfaceRotaion())
-            {
-                //this.UpdatePlanarRotation();
-            }
+            this.UpdateSurfaceRotaion();
 
             this.UpdateMovement();
         }
 
-        private bool UpdateSurfaceRotaion()
+        private void UpdateSurfaceRotaion()
         {
-            m_surfaceInfo = this.GetSurfaceRotationInfo();
+            if (m_groundRay.Hit)
+            {
+                m_surfaceInfo = this.GetSurfaceRotationInfo();
 
-            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
+                //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
 
-            m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
-
-
-            m_tgtLookatRot = m_camera.PlanarRotaion;
-
-            var rotation = m_tgtSurfRot * m_tgtLookatRot;
+                m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
 
 
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+                m_tgtLookatRot = m_camera.PlanarRotaion;
 
-            return this.transform.rotation == rotation;
-        }
+                var rotation = m_tgtSurfRot * m_tgtLookatRot;
 
-        private void UpdatePlanarRotation()
-        {
 
+                this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+            }
         }
 
         private void UpdateMovement()
@@ -256,6 +253,38 @@ namespace Assets.Scripts.Actor
         internal void ToggleCrouch()
         {
             m_crouchToggle = !m_crouchToggle;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
+
+            var mask = LayerMask.GetMask("Level");
+
+            if ((mask & (1 << collision.collider.gameObject.layer)) != 0)
+            {
+                m_state.FeetOnGround = true;
+            }
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            bool feetOnGround = false;
+
+            m_colDict.Remove(collision.collider.GetInstanceID());
+
+            foreach(var kvp in m_colDict)
+            {
+                var mask = LayerMask.GetMask("Level");
+
+                if ((mask & (1 << kvp.Value.collider.gameObject.layer)) != 0)
+                {
+                    feetOnGround = true;
+                    break;
+                }
+            }
+
+            m_state.FeetOnGround = feetOnGround;
         }
 
     }

@@ -16,6 +16,9 @@ namespace Assets.Scripts.Actor
         private float m_maxSpeed;
 
         [SerializeField]
+        private float m_rotationSpeed;
+
+        [SerializeField]
         private GameObject m_body;
 
         [SerializeField]
@@ -71,6 +74,7 @@ namespace Assets.Scripts.Actor
         {
             m_moveForce = 10.0f;
             m_maxSpeed = 22.0f;
+            m_rotationSpeed = 50.0f;
         }
 
         private void Start()
@@ -92,12 +96,10 @@ namespace Assets.Scripts.Actor
                 var moveDir = m_tpCamera.Rotation * moveInput;
                 m_rigidBody.AddForce(moveDir * (m_moveForce * Time.deltaTime), ForceMode.Force);
             }
-            else
-            {
-                m_rigidBody.velocity -= m_rigidBody.velocity * (0.95f * Time.deltaTime);
-            }
 
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, 50.0f * Time.deltaTime);
+            m_rigidBody.AddForce(-m_rigidBody.velocity * (0.95f * Time.deltaTime), ForceMode.Force);
+
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
         }
 
     }

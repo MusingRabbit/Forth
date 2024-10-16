@@ -85,7 +85,7 @@ namespace Assets.Scripts.Scan
 
                     pos = hitInfo.point;
                     rot.MatchUp(hitInfo.normal);
-                    m_scanResult.Add(new PointData { Position = pos, Rotation = rot * Quaternion.Euler(0, -angle, 0), Weight = weight, Normal = hitInfo.normal, Centre=args.Centre });
+                    m_scanResult.Add(new PointData { Position = pos, Rotation = rot * Quaternion.Euler(0, -angle, 0), Weight = weight, Normal = hitInfo.normal, Centre = args.Centre, Height = Mathf.Abs(args.Centre.y - pos.y) });
                 }
             }
 

@@ -104,7 +104,7 @@ public class ActorController : MonoBehaviour
         }
         else
         {
-            this.transform.parent = null;
+            //this.transform.parent = null;
             //m_network.SetParent(null);
 
             m_grounded.enabled = false;

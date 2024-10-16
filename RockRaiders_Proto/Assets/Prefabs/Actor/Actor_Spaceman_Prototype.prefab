@@ -2391,7 +2391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4166983387
+  GlobalObjectIdHash: 3804523594
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -2507,8 +2507,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3553b522b01c7e44ace77bf01e2f0c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_moveForce: 5
-  m_maxSpeed: 22
+  m_moveForce: 100
+  m_maxSpeed: 50
   m_body: {fileID: 3567866040056171928}
   m_head: {fileID: 3567866041601796693}
   m_actorCamera: {fileID: 0}
@@ -2524,11 +2524,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a014efd06648e04d8c090c54632e8f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_moveSpeed: 20
-  m_jumpForce: 5
+  m_moveSpeed: 5
+  m_jumpForce: 10
   m_jumpTimeout: 3
-  m_gravStrength: 2
-  m_rotationSpeed: 360
+  m_gravStrength: 20
+  m_rotationSpeed: 50
   m_body: {fileID: 3567866040056171928}
   m_head: {fileID: 3567866041601796693}
   m_camera: {fileID: 0}

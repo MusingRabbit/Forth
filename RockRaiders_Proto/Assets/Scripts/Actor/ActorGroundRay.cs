@@ -24,12 +24,21 @@ public class ActorGroundRay : MonoBehaviour
     private Quaternion m_rot;
     private Vector3 m_pos;
     private Vector3 m_norm;
+    private float m_height;
 
     public bool Hit
     {
         get
         {
             return m_rayHit;
+        }
+    }
+
+    public float Height
+    {
+        get
+        {
+            return m_height;
         }
     }
 
@@ -88,6 +97,7 @@ public class ActorGroundRay : MonoBehaviour
         List<float> weights = new List<float>();
         Vector3 avgPos = Vector3.zero;
         Vector3 avgNorm = Vector3.zero;
+        float avgHeight = 0;
 
         int nbPoint = 0;
 
@@ -97,16 +107,22 @@ public class ActorGroundRay : MonoBehaviour
             weights.Add(item.Weight);
             avgPos += item.Position;
             avgNorm += item.Normal;
+            avgHeight += item.Height;
             nbPoint++;
         }
 
         avgPos /= points.Count;
         avgNorm /= points.Count;
+        avgHeight /= points.Count;
         avgRot = QuaternionExtensions.QuatAvgApprox(rots.ToArray(), weights.ToArray());
 
         m_pos = avgPos;
         m_rot = avgRot;
         m_norm = avgNorm;
+        m_height = avgHeight;
+
+        Debug.Log("Height : " + m_height);
+
         m_rayHit = points.Any();
     }
 

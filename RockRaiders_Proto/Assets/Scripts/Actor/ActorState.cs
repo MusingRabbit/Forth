@@ -18,6 +18,9 @@ namespace Assets.Scripts.Actor
 
         public bool IsMoving { get; set; }
         public bool IsFloating { get; set; }
+
+        public bool FeetOnGround { get; set; }
+
         public bool IsCrouched { get; set; }
         public bool IsMovingForward { get; set; }
 

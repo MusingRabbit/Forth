@@ -151,46 +151,19 @@ namespace Assets.Scripts
                 else
                 {
                     var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
+                    var distance = m_body.transform.rotation * new Vector3(0, 0, m_distance);
                     this.transform.parent = m_body.transform;
 
                     m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
                     m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
 
-                    Debug.Log("m_rotX:" + m_rotX);
-                    Debug.Log("m_rotY:" + m_rotX);
-
                     var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
 
-                    m_tgtPos = (m_body.transform.position - (tgtRotation * m_body.transform.forward)) + offset;
+                    m_tgtPos = m_body.transform.position - (tgtRotation * m_body.transform.forward) + offset - distance;
                     m_tgtRot = m_body.transform.localRotation * tgtRotation;
 
 
                     this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, m_tgtRot, 50 * Time.deltaTime);
-
-                    //this.transform.rotation = m_targetActor.transform.rotation;
-                    //
-                    //var camPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y, -m_distance);
-                    //this.transform.position = camPos;
-
-                    //var baseRotation = m_targetActor.transform.rotation;
-                    //var focusPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y);
-                    //this.transform.position = focusPos - (baseRotation * new Vector3(0, 0, m_distance));
-                    ////this.transform.rotation = baseRotation;
-
-
-                    //m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
-
-                    //if (m_limitYAngle)
-                    //{
-                    //    m_rotX = Mathf.Clamp(m_rotX, -m_maxYAngle, m_maxYAngle);
-                    //}
-
-                    //m_rotY += m_controller.LookAxis.x * m_rotationSpeed;
-
-                    //
-                    //focusPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y);
-                    //this.transform.position = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
-                    //this.transform.rotation = tgtRotation;
                 }
 
                 
