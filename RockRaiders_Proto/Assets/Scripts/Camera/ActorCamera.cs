@@ -157,6 +157,13 @@ namespace Assets.Scripts
                     m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
                     m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
 
+
+                    if (m_limitYAngle)
+                    {
+                        m_rotX = Mathf.Clamp(m_rotX, -m_maxYAngle, m_maxYAngle);
+                    }
+
+
                     var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
 
                     m_tgtPos = m_body.transform.position - (tgtRotation * m_body.transform.forward) + offset - distance;
