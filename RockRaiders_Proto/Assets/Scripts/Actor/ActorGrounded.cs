@@ -131,19 +131,16 @@ namespace Assets.Scripts.Actor
         private void UpdateSurfaceRotaion()
         {
 
-                m_surfaceInfo = this.GetSurfaceRotationInfo();
+            m_surfaceInfo = this.GetSurfaceRotationInfo();
 
-                //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
+            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
 
-                m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
+            m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
 
-
-                m_tgtLookatRot = m_camera.PlanarRotaion;
-
-                var rotation = m_tgtSurfRot * m_tgtLookatRot;
+            var rotation = m_tgtSurfRot * m_camera.PlanarRotaion;
 
 
-                this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
         }
 
         private void UpdateMovement()
@@ -165,7 +162,7 @@ namespace Assets.Scripts.Actor
                 var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
                 m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
 
-                m_rigidBody.AddForce(m_moveVector * (m_moveSpeed * Time.deltaTime), ForceMode.Impulse);
+                m_rigidBody.AddForce(m_moveVector * (m_moveSpeed  / 10), ForceMode.Impulse);
             }
 
         }
@@ -190,32 +187,12 @@ namespace Assets.Scripts.Actor
         private SurfaceRotationInfo GetSurfaceRotationInfo()
         {
             var result = new SurfaceRotationInfo();
-
-            //var deltaV = m_groundRay.Positon - m_body.transform.position;
-            //deltaV.y = deltaV.y - (m_groundRay.Positon.y - m_body.transform.position.y);
-
-            //var deltaRot = Quaternion.FromToRotation(m_body.transform.position, m_groundRay.HitInfo.point);
-
             var normal = m_groundRay.Normal;
 
             var normRgt = -Vector3.Cross(this.transform.forward, m_groundRay.Normal);
             var normfwd = Vector3.Cross(normRgt, m_groundRay.Normal);
 
-            //var v1 = new Vector2(normfwd.x, normfwd.z);
-            //var v2 = new Vector2(this.transform.forward.x, this.transform.forward.z);
-
-            //var angleBetween = v2.y < 0 ? -Vector2.Angle(v1, v2) : Vector2.Angle(v1, v2);
-            //Debug.Log("V1 : " + v1);
-            //Debug.Log("V2 : " + v2);
-            
-            //Debug.Log("Angle Between : " + angleBetween);
-
-            //normfwd = Quaternion.Euler(0, angleBetween, 0) * normfwd;
-
-
             var normBck = -normfwd.normalized;
-
-            //var normRgt = Vector3.Cross(normal, normfwd);
             var normLft = -normRgt;
 
             Debug.DrawRay(m_groundRay.Positon, normal, Color.magenta, 0.0f, false);

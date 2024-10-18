@@ -53,8 +53,6 @@ namespace Assets.Scripts.Actor
 
         public void SelectWeapon(SelectedWeapon weapon)
         {
-            var selectedWeapon = this.GetSelectedWeapon();
-
             switch (weapon)
             {
                 case SelectedWeapon.Main:

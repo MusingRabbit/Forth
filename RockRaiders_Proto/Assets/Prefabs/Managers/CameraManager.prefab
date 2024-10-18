@@ -44,6 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e75849949176a9d4998422c01db41f6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cameras:
-  - {fileID: 0}
+  m_cameras: []
   m_selectedIdx: 0

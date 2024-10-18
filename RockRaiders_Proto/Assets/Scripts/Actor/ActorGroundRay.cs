@@ -121,7 +121,7 @@ public class ActorGroundRay : MonoBehaviour
         m_norm = avgNorm;
         m_height = avgHeight;
 
-        Debug.Log("Height : " + m_height);
+        //Debug.Log("Height : " + m_height);
 
         m_rayHit = points.Any();
     }

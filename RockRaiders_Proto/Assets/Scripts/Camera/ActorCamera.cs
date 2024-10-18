@@ -40,6 +40,9 @@ namespace Assets.Scripts
         private Vector3 m_tgtPos;
         private Quaternion m_tgtRot;
 
+        private uint m_floatCounter = 0;
+        private uint m_groundCounter = 0;
+
         public GameObject Target
         {
             get
@@ -127,12 +130,28 @@ namespace Assets.Scripts
             this.transform.parent = m_body.transform;
         }
 
+        private Vector2 CalculateRotationFromTransform(Transform rhs, Vector3 offset)
+        {
+            var result = new Vector2();
+
+            var focusPos = rhs.position + offset;
+            var direction = focusPos - this.transform.position;
+            var targetRotation = Quaternion.LookRotation(direction);
+
+            result.x = targetRotation.eulerAngles.x;
+            result.y = targetRotation.eulerAngles.y;
+
+            return result;
+        }
+
         private void Update()
         {
             if (m_hasController)
             {
                 if (m_state.IsFloating)
                 {
+                    m_groundCounter = 0;
+
                     m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
 
                     if (m_limitYAngle)
@@ -142,15 +161,43 @@ namespace Assets.Scripts
 
                     m_rotY += m_controller.LookAxis.x * m_rotationSpeed;
 
+                    
+                    if (m_floatCounter == 0)
+                    {
+                        var rot = this.CalculateRotationFromTransform(m_targetActor.transform, new Vector3(0, 0, m_distance));
+                        m_rotX = rot.x;
+                        m_rotY = rot.y;
+                    }
+                    
+                    
                     var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
                     var focusPos = m_targetActor.transform.position + new Vector3(m_offset.x, m_offset.y);
                     m_tgtPos = focusPos - tgtRotation * new Vector3(0, 0, m_distance);
                     m_tgtRot = tgtRotation;
 
+                    //if (this.transform.localRotation != Quaternion.Euler(0,0,0))
+                    //{
+                    //    this.transform.rotation = this.transform.localRotation;
+                    //    this.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                    //}
+
+
                     this.transform.rotation = Quaternion.Lerp(this.transform.rotation, m_tgtRot, 50 * Time.deltaTime);
+
+                    if (m_floatCounter > uint.MaxValue)
+                    {
+                        m_floatCounter = 1;
+                    }
+                    else
+                    {
+                        m_floatCounter++;
+                    }
+                    
                 }
                 else
                 {
+                    m_floatCounter = 0;
+
                     var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
                     var distance = m_body.transform.rotation * new Vector3(0, 0, m_distance);
 
@@ -169,8 +216,17 @@ namespace Assets.Scripts
                     m_tgtPos = m_body.transform.position - (tgtRotation * m_body.transform.forward) + offset - distance;
                     m_tgtRot = m_body.transform.localRotation * tgtRotation;
 
-
                     this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, m_tgtRot, 50 * Time.deltaTime);
+
+
+                    if (m_groundCounter > uint.MaxValue)
+                    {
+                        m_groundCounter = 1;
+                    }
+                    else
+                    {
+                        m_groundCounter++;
+                    }
                 }
 
                 
