@@ -1,3 +1,4 @@
+using Assets.Scripts.Actor;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Util;
 using System;
@@ -12,7 +13,7 @@ internal struct ActorNetData : INetworkSerializable
 {
     public Vector3 Position;
     public Quaternion Rotation;
-    public NetPlayerController Controller;
+    public NetPlayerInput Controller;
     public Vector3 CrosshairPosition;
     public int SelectedWeapon;
 
@@ -43,7 +44,7 @@ public class ActorNetwork : NetworkBehaviour
 {
     private NetworkVariable<ActorNetData> m_playerState;
 
-    private PlayerController m_controller;
+    private PlayerInput m_controller;
     private ActorController m_actorController;
     //private Crosshair m_crosshair;
     private ActorSpawnManager m_actorManager;
@@ -81,7 +82,7 @@ public class ActorNetwork : NetworkBehaviour
 
         if (m_controller == null)
         {
-            m_controller = this.GetComponent<PlayerController>();
+            m_controller = this.GetComponent<PlayerInput>();
         }
     }
 
@@ -97,7 +98,7 @@ public class ActorNetwork : NetworkBehaviour
             var state = m_playerState.Value;
             this.transform.position = state.Position;
             this.transform.rotation = state.Rotation;
-            m_controller.SetStateFromNetPlayerController(state.Controller);
+            m_controller.SetStateFromNetPlayerInput(state.Controller);
             //m_crosshair.gameObject.transform.position = state.CrosshairPosition;
             //m_crosshair.enabled = false;
 
@@ -111,9 +112,9 @@ public class ActorNetwork : NetworkBehaviour
         {
             Position = this.transform.position,
             Rotation = this.transform.rotation,
-            Controller = m_controller.GetNetPlayerController(),
+            Controller = m_controller.GetNetPlayerInput(),
             //CrosshairPosition = m_crosshair.transform.position,
-            SelectedWeapon = (int)m_actorController.State.SelectedWeapon
+            SelectedWeapon = (int)m_actorController.GetComponent<ActorState>().SelectedWeapon
         };
 
         if (this.IsServer || !m_serverAuth)
@@ -176,10 +177,11 @@ public class ActorNetwork : NetworkBehaviour
     {
         if (m_actorManager == null)
         {
-            return;
+            Debug.Log("Actor manager is null. Fix this hack.");
+            m_actorManager = ActorSpawnManager.Instance;
         }
 
-        m_controller = this.GetComponent<PlayerController>();
+        m_controller = this.GetComponent<PlayerInput>();
 
         if (this.IsOwner)
         {

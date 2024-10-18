@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 using static Assets.Scripts.Util.PhysicsExtensions;
-using static UnityEditor.PlayerSettings;
 
 namespace Assets.Scripts.Scan
 {
@@ -63,7 +62,7 @@ namespace Assets.Scripts.Scan
 
             for (int i = 0; i < m_armCount; i++)
             {
-                var angle = (270 * i / m_armCount) - (270/2);
+                var angle = (m_arcAngle * i / m_armCount) - (m_arcAngle / 2);
                 angle = angle < 0 ? 360 + angle : angle;
                 var pos = this.transform.position;
                 var rot = this.transform.rotation * Quaternion.Euler(0, angle, 0);

@@ -14,7 +14,7 @@ namespace Assets.Scripts.Actor
         public Quaternion TargetRotation;
     }
 
-    internal class ActorGrounded : MonoBehaviour
+    internal class ActorGrounded : RRMonoBehaviour
     {
         [SerializeField]
         private float m_moveSpeed;
@@ -33,11 +33,11 @@ namespace Assets.Scripts.Actor
 
         private bool m_crouch;
 
-        private PlayerController m_controller;
+        private PlayerInput m_controller;
         private ActorState m_state;
         private Rigidbody m_rigidBody;
         private ActorGroundRay m_groundRay;
-        
+
         private bool m_canJump;
 
         private Timer m_jumpTimer;
@@ -46,10 +46,7 @@ namespace Assets.Scripts.Actor
         private GameObject m_body;
 
         [SerializeField]
-        private GameObject m_head;
-
-        [SerializeField]
-        private ActorCamera m_camera;
+        private ActorCamera m_actorCamera;
 
         private SurfaceRotationInfo m_surfaceInfo;
         private Quaternion m_tgtSurfRot;
@@ -70,15 +67,15 @@ namespace Assets.Scripts.Actor
             }
         }
 
-        public GameObject Head
+        public ActorCamera ActorCamera
         {
             get
             {
-                return m_head;
+                return m_actorCamera;
             }
             set
             {
-                m_head = value;
+                m_actorCamera = value;
             }
         }
 
@@ -98,15 +95,18 @@ namespace Assets.Scripts.Actor
             m_rotationSpeed = 150.0f;
         }
 
-        private void Start()
+        public override void Initialise()
         {
-            m_controller = this.GetComponent<PlayerController>();
+            m_controller = this.GetComponent<PlayerInput>();
             m_state = this.GetComponent<ActorState>();
             m_rigidBody = this.GetComponent<Rigidbody>();
             m_groundRay = this.GetComponent<ActorGroundRay>();
         }
 
-
+        private void Start()
+        {
+            this.Initialise();
+        }
 
         private void Update()
         {
@@ -137,7 +137,7 @@ namespace Assets.Scripts.Actor
 
             m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
 
-            var rotation = m_tgtSurfRot * m_camera.PlanarRotaion;
+            var rotation = m_tgtSurfRot * m_actorCamera.PlanarRotaion;
 
 
             this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
@@ -162,7 +162,7 @@ namespace Assets.Scripts.Actor
                 var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
                 m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
 
-                m_rigidBody.AddForce(m_moveVector * (m_moveSpeed  / 10), ForceMode.Impulse);
+                m_rigidBody.AddForce(m_moveVector * (m_moveSpeed / 10), ForceMode.Impulse);
             }
 
         }
@@ -252,7 +252,7 @@ namespace Assets.Scripts.Actor
 
             m_colDict.Remove(collision.collider.GetInstanceID());
 
-            foreach(var kvp in m_colDict)
+            foreach (var kvp in m_colDict)
             {
                 var mask = LayerMask.GetMask("Level");
 
@@ -265,6 +265,5 @@ namespace Assets.Scripts.Actor
 
             m_state.FeetOnGround = feetOnGround;
         }
-
     }
 }

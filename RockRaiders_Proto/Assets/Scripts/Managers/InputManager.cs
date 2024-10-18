@@ -8,7 +8,7 @@ public class InputManager : MonoBehaviour
 {
 
     [SerializeField]
-    private PlayerController m_controller;
+    private PlayerInput m_controller;
 
     public InputManager()
     {
@@ -30,7 +30,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public void RegisterPlayerController(PlayerController controllerComponent)
+    public void RegisterPlayerController(PlayerInput controllerComponent)
     {
         if (controllerComponent == null)
         {

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorAnimController : MonoBehaviour
+    public class ActorAnimController : RRMonoBehaviour
     {
         private const string ANIM_IDLE = "Idle";
         private const string ANIM_CROUCH_IDLE = "Actor_Crouch_Idle";
@@ -39,6 +39,10 @@ namespace Assets.Scripts.Actor
         private Animator m_animator;
 
         public ActorAnimController()
+        {
+        }
+
+        public override void Initialise()
         {
         }
 

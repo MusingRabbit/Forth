@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Actor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,9 @@ namespace Assets.Scripts.Weapons
 
         private Rigidbody m_parentRigidBody;
 
+        [SerializeField]
+        private ActorCrosshair m_crosshair;
+
         public GameObject Owner
         {
             get
@@ -48,6 +52,18 @@ namespace Assets.Scripts.Weapons
             {
                 m_owner = value;
                 m_parentRigidBody = m_owner?.GetComponent<Rigidbody>();
+            }
+        }
+
+        public ActorCrosshair Crosshair
+        {
+            get
+            {
+                return m_crosshair;
+            }
+            set
+            {
+                m_crosshair = value;
             }
         }
 

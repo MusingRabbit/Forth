@@ -14,7 +14,7 @@ namespace Assets.Scripts
         SideArm = 2
     }
 
-    public class ActorInventory : MonoBehaviour
+    public class ActorInventory : RRMonoBehaviour
     {
         [SerializeField]
         private CurrentSelection m_currentSelection;
@@ -52,6 +52,11 @@ namespace Assets.Scripts
         }
 
         public ActorInventory()
+        {
+            m_selectedWeapon = SelectedWeapon.None;
+        }
+
+        public override void Initialise()
         {
             m_selectedWeapon = SelectedWeapon.None;
         }

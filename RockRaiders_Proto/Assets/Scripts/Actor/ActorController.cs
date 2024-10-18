@@ -7,9 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActorController : MonoBehaviour
+public class ActorController : RRMonoBehaviour
 {
-    private PlayerController m_controller;
+    private PlayerInput m_controller;
     private ActorState m_state;
     private ActorGrounded m_grounded;
     private ActorAnimController m_animController;
@@ -19,8 +19,6 @@ public class ActorController : MonoBehaviour
     private Rigidbody m_rigidBody;
     private double m_dropTimeOut = 1.0f;
     private float m_dropForce = 3.0f;
-
-    private float m_currHeadRot = 0.0f;
 
     private Timer m_dropTimer;
 
@@ -62,8 +60,7 @@ public class ActorController : MonoBehaviour
         m_canPickup = true;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public override void Initialise()
     {
         m_body = this.gameObject.FindChild("Body");
         m_head = this.gameObject.FindChild("Head");
@@ -71,9 +68,9 @@ public class ActorController : MonoBehaviour
         m_RHGrip = this.gameObject.FindChild("RH_Grip");
         m_rArm = this.gameObject.FindChild("Body.UpperBody.RArm.UpperArmGroup");
         m_lArm = this.gameObject.FindChild("Body.UpperBody.LArm.UpperArmGroup");
-        
 
-        m_controller = this.GetComponent<PlayerController>();
+
+        m_controller = this.GetComponent<PlayerInput>();
         m_state = this.GetComponent<ActorState>();
         m_floating = this.GetComponent<ActorFloating>();
         m_grounded = this.GetComponent<ActorGrounded>();
@@ -86,7 +83,12 @@ public class ActorController : MonoBehaviour
         m_floating.Body = m_body;
 
         m_floating.Head = m_head;
-        m_grounded.Head = m_head;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        this.Initialise();
     }
 
     // Update is called once per frame
@@ -267,6 +269,7 @@ public class ActorController : MonoBehaviour
             m_canPickup = false;
 
             weapon.Owner = null;
+            weapon.Crosshair = null;
         }
     }
 
@@ -296,6 +299,7 @@ public class ActorController : MonoBehaviour
 
         weaponObj.GetComponent<Rigidbody>().isKinematic = true;
         weaponObj.GetComponent<Rigidbody>().detectCollisions = false;
+        weapon.Crosshair = m_crosshair;
         weapon.Owner = this.gameObject;
     }
 
@@ -326,7 +330,7 @@ public class ActorController : MonoBehaviour
             var rhGripPos = m_RHGrip.transform.position;
             selectedWeapon.transform.position = rhGripPos;
             selectedWeapon.transform.LookAt(new Vector3(pos.x, pos.y, pos.z), this.transform.up);
-            selectedWeapon.transform.Rotate(new Vector3(0, 1, 0), -90);
+            //selectedWeapon.transform.Rotate(new Vector3(0, 1, 0), 0);
         }
     }
 
@@ -338,16 +342,14 @@ public class ActorController : MonoBehaviour
         var crossPos = m_crosshair.AimPoint;
 
         var deltaVector = rArmPos - crossPos;
-        //deltaVector.y = 0;
-        var rotation = Quaternion.LookRotation(deltaVector);
+        var rotation = Quaternion.LookRotation(deltaVector, this.transform.up);
 
         Debug.Log(rotation.eulerAngles);
 
-        rArmTrans.rotation *= Quaternion.Euler(0, 0, rotation.eulerAngles.x);
+        bool inverted = this.transform.up.y < 0.0f;
+
+        rArmTrans.rotation *= Quaternion.Euler(0, 0, inverted ? - rotation.eulerAngles.x : rotation.eulerAngles.x);
         lArmTrans.rotation = rArmTrans.rotation;
-        // This is seriously *special* stuff - but it works.
-        //rArmTrans.position = lArmTrans.position;
-        //lArmTrans.position = rArmPos;
     }
 
     private void UpdateActorHeadRotation()
@@ -355,26 +357,9 @@ public class ActorController : MonoBehaviour
         var headTransform = m_head.GetComponent<Transform>();
         var neckTransform = m_neck.GetComponent<Transform>();
 
-        var detlaVector = headTransform.position - m_crosshair.transform.position;
-        var rotation = (Mathf.Atan2(detlaVector.x, detlaVector.y) * (180 / Mathf.PI)) - 90;
-
-        if (detlaVector.x < 0)
-        {
-            rotation = -rotation;
-        }
-
-        rotation = this.GetClampedHeadRotation(rotation);
-
-        //Debug.Log("Head Rot : " + rotation);
-
-        m_currHeadRot = rotation;
-
-        headTransform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
-    }
-
-    private float GetClampedHeadRotation(float rotation)
-    {
-        return Mathf.Clamp(rotation, 150, 230);
+        var detlaVector = headTransform.position - m_crosshair.AimPoint;
+        var rotation = Quaternion.LookRotation(detlaVector, headTransform.up);
+        headTransform.rotation = rotation;
     }
 
 

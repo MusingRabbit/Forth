@@ -21,7 +21,7 @@ public class Crosshair : MonoBehaviour
     [SerializeField]
     private bool isEnabled;
 
-    private PlayerController m_playerController;
+    private PlayerInput m_playerController;
     private MeshCollider m_uiMeshCollider;
 
     public GameObject Actor
@@ -48,7 +48,7 @@ public class Crosshair : MonoBehaviour
         }
     }
 
-    public PlayerController PlayerController
+    public PlayerInput PlayerController
     {
         get
         {
@@ -63,7 +63,7 @@ public class Crosshair : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_playerController = m_actor.GetComponent<PlayerController>();
+        m_playerController = m_actor.GetComponent<PlayerInput>();
         m_uiMeshCollider = m_uiPlaneObject.GetComponent<MeshCollider>();
     }
 

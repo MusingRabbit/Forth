@@ -1,3 +1,4 @@
+using Assets.Scripts.Input;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ public enum ControllerActions
     Count                       // Not in use
 }
 
-public struct NetPlayerController : INetworkSerializable
+public struct NetPlayerInput : INetworkSerializable
 {
     public float MoveX;
     public float MoveY;
@@ -41,6 +42,7 @@ public struct NetPlayerController : INetworkSerializable
     public float LookY;
     public int Trigger;
     public int Jump;
+    public int Crouch;
     public int Use;
     public int Drop;
     public int Throw;
@@ -58,6 +60,7 @@ public struct NetPlayerController : INetworkSerializable
         serializer.SerializeValue(ref LookY);
         serializer.SerializeValue(ref Trigger);
         serializer.SerializeValue(ref Jump);
+        serializer.SerializeValue(ref Crouch);
         serializer.SerializeValue(ref Use);
         serializer.SerializeValue(ref Drop);
         serializer.SerializeValue(ref Throw);
@@ -69,7 +72,7 @@ public struct NetPlayerController : INetworkSerializable
     }
 }
 
-public class PlayerController : MonoBehaviour, IPlayerController
+public class PlayerInput : MonoBehaviour, IPlayerInput
 {
     private Vector2 moveAxis;
     private Vector2 lookAxis;
@@ -233,7 +236,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     }
 
 
-    public PlayerController()
+    public PlayerInput()
     {
         this.m_actionDict = new Dictionary<ControllerActions, ActionState>();
 
@@ -292,9 +295,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
     }
 
 
-    public NetPlayerController GetNetPlayerController()
+    public NetPlayerInput GetNetPlayerInput()
     {
-        return new NetPlayerController
+        return new NetPlayerInput
         {
             LookX = this.lookAxis.x,
             LookY = this.lookAxis.y,
@@ -309,11 +312,12 @@ public class PlayerController : MonoBehaviour, IPlayerController
             Use = this.Use,
             Trigger = this.Trigger,
             Jump = this.Jump,
+            Crouch = this.Crouch,
             Throw = this.Throw
         };
     }
 
-    public void SetStateFromNetPlayerController(NetPlayerController netController)
+    public void SetStateFromNetPlayerInput(NetPlayerInput netController)
     {
         this.moveAxis.x = netController.MoveX;
         this.moveAxis.y = netController.MoveY;

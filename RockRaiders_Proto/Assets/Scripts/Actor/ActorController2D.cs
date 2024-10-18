@@ -57,7 +57,7 @@ public class ActorController2D : MonoBehaviour
     [SerializeField]
     private Team m_team;
 
-    private PlayerController m_controller;
+    private PlayerInput m_controller;
 
     private Rigidbody m_rigidBody;
     
@@ -192,7 +192,7 @@ public class ActorController2D : MonoBehaviour
         m_rigidBody = this.gameObject.GetComponent<Rigidbody>();
         m_lowerBody = m_body.FindChild("LowerBody");
 
-        m_controller = this.GetComponent<PlayerController>();
+        m_controller = this.GetComponent<PlayerInput>();
 
         //m_controller.Start();
 

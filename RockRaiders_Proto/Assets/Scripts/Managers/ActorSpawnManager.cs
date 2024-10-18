@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Util;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,6 @@ namespace Assets.Scripts.Factory
 
 
         [SerializeField]
-        private GameObject m_gameUIPrefab;
-
-        [SerializeField]
         private GameObject m_cameraManagerObj;
 
         [SerializeField]
@@ -41,6 +39,7 @@ namespace Assets.Scripts.Factory
          
         public ActorSpawnManager()
         {
+            instance = this;
             m_spawnPoints = new List<GameObject>();
         }
 
@@ -73,6 +72,8 @@ namespace Assets.Scripts.Factory
             // Instantiate player object
             GameObject player = Instantiate(m_playerPrefab);
 
+            this.InitialiseBehaviours(player);
+
             var actorNetwork = player.GetComponent<ActorNetwork>();
             actorNetwork.ActorSpawnManager = this;
 
@@ -86,7 +87,17 @@ namespace Assets.Scripts.Factory
             playerNetworkObject.SpawnAsPlayerObject(clientId);
         }
 
-        public void AddActorNetworkComponent(GameObject actor)
+        private void InitialiseBehaviours(GameObject actor)
+        {
+            var behaviours = actor.GetComponents<RRMonoBehaviour>();
+
+            foreach (var behaviour in behaviours)
+            {
+                behaviour.Initialise();
+            }
+        }
+
+        public void SetupActorNetworkComponent(GameObject actor)
         {
             if (actor == null)
             {
@@ -110,7 +121,7 @@ namespace Assets.Scripts.Factory
             }
 
             var inputManager = m_inputManagerObj.GetComponent<InputManager>();
-            var controller = actor.GetComponent<PlayerController>();
+            var controller = actor.GetComponent<PlayerInput>();
             inputManager.RegisterPlayerController(controller);
         }
 
@@ -123,59 +134,24 @@ namespace Assets.Scripts.Factory
 
             var cameraSystem = m_cameraManagerObj.GetComponent<CameraManager>();
             var cameraObj = new GameObject();
+            cameraObj.name = "Actor Camera";
             cameraObj.AddComponent<ActorCamera>();
 
-            var tpc = cameraObj.GetComponent<ActorCamera>();
-            tpc.Target = actor;
-            tpc.Distance = 5.0f;
-            tpc.Offset = new Vector3(0, 10.0f, 0);
+            var actorCamera = cameraObj.GetComponent<ActorCamera>();
+            actorCamera.Target = actor;
+            actorCamera.Offset = new Vector2(0.5f, 0.5f);
+            actorCamera.Distance = 0.5f;
             
-
             cameraObj.AddComponent<Camera>();
 
             var camera = cameraObj.GetComponent<Camera>();
 
+
+            actor.GetComponent<ActorFloating>().ActorCamera = actorCamera;
+            actor.GetComponent<ActorGrounded>().ActorCamera = actorCamera;
+            actor.GetComponent<ActorCrosshair>().ActorCamera = actorCamera;
+
             cameraSystem.AddCamera(camera, isLocal);
-        }
-
-        public void CreateActorUI(GameObject actor, bool isLocal)
-        {
-            if (m_gameUIPrefab == null)
-            {
-                throw new NullReferenceException("No 'Game UI Prefab' has been set.");
-            }
-
-            var cameraSystem = m_cameraManagerObj.GetComponent<CameraManager>();
-            var gameUI = GameObject.Instantiate(m_gameUIPrefab);
-            gameUI.AddComponent<FollowObject>();
-
-            var followObj = gameUI.GetComponent<FollowObject>();
-            followObj.Target = actor;
-            followObj.Offset = new Vector3(0, 0, 0);
-            followObj.IsLookingAtTarget = false;
-
-            var actorController = actor.GetComponent<ActorController>();
-            var crosshairObj = gameUI.FindChild("Crosshair"); 
-
-            if (crosshairObj == null)
-            {
-                throw new NullReferenceException("Crosshair is null!");
-            }
-
-            //actorController.Crosshair = gameUI.FindChild("Crosshair");
-            //var crosshair = actorController.Crosshair.GetComponent<Crosshair>();
-
-            //if (isLocal)
-            //{
-            //    crosshair.Actor = actor;
-            //    crosshair.Camera = cameraSystem.GetSelectedCamera();
-            //    crosshair.PlayerController = actor.GetComponent<PlayerController>();
-            //}
-            //else
-            //{
-            //    crosshair.enabled = false;  
-            //}
-
         }
 
         private GameObject GetSpawnPoint(GameObject actor)
@@ -188,17 +164,15 @@ namespace Assets.Scripts.Factory
 
         public void PrepareLocalPlayerActor(GameObject actor)
         {
-            this.AddActorNetworkComponent(actor);
+            this.SetupActorNetworkComponent(actor);
             this.RegisterActorOnInputManager(actor);
             this.CreateActorCamera(actor, true);
-            //this.CreateActorUI(actor, true);
         }
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
-            this.AddActorNetworkComponent(actor);
+            this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
-            //this.CreateActorUI(actor, false);
         }
     }
 }

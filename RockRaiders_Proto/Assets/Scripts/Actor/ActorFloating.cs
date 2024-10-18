@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorFloating : MonoBehaviour
+    public class ActorFloating : RRMonoBehaviour
     {
         [SerializeField]
         private float m_moveForce;
@@ -25,12 +25,11 @@ namespace Assets.Scripts.Actor
         private GameObject m_head;
 
         [SerializeField]
-        private GameObject m_actorCamera;
+        private ActorCamera m_actorCamera;
 
-        private PlayerController m_controller;
+        private PlayerInput m_controller;
         private Rigidbody m_rigidBody;
 
-        private ActorCamera m_tpCamera;
         private Quaternion m_tgtRotation;
 
         public GameObject Head
@@ -57,7 +56,7 @@ namespace Assets.Scripts.Actor
             }
         }
 
-        public GameObject Camera
+        public ActorCamera ActorCamera
         {
             get
             {
@@ -77,11 +76,15 @@ namespace Assets.Scripts.Actor
             m_rotationSpeed = 50.0f;
         }
 
+        public override void Initialise()
+        {
+            m_controller = this.GetComponent<PlayerInput>();
+            m_rigidBody = this.GetComponent<Rigidbody>();
+        }
+
         private void Start()
         {
-            m_controller = this.GetComponent<PlayerController>();
-            m_rigidBody = this.GetComponent<Rigidbody>();
-            m_tpCamera = m_actorCamera.GetComponent<ActorCamera>();
+            this.Initialise();
         }
 
         private void Update()
@@ -89,11 +92,11 @@ namespace Assets.Scripts.Actor
             var moveInput = new Vector3(m_controller.MoveAxis.x, 0, m_controller.MoveAxis.y).normalized;
             var isMoving = moveInput.magnitude > 0;
 
-            m_tgtRotation = m_tpCamera.Rotation;
+            m_tgtRotation = m_actorCamera.Rotation;
 
-            if (isMoving)
+            if (isMoving && m_rigidBody.velocity.magnitude <= m_maxSpeed)
             {
-                var moveDir = m_tpCamera.Rotation * moveInput;
+                var moveDir = m_actorCamera.Rotation * moveInput;
                 m_rigidBody.AddForce(moveDir * (m_moveForce * Time.deltaTime), ForceMode.Force);
             }
 
@@ -111,6 +114,5 @@ namespace Assets.Scripts.Actor
         {
             m_rigidBody.AddForce(-this.transform.up.normalized * m_moveForce * Time.deltaTime, ForceMode.Force);
         }
-
     }
 }

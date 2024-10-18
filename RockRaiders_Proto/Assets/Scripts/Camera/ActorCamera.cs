@@ -29,7 +29,7 @@ namespace Assets.Scripts
         [SerializeField]
         private Vector2 m_offset;
 
-        private PlayerController m_controller;
+        private PlayerInput m_controller;
         private ActorState m_state;
         private bool m_hasController;
         private GameObject m_body;
@@ -121,7 +121,7 @@ namespace Assets.Scripts
             this.transform.rotation = m_targetActor.transform.rotation;
             m_body = m_targetActor.gameObject.FindChild("Body");
 
-            m_controller = m_targetActor.GetComponent<PlayerController>();
+            m_controller = m_targetActor.GetComponent<PlayerInput>();
             m_state = m_targetActor.GetComponent<ActorState>();
             m_hasController = m_controller != null;
 

@@ -8,12 +8,10 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorState : MonoBehaviour
+    public class ActorState : RRMonoBehaviour
     {
         public Team Team { get; set; }
-
         public SelectedWeapon SelectedWeapon { get; set; }
-
         public ActorInventory Inventory { get; set; }
 
         public bool IsMoving { get; set; }
@@ -29,9 +27,14 @@ namespace Assets.Scripts.Actor
             this.SelectedWeapon = SelectedWeapon.None;
         }
 
-        private void Start()
+        public override void Initialise()
         {
             this.Inventory = this.GetComponent<ActorInventory>();
+        }
+
+        private void Start()
+        {
+            this.Initialise();
         }
 
         public GameObject GetSelectedWeapon()

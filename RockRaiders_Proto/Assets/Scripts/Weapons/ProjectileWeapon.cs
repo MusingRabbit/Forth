@@ -53,15 +53,19 @@ public class ProjectileWeapon : Weapon
             var deltaTime = Time.time - m_lastShotTime;
             var canFire = deltaTime > (1.0f / m_fireRate);
 
-            var spread = Random.Range(-m_spread, m_spread);
-            var velOffset = this.OwnerRigidBody.velocity + new Vector3(0.0f, spread, 0.0f);
+            var spreadX = Random.Range(-m_spread, m_spread);
+            var spreadY = Random.Range(-m_spread, m_spread);
+            var velOffset = this.OwnerRigidBody.velocity + new Vector3(spreadX, spreadY, 0.0f);
+
+            var deltaV = this.Crosshair.AimPoint - m_muzzle.transform.position;
+            var rotation = Quaternion.LookRotation(deltaV, this.transform.up);
 
             if (canFire)
             {
                 m_lastShotTime = Time.time;
                 m_pwNet.SpawnProjectile(
                     m_muzzle.transform.position,
-                    m_muzzle.transform.rotation,
+                    rotation,
                     velOffset,
                     m_muzzleVelocity);
             }
