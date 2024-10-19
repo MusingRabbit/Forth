@@ -27,7 +27,7 @@ namespace Assets.Scripts
 
             if (!m_netManager.IsClient && !m_netManager.IsServer)
             {
-                StartButtons();
+                //StartButtons();
             }
             else
             {

@@ -45,6 +45,10 @@ namespace Assets.Scripts.Actor
             {
                 return m_point;
             }
+            set
+            {
+                m_point = value;
+            }
         }
 
         public ActorCrosshair()

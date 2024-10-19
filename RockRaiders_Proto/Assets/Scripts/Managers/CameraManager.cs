@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,14 +26,14 @@ public class CameraManager : MonoBehaviour
 
         if (m_cameras.Count > 0)
         {
-            m_cameras[0].gameObject.SetActive(true);
+            m_cameras[0].enabled = true;
         }
     }
 
     // Update is called once per frame
     private void Update()
     {
-
+        //m_currCamera.enabled = true;
     }
 
     public void AddCamera(Camera camera, bool makeActive = false)

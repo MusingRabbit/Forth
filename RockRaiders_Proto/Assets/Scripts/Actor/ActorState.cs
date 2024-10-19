@@ -14,6 +14,8 @@ namespace Assets.Scripts.Actor
         public SelectedWeapon SelectedWeapon { get; set; }
         public ActorInventory Inventory { get; set; }
 
+        public bool GravBootsEnabled { get; set; }
+
         public bool IsMoving { get; set; }
         public bool IsFloating { get; set; }
 

@@ -238,7 +238,7 @@ namespace Assets.Scripts.Actor
         {
             m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
 
-            var mask = LayerMask.GetMask("Level");
+            var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock");
 
             if ((mask & (1 << collision.collider.gameObject.layer)) != 0)
             {
@@ -254,7 +254,7 @@ namespace Assets.Scripts.Actor
 
             foreach (var kvp in m_colDict)
             {
-                var mask = LayerMask.GetMask("Level");
+                var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock");
 
                 if ((mask & (1 << kvp.Value.collider.gameObject.layer)) != 0)
                 {

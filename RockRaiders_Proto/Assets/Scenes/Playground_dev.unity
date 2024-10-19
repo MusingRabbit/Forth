@@ -1297,6 +1297,10 @@ PrefabInstance:
       propertyPath: m_Mass
       value: 10000
       objectReference: {fileID: 0}
+    - target: {fileID: 9077340054095194692, guid: 4feb8a040209fee4dba26c358ec2cf99, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1838,7 +1842,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1762952913387035032, guid: 285b78f462cff5a43ab92247d722fac7, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1777015267730858489, guid: 285b78f462cff5a43ab92247d722fac7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2346,6 +2350,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5691258161892701413, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 42.0902
+      objectReference: {fileID: 0}
+    - target: {fileID: 5691258161892701413, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 468.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5691258161892701413, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 310.45486
+      objectReference: {fileID: 0}
     - target: {fileID: 6139755862691274259, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Camera
       value: 
@@ -2353,6 +2369,12 @@ PrefabInstance:
     - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Name
       value: UI_Overlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 9148109777525707128, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_Text
+      value: 'Rock Raiders Prototype
+
+        v0.1'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -36,6 +36,9 @@ namespace Assets.Scripts.Factory
 
         [SerializeField]
         private List<GameObject> m_spawnPoints;
+
+        [SerializeField]
+        private UIGameOverlay m_uiOverlay;
          
         public ActorSpawnManager()
         {
@@ -140,18 +143,22 @@ namespace Assets.Scripts.Factory
             var actorCamera = cameraObj.GetComponent<ActorCamera>();
             actorCamera.Target = actor;
             actorCamera.Offset = new Vector2(0.5f, 0.5f);
-            actorCamera.Distance = 0.5f;
+            actorCamera.Distance = 1.0f;
             
             cameraObj.AddComponent<Camera>();
 
             var camera = cameraObj.GetComponent<Camera>();
-
 
             actor.GetComponent<ActorFloating>().ActorCamera = actorCamera;
             actor.GetComponent<ActorGrounded>().ActorCamera = actorCamera;
             actor.GetComponent<ActorCrosshair>().ActorCamera = actorCamera;
 
             cameraSystem.AddCamera(camera, isLocal);
+        }
+
+        public void SetupUIOverlay(GameObject actor)
+        {
+            m_uiOverlay.Actor = actor.GetComponent<ActorController>();
         }
 
         private GameObject GetSpawnPoint(GameObject actor)
@@ -167,6 +174,7 @@ namespace Assets.Scripts.Factory
             this.SetupActorNetworkComponent(actor);
             this.RegisterActorOnInputManager(actor);
             this.CreateActorCamera(actor, true);
+            this.SetupUIOverlay(actor);
         }
 
         public void PrepareRemotePlayerActor(GameObject actor)

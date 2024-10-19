@@ -18,4 +18,18 @@ namespace Assets.Scripts
         Spectating = 0,
         Playing
     }
+
+    public enum MatchType
+    {
+        Deathmatch = 0,
+        TeamDeathmatch,
+        CaptureTheFlag
+    }
+
+    public enum GameState
+    {
+        MainMenu = 0,
+        Loading,
+        InGame
+    }
 }

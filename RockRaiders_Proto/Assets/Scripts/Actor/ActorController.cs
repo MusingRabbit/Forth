@@ -23,8 +23,6 @@ public class ActorController : RRMonoBehaviour
     private Timer m_dropTimer;
 
     private bool m_canPickup;
-    private bool m_gravbootsToggle;
-
 
     private GameObject m_body;
     private GameObject m_head;
@@ -83,6 +81,8 @@ public class ActorController : RRMonoBehaviour
         m_floating.Body = m_body;
 
         m_floating.Head = m_head;
+
+        m_state.GravBootsEnabled = true;
     }
 
     // Start is called before the first frame update
@@ -103,8 +103,7 @@ public class ActorController : RRMonoBehaviour
             this.ProcessControllerActions();
         }
 
-
-        if (m_groundRay.Hit)
+        if (m_state.GravBootsEnabled && m_groundRay.Hit)
         {
             m_grounded.enabled = true;
             m_floating.enabled = false;
@@ -226,7 +225,7 @@ public class ActorController : RRMonoBehaviour
 
     private void ToggleGravBoots()
     {
-        m_gravbootsToggle = !m_gravbootsToggle;
+        m_state.GravBootsEnabled = !m_state.GravBootsEnabled;
     }
 
     private void DropTimer_OnTimerElapsed(object sender, Assets.Scripts.Events.TimerElapsedEventArgs e)
@@ -357,9 +356,10 @@ public class ActorController : RRMonoBehaviour
         var headTransform = m_head.GetComponent<Transform>();
         var neckTransform = m_neck.GetComponent<Transform>();
 
-        var detlaVector = headTransform.position - m_crosshair.AimPoint;
+        var detlaVector = m_crosshair.AimPoint - headTransform.position;
         var rotation = Quaternion.LookRotation(detlaVector, headTransform.up);
-        headTransform.rotation = rotation;
+        headTransform.rotation = Quaternion.Euler(rotation.eulerAngles.x, rotation.eulerAngles.y, rotation.eulerAngles.z);
+        headTransform.Rotate(0, -90, 0);
     }
 
 

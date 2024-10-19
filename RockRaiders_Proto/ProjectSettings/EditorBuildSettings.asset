@@ -12,9 +12,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Playground_01_BAK.unity
     guid: 483be1a4028e62b4bbe0a87f3b17853f
   - enabled: 1
+    path: Assets/Scenes/SplashScreen.unity
+    guid: 43eb661283eaaaf4a89c2c7c365dfb0e
+  - enabled: 1
+    path: Assets/Scenes/DM-VolcanicPlanet01.unity
+    guid: a486d5e651d47f4498f8cf4efc6403c0
+  - enabled: 1
     path: Assets/Scenes/Playground_dev.unity
     guid: c660e2a4fbae02648a530bb117caa55b
-  - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+  - enabled: 0
+    path: Assets/Scenes/VolcanicPlanet01.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
