@@ -769,4 +769,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_actor: {fileID: 0}
-  m_txtGravBootsEnabled: {fileID: 0}
+  m_txtGravBootsEnabled: {fileID: 8743945798676295478}

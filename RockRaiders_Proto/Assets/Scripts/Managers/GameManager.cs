@@ -105,13 +105,20 @@ namespace Assets.Scripts.Managers
         {
             m_state = GameState.Loading;
 
-            if (m_settings.MatchSettings.IsHost)
+            try
             {
-                this.StartSessionAsHost();
+                if (m_settings.MatchSettings.IsHost)
+                {
+                    this.StartSessionAsHost();
+                }
+                else
+                {
+                    this.ConnectToRemoteHost();
+                }
             }
-            else
+            catch(Exception ex)
             {
-                this.ConnectToRemoteHost();
+                this.LoadSplashScreen();
             }
         }
 

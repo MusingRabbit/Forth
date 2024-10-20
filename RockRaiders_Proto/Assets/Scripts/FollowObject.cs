@@ -52,7 +52,14 @@ public class FollowObject : MonoBehaviour
 
     [SerializeField]
     [SerializeAs("LookAtTarget")]
+    [Tooltip("Check if you want this object to look at the target. Checking this will ignore match rotation.")]
     private bool m_lookAtTarget;
+
+    [SerializeField]
+    private bool m_matchRotation;
+
+    [SerializeField]
+    private float m_roationSlerp;
 
     public FollowObject()
     {
@@ -79,6 +86,11 @@ public class FollowObject : MonoBehaviour
         if (m_lookAtTarget)
         {
             this.gameObject.transform.LookAt(m_targetObj.gameObject.transform.position);
+        }
+        else if (m_matchRotation)
+        {
+            var tgtRotaion = m_targetObj.gameObject.transform.rotation;
+            this.gameObject.transform.rotation = Quaternion.Slerp(this.gameObject.transform.rotation, tgtRotaion, m_roationSlerp * Time.deltaTime);
         }
     }
 }

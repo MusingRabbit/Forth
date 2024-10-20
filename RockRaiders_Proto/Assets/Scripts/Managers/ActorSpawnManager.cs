@@ -39,7 +39,7 @@ namespace Assets.Scripts.Factory
 
         [SerializeField]
         private UIGameOverlay m_uiOverlay;
-         
+
         public ActorSpawnManager()
         {
             instance = this;

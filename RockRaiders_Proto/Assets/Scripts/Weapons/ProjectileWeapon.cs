@@ -55,7 +55,8 @@ public class ProjectileWeapon : Weapon
 
             var spreadX = Random.Range(-m_spread, m_spread);
             var spreadY = Random.Range(-m_spread, m_spread);
-            var velOffset = this.OwnerRigidBody.velocity + new Vector3(spreadX, spreadY, 0.0f);
+            var spread = new Vector3(spreadX, spreadY, 0.0f);
+            var velOffset = this.OwnerRigidBody.velocity + spread;
 
             var deltaV = this.Crosshair.AimPoint - m_muzzle.transform.position;
             var rotation = Quaternion.LookRotation(deltaV, this.transform.up);
@@ -68,6 +69,8 @@ public class ProjectileWeapon : Weapon
                     rotation,
                     velOffset,
                     m_muzzleVelocity);
+
+                this.Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_pwNet.Projectile.Mass);
             }
         }
     }

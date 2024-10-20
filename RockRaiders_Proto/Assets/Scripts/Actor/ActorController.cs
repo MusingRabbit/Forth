@@ -1,5 +1,6 @@
 using Assets.Scripts;
 using Assets.Scripts.Actor;
+using Assets.Scripts.Events;
 using Assets.Scripts.Util;
 using Assets.Scripts.Weapons;
 using System;
@@ -269,6 +270,7 @@ public class ActorController : RRMonoBehaviour
 
             weapon.Owner = null;
             weapon.Crosshair = null;
+            weapon.OnShotFired -= this.Weapon_OnShotFired;
         }
     }
 
@@ -300,6 +302,12 @@ public class ActorController : RRMonoBehaviour
         weaponObj.GetComponent<Rigidbody>().detectCollisions = false;
         weapon.Crosshair = m_crosshair;
         weapon.Owner = this.gameObject;
+        weapon.OnShotFired += this.Weapon_OnShotFired;
+    }
+
+    private void Weapon_OnShotFired(object sender, OnShotFiredEventArgs e)
+    {
+        this.HandleRecoil(e.ProjectileVelocity, e.ProjectileMass);
     }
 
     private void UpdateSelectedWeaponWorldPos()
@@ -347,8 +355,18 @@ public class ActorController : RRMonoBehaviour
 
         bool inverted = this.transform.up.y < 0.0f;
 
-        rArmTrans.rotation *= Quaternion.Euler(0, 0, inverted ? - rotation.eulerAngles.x : rotation.eulerAngles.x);
-        lArmTrans.rotation = rArmTrans.rotation;
+        var clampVal = Mathf.Clamp(rotation.eulerAngles.x, 0, 55);
+
+        var rotAmt = Quaternion.Euler(0, 0, inverted ? -rotation.eulerAngles.x : rotation.eulerAngles.x);
+        var rotAmtZ = Mathf.Abs(rotAmt.eulerAngles.z - 180 < 0 ? rotAmt.eulerAngles.z : rotAmt.eulerAngles.z - 360);
+
+        Debug.Log("rotAmtZ : " + rotAmtZ);
+
+        if (rotAmtZ < 25)
+        {
+            rArmTrans.rotation *= rotAmt;
+            lArmTrans.rotation = rArmTrans.rotation;
+        }
     }
 
     private void UpdateActorHeadRotation()
@@ -360,6 +378,14 @@ public class ActorController : RRMonoBehaviour
         var rotation = Quaternion.LookRotation(detlaVector, headTransform.up);
         headTransform.rotation = Quaternion.Euler(rotation.eulerAngles.x, rotation.eulerAngles.y, rotation.eulerAngles.z);
         headTransform.Rotate(0, -90, 0);
+    }
+
+    private void HandleRecoil(Vector3 velocity, float mass)
+    {
+        if (m_state.IsFloating)
+        {
+            m_rigidBody.AddForce(-velocity * mass, ForceMode.Impulse);
+        }
     }
 
 

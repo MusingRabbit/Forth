@@ -27,7 +27,7 @@ public class Host : GameMenu
     private TMP_Dropdown m_levelDropDown;
 
 
-    private static string[] availableScenes = new string[] { "VolcanicPlanet01" };
+    private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01" };
 
     // Start is called before the first frame update
     protected override void Start()

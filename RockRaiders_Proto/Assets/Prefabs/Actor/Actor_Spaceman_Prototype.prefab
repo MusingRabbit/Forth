@@ -2617,8 +2617,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_moveForce: 1000
-  m_maxSpeed: 50
-  m_rotationSpeed: 100
+  m_maxSpeed: 500
+  m_rotationSpeed: 200
   m_body: {fileID: 3567866040056171928}
   m_head: {fileID: 3567866041601796693}
   m_actorCamera: {fileID: 0}

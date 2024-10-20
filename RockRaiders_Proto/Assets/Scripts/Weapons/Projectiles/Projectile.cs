@@ -7,10 +7,17 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private float m_muzzleVelcity;
-    private float m_mass;
+    
+
+    [SerializeField]
     private TimeSpan m_lifeSpan;
+
+    [SerializeField]
+    private float m_mass;
+
+
     private float m_startTime;
+    private float m_muzzleVelcity;
 
     public float MuzzleVelocity
     {
@@ -39,12 +46,18 @@ public class Projectile : MonoBehaviour
     private Rigidbody m_rigidBody;
     private ProjectileNetwork m_projNetwork;
 
+    private void Awake()
+    {
+        
+    }
+
+
     // Start is called before the first frame update
     public virtual void Start()
     {
         m_rigidBody = this.GetComponent<Rigidbody>();
-        m_rigidBody.mass = m_mass;
         m_rigidBody.velocity += this.transform.forward * m_muzzleVelcity;
+        m_rigidBody.mass = m_mass;
         m_startTime = Time.time;
         m_lifeSpan = TimeSpan.FromSeconds(5);
 

@@ -339,6 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ec374320ffa9c40be29d7f1b4d4d90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_mass: 0.05
 --- !u!114 &4068920403755082656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1643425809
+  GlobalObjectIdHash: 4142044985
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -403,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 423bb8e50c8c1ab44999c9b678630e2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_projectilePrefab: {fileID: 0}
+  m_projectilePrefab: {fileID: 7048868486205371406}
 --- !u!114 &1726368187522168186
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace Assets.Scripts.Weapons
 
     public class Weapon : MonoBehaviour
     {
+        public event EventHandler<OnShotFiredEventArgs> OnShotFired;
+
+
         [SerializeField]
         [SerializeAs("Name")]
         private string m_name;
@@ -140,6 +144,11 @@ namespace Assets.Scripts.Weapons
         public virtual void Fire()
         {
 
+        }
+
+        protected void Invoke_OnShotFired(Vector3 velocity, float mass)
+        {
+            this.OnShotFired?.Invoke(this, new OnShotFiredEventArgs(velocity, mass));
         }
     }
 }

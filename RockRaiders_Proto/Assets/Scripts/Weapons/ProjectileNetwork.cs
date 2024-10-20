@@ -15,17 +15,19 @@ namespace Assets.Scripts.Weapons
         [SerializeField]
         private GameObject m_projectilePrefab;
 
-        private static HashSet<Type> RegisteredPrefabs = new HashSet<Type>();
+        private Projectile m_projectile;
 
+        public Projectile Projectile
+        {
+            get
+            {
+                return m_projectile;
+            }
+        }
 
         private void Start()
         {
-
-            //if (m_projectilePrefab != null && !RegisteredPrefabs.Contains(m_projectilePrefab.GetType()))
-            //{
-            //    RegisteredPrefabs.Add(m_projectilePrefab.GetType());
-            //    this.NetworkManager.AddNetworkPrefab(m_projectilePrefab);
-            //}
+            m_projectile = m_projectilePrefab.GetComponent<Projectile>();
         }
 
         public void SpawnProjectile(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
@@ -71,7 +73,6 @@ namespace Assets.Scripts.Weapons
             var projectile = instance.GetComponent<Projectile>();
 
             projectile.MuzzleVelocity = muzzleVelocity;
-            projectile.Mass = 1.0f;
             instance.transform.position = position;
             instance.transform.rotation = rotation;
             rigidBody.isKinematic = false;
@@ -87,7 +88,7 @@ namespace Assets.Scripts.Weapons
         {
             var projectile = this.CreateProjectile(position, rotation, velocityOffset, muzzleVelocity);
             var netObj = projectile.GetComponent<NetworkObject>();
-            netObj.Spawn();
+            netObj.Spawn(true);
 
             //SpawnProjectileClientRpc(position, rotation, currVelocity, muzzleVelocity);
         }
