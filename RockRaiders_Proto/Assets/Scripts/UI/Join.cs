@@ -1,11 +1,6 @@
 ﻿using Assets.Scripts.Managers;
 using Assets.Scripts.UI.Models;
 using Assets.Scripts.UI.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -27,7 +22,8 @@ namespace Assets.Scripts.UI
 
         protected override void Start()
         {
-            m_portInputField.inputValidator = new UShortInputValidator();
+            m_portInputField.inputValidator = ScriptableObject.CreateInstance<UShortInputValidator>();
+
             base.Start();
         }
 
@@ -39,7 +35,7 @@ namespace Assets.Scripts.UI
         public void LaunchGame()
         {
             this.Model.MatchSettings.IsHost = false;
-            GameManager.Instance.LaunchGame();
+            this.GameManager.LaunchGame();
         }
 
         protected override void UpdateControls(SettingsModel model)

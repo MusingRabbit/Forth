@@ -1,10 +1,6 @@
 ﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Input;
 using Assets.Scripts.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -124,9 +120,6 @@ namespace Assets.Scripts
             m_controller = m_targetActor.GetComponent<PlayerInput>();
             m_state = m_targetActor.GetComponent<ActorState>();
             m_hasController = m_controller != null;
-
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
             this.transform.parent = m_body.transform;
         }
 

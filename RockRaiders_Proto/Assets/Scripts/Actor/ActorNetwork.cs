@@ -1,13 +1,8 @@
 using Assets.Scripts.Actor;
 using Assets.Scripts.Factory;
-using Assets.Scripts.Util;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using Assets.Scripts.Input;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 internal struct ActorNetData : INetworkSerializable
 {
@@ -99,9 +94,13 @@ public class ActorNetwork : NetworkBehaviour
             var state = m_playerState.Value;
             this.transform.position = state.Position;
             this.transform.rotation = state.Rotation;
-            m_controller.SetStateFromNetPlayerInput(state.Controller);
+
+            state.Controller.LookX = 0;
+            state.Controller.LookY = 0;
+            m_crosshair.UpdateAimpointFromCamera = false;
             m_crosshair.AimPoint = state.CrosshairPosition;
 
+            m_controller.SetStateFromNetPlayerInput(state.Controller);
             m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
         }
     }

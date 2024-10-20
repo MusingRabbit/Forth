@@ -1,11 +1,4 @@
-﻿using Assets.Scripts.Util;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
@@ -26,6 +19,8 @@ namespace Assets.Scripts.Actor
         private Vector3 m_point;
 
         private ActorState m_state;
+
+        public bool UpdateAimpointFromCamera { get; set; }
 
         public ActorCamera ActorCamera
         {
@@ -58,6 +53,7 @@ namespace Assets.Scripts.Actor
 
         public override void Initialise()
         {
+            this.UpdateAimpointFromCamera = true;
             m_state = this.GetComponent<ActorState>();
         }
 
@@ -76,7 +72,7 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
-            if (m_actorCamera == null)
+            if (m_actorCamera == null || m_state.IsDead || this.UpdateAimpointFromCamera == false)
             {
                 return;
             }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Scripts.Pickups.Weapons.Projectiles;
+using System;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Assets.Scripts.Weapons
+namespace Assets.Scripts.Pickups.Weapons
 {
 
     public class ProjectileNetwork : NetworkBehaviour
@@ -83,7 +79,7 @@ namespace Assets.Scripts.Weapons
         }
 
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         private void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             var projectile = this.CreateProjectile(position, rotation, velocityOffset, muzzleVelocity);

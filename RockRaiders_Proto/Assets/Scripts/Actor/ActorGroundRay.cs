@@ -1,12 +1,9 @@
 using Assets.Scripts;
 using Assets.Scripts.Scan;
 using Assets.Scripts.Util;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static Assets.Scripts.Util.PhysicsExtensions;
 
 public struct ActorGroundRayHitInfo
 {

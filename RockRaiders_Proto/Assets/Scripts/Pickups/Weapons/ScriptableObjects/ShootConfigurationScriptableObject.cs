@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Assets.Scripts.ScriptableObjects
+namespace Assets.Scripts.Pickups.Weapons.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "Shoot Config", menuName = "Guns/Shoot Configuration", order = 2)]
     public class ShootConfigurationScriptableObject : ScriptableObject

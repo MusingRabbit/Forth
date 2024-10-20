@@ -1,11 +1,10 @@
 using Assets.Scripts;
 using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.Input;
+using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Util;
-using Assets.Scripts.Weapons;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ActorController : RRMonoBehaviour
@@ -17,6 +16,7 @@ public class ActorController : RRMonoBehaviour
     private ActorFloating m_floating;
     private ActorGroundRay m_groundRay;
     private ActorCrosshair m_crosshair;
+    private ActorHealth m_health;
     private Rigidbody m_rigidBody;
     private double m_dropTimeOut = 1.0f;
     private float m_dropForce = 3.0f;
@@ -31,6 +31,8 @@ public class ActorController : RRMonoBehaviour
     private GameObject m_rArm;
     private GameObject m_lArm;
     private GameObject m_neck;
+
+    private BoxCollider m_headBoxCollider;
 
     [SerializeField]
     private Team m_team;
@@ -61,13 +63,13 @@ public class ActorController : RRMonoBehaviour
 
     public override void Initialise()
     {
+        // I know this is frowned up. So sue me - its only once on initialisation. Might change later, didn't want to have unnecessary duplicate serialized fields.
         m_body = this.gameObject.FindChild("Body");
         m_head = this.gameObject.FindChild("Head");
         m_neck = this.gameObject.FindChild("Neck");
         m_RHGrip = this.gameObject.FindChild("RH_Grip");
         m_rArm = this.gameObject.FindChild("Body.UpperBody.RArm.UpperArmGroup");
         m_lArm = this.gameObject.FindChild("Body.UpperBody.LArm.UpperArmGroup");
-
 
         m_controller = this.GetComponent<PlayerInput>();
         m_state = this.GetComponent<ActorState>();
@@ -77,6 +79,9 @@ public class ActorController : RRMonoBehaviour
         m_rigidBody = this.GetComponent<Rigidbody>();
         m_animController = this.GetComponent<ActorAnimController>();
         m_crosshair = this.GetComponent<ActorCrosshair>();
+        m_health = this.GetComponent<ActorHealth>();
+
+        m_headBoxCollider = m_head.GetComponent<BoxCollider>();
 
         m_grounded.Body = m_body;
         m_floating.Body = m_body;
@@ -95,6 +100,14 @@ public class ActorController : RRMonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (m_state.IsDead)
+        {
+            this.StartDying();
+            m_grounded.enabled = false;
+            m_floating.enabled = false;
+            return;
+        }
+
         m_dropTimer.Tick();
 
         m_state.Team = m_team;
@@ -178,8 +191,6 @@ public class ActorController : RRMonoBehaviour
                 case ControllerActions.GravBoots:
                     this.ToggleGravBoots();
                     break;
-                case ControllerActions.Pause:
-                    break;
             }
         }
     }
@@ -229,7 +240,7 @@ public class ActorController : RRMonoBehaviour
         m_state.GravBootsEnabled = !m_state.GravBootsEnabled;
     }
 
-    private void DropTimer_OnTimerElapsed(object sender, Assets.Scripts.Events.TimerElapsedEventArgs e)
+    private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
     {
         m_dropTimer.Stop();
         m_dropTimer.ResetTimer();
@@ -337,7 +348,6 @@ public class ActorController : RRMonoBehaviour
             var rhGripPos = m_RHGrip.transform.position;
             selectedWeapon.transform.position = rhGripPos;
             selectedWeapon.transform.LookAt(new Vector3(pos.x, pos.y, pos.z), this.transform.up);
-            //selectedWeapon.transform.Rotate(new Vector3(0, 1, 0), 0);
         }
     }
 
@@ -388,7 +398,10 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
-
+    public void StartDying()
+    {
+        this.DropSelectedWeapon();
+    }
     private void OnCollisionEnter(Collision collision)
     {
         foreach (var contact in collision.contacts)
@@ -398,6 +411,20 @@ public class ActorController : RRMonoBehaviour
             if (gameObj.IsWeapon() && m_canPickup)
             {
                 this.PickupWeapon(gameObj);
+            }
+
+            if (gameObj.IsProjectile())
+            {
+                var projCollider = gameObj.GetComponent<CapsuleCollider>();
+
+                if (m_headBoxCollider.bounds.Intersects(projCollider.bounds)) // Check if it's a headshot.
+                {
+                    m_health.RegisterProjectileHitHead(gameObj);
+                }
+                else
+                {
+                    m_health.RegisterProjectileHit(gameObj, 1.0f);
+                }
             }
         }
     }

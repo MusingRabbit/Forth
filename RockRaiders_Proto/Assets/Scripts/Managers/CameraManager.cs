@@ -1,5 +1,3 @@
-using Assets.Scripts;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,7 +31,25 @@ public class CameraManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        //m_currCamera.enabled = true;
+        this.ClearNullCameras();
+    }
+
+    private void ClearNullCameras()
+    {
+        var indices = new List<int>();
+
+        for (int i = 0; i < m_cameras.Count; i++)
+        {
+            if (m_cameras[i] == null)
+            {
+                indices.Add(i);
+            }
+        }
+
+        for (int i = 0; i < indices.Count; i++)
+        {
+            m_cameras.RemoveAt(indices[i]);
+        }
     }
 
     public void AddCamera(Camera camera, bool makeActive = false)
@@ -85,7 +101,7 @@ public class CameraManager : MonoBehaviour
         {
             var currCam = m_cameras[i];
 
-            if (currCam.GetInstanceID() == camera.GetInstanceID())
+            if (currCam?.GetInstanceID() == camera.GetInstanceID())
             {
                 idx = i;
                 break;

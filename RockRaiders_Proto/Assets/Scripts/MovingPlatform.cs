@@ -1,56 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+namespace Assets.Scripts
 {
-    private Transform m_transform;
-
-    [SerializeField]
-    private Vector3 m_startPosition;
-
-    [SerializeField]
-    private Vector3 m_endPosition;
-
-    [SerializeField]
-    private float m_interpolationTime;
-
-    private float m_startTime;
-    private float m_currTime;
-    private bool m_reverse;
-
-    // Start is called before the first frame update
-    void Start()
+    public class MovingPlatform : MonoBehaviour
     {
-        m_reverse = false;
-        m_transform = this.gameObject.transform;
-        this.ResetStartTime();
-    }
+        private Transform m_transform;
 
-    // Update is called once per frame
-    void Update()
-    {
-        m_currTime = Time.time;
-        var deltaTime = m_currTime - m_startTime;
-        var val = Mathf.Sin(Mathf.PI * ((deltaTime) / m_interpolationTime));
+        [SerializeField]
+        private Vector3 m_startPosition;
 
-        if (m_reverse)
+        [SerializeField]
+        private Vector3 m_endPosition;
+
+        [SerializeField]
+        private float m_interpolationTime;
+
+        private float m_startTime;
+        private float m_currTime;
+        private bool m_reverse;
+
+        // Start is called before the first frame update
+        void Start()
         {
-            val = 1.0f - val;
+            m_reverse = false;
+            m_transform = gameObject.transform;
+            ResetStartTime();
         }
 
-        m_transform.position = Vector3.Lerp(m_startPosition, m_endPosition, val);
-
-        if (deltaTime >= m_interpolationTime)
+        // Update is called once per frame
+        void Update()
         {
-            //m_reverse = !m_reverse;
-            this.ResetStartTime();
-        }
-    }
+            m_currTime = Time.time;
+            var deltaTime = m_currTime - m_startTime;
+            var val = Mathf.Sin(Mathf.PI * (deltaTime / m_interpolationTime));
 
-    private void ResetStartTime()
-    {
-        m_startTime = Time.time;
+            if (m_reverse)
+            {
+                val = 1.0f - val;
+            }
+
+            m_transform.position = Vector3.Lerp(m_startPosition, m_endPosition, val);
+
+            if (deltaTime >= m_interpolationTime)
+            {
+                //m_reverse = !m_reverse;
+                ResetStartTime();
+            }
+        }
+
+        private void ResetStartTime()
+        {
+            m_startTime = Time.time;
+        }
     }
 }

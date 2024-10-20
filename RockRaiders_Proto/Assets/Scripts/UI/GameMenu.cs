@@ -1,16 +1,15 @@
 ﻿using Assets.Scripts.Managers;
 using Assets.Scripts.UI.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.UI
 {
     public abstract class GameMenu : MonoBehaviour
     {
+        [SerializeField]
+        private GameManager m_gameManager;
+
         private SettingsModel m_model;
 
         public SettingsModel Model
@@ -26,9 +25,17 @@ namespace Assets.Scripts.UI
             }
         }
 
+        protected GameManager GameManager
+        {
+            get
+            {
+                return m_gameManager;
+            }
+        }
+
         protected virtual void Start()
         {
-            this.Model = GameManager.Instance.Settings;
+            this.Model = m_gameManager.Settings;
         }
 
         protected virtual void Update()

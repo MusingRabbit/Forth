@@ -1,15 +1,13 @@
-using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using Assets.Scripts.Util;
 using System;
 using Assets.Scripts;
-using Assets.Scripts.Weapons;
 using static Assets.Scripts.Util.PhysicsExtensions;
-using UnityEngine.SceneManagement;
-using Unity.Netcode;
 using Assets.Scripts.Actor;
+using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Input;
 
 
 public enum SelectedWeapon

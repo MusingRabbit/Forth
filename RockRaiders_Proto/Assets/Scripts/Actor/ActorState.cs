@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Netcode;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
     public class ActorState : RRMonoBehaviour
     {
         public Team Team { get; set; }
+
         public SelectedWeapon SelectedWeapon { get; set; }
         public ActorInventory Inventory { get; set; }
 
@@ -24,6 +19,25 @@ namespace Assets.Scripts.Actor
         public bool IsCrouched { get; set; }
         public bool IsMovingForward { get; set; }
 
+        public bool IsDead
+        {
+            get
+            {
+                return m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead ;
+            }
+        }
+
+        public int Health
+        {
+            get
+            {
+                return m_health?.Hitpoints.Current ?? 0;
+            }
+        }
+
+
+        private ActorHealth m_health;
+
         public ActorState()
         {
             this.SelectedWeapon = SelectedWeapon.None;
@@ -32,6 +46,7 @@ namespace Assets.Scripts.Actor
         public override void Initialise()
         {
             this.Inventory = this.GetComponent<ActorInventory>();
+            m_health = this.GetComponent<ActorHealth>();
         }
 
         private void Start()

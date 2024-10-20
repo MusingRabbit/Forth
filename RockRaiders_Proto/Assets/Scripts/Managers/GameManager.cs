@@ -1,16 +1,11 @@
 ﻿using Assets.Scripts.UI.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 namespace Assets.Scripts.Managers
 {
@@ -20,8 +15,14 @@ namespace Assets.Scripts.Managers
         public string Message { get; set; }
     }
 
-    public class GameManager
+    public class GameManager : MonoBehaviour
     {
+        [SerializeField]
+        private NetworkManager m_netManager;
+
+        [SerializeField]
+        private InputManager m_inputManager;
+
         private static GameManager _instance;
         public static GameManager Instance
         {
@@ -33,7 +34,7 @@ namespace Assets.Scripts.Managers
 
         private GameState m_state;
         private SettingsModel m_settings;
-        private NetworkManager m_netManager;
+        
         private UnityTransport m_unityTransport;
 
         private Dictionary<ulong, NetworkPrefab> m_clientPrefabs;
@@ -48,12 +49,46 @@ namespace Assets.Scripts.Managers
 
         public GameManager()
         {
-            m_netManager = NetworkManager.Singleton;
-            m_unityTransport = m_netManager.GetComponent<UnityTransport>();
-            m_state = GameState.InGame;
+            m_state = GameState.MainMenu;
             m_settings = new SettingsModel();
 
             m_clientPrefabs = new Dictionary<ulong, NetworkPrefab>();
+        }
+
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+                GameObject.DontDestroyOnLoad(base.gameObject);
+            }
+            else
+            {
+                GameObject.Destroy(base.gameObject);
+            }
+        }
+
+        private void Start()
+        {
+            m_unityTransport = m_netManager.GetComponent<UnityTransport>();
+
+        }
+
+        private void Update()
+        {
+            if (m_inputManager.Controller != null)
+            {
+                if (m_inputManager.Controller.GetActionState(Input.ControllerActions.Pause) == Input.ActionState.Active)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = true;
+                }
+            }
         }
 
         private void ConnectToRemoteHost()
@@ -75,7 +110,7 @@ namespace Assets.Scripts.Managers
 
             //m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
             //m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
-
+            
             if (m_netManager.StartHost())
             {
                 //m_netManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
@@ -98,8 +133,6 @@ namespace Assets.Scripts.Managers
                 }
             }
         }
-
-
 
         public void LaunchGame()
         {

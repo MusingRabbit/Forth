@@ -1,13 +1,12 @@
 ﻿using Assets.Scripts.Actor;
-using Assets.Scripts.Util;
+using Assets.Scripts.Input;
+using Assets.Scripts.Managers;
+using Assets.Scripts.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Factory
@@ -27,9 +26,6 @@ namespace Assets.Scripts.Factory
 
         [SerializeField]
         private GameObject m_cameraManagerObj;
-
-        [SerializeField]
-        private GameObject m_inputManagerObj;
 
         [SerializeField]
         private GameObject m_playerPrefab;
@@ -118,14 +114,8 @@ namespace Assets.Scripts.Factory
                 throw new NullReferenceException(nameof(actor));
             }
 
-            if (m_inputManagerObj == null)
-            {
-                throw new NullReferenceException("No 'InputManager' has been set.");
-            }
-
-            var inputManager = m_inputManagerObj.GetComponent<InputManager>();
             var controller = actor.GetComponent<PlayerInput>();
-            inputManager.RegisterPlayerController(controller);
+            InputManager.Instance.RegisterPlayerController(controller);
         }
 
         public void CreateActorCamera(GameObject actor, bool isLocal)
