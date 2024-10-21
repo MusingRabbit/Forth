@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
-using Assets.Scripts.Health;
+using Assets.Scripts.HealthSystem;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorHealth : HealthSystem
+    public class ActorHealth : HealthSystem.Health
     {
         public event EventHandler<EventArgs> OnActorHealthStateChanged;
 
@@ -32,6 +32,12 @@ namespace Assets.Scripts.Actor
         protected override void Start()
         {
             this.Initialise();
+        }
+
+        public override void Reset()
+        {
+            m_state = ActorHealthState.Live;
+            base.Reset();
         }
 
         public override void Initialise()

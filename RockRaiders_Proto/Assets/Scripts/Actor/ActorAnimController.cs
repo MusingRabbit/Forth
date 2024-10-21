@@ -42,6 +42,12 @@ namespace Assets.Scripts.Actor
         {
         }
 
+
+        public override void Reset()
+        {
+
+        }
+
         public void PlayAnimationForActorState(ActorState state)
         {
             m_animator.Play(this.GetAnimationForActorState(state));

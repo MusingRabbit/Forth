@@ -31,20 +31,31 @@ namespace Assets.Scripts.Factory
         private GameObject m_playerPrefab;
 
         [SerializeField]
+        private GameManager m_gameManager;
+
+        [SerializeField]
         private List<GameObject> m_spawnPoints;
 
         [SerializeField]
         private UIGameOverlay m_uiOverlay;
 
+
+        private Dictionary<ulong, NetworkObject> m_clients;
+
         public ActorSpawnManager()
         {
             instance = this;
             m_spawnPoints = new List<GameObject>();
+            m_clients = new Dictionary<ulong, NetworkObject>();
         }
 
         public void Start()
         {
-
+            if (m_gameManager == null)
+            {
+                m_gameManager = GameManager.Instance;
+                m_gameManager.OnRespawnTriggered += GameManager_OnRespawnTriggered;
+            }
         }
 
         public void Update()
@@ -56,12 +67,28 @@ namespace Assets.Scripts.Factory
             this.SpawnPlayerServerRpc();
         }
 
+        public void SpawnPlayer()
+        {
+            this.SpawnPlayerServerRpc();
+        }
+
+        public void DespawnPlayer()
+        {
+            this.DespawnPlayerServerRpc();
+        }
+
         [ServerRpc(RequireOwnership = false)]
         private void SpawnPlayerServerRpc(ServerRpcParams rpcParams = default)
         {
             ulong senderClientId = rpcParams.Receive.SenderClientId;
+            this.SpawnPlayerOnClients(senderClientId);
+        }
 
-            SpawnPlayerOnClients(senderClientId);
+        [ServerRpc(RequireOwnership = false)]
+        private void DespawnPlayerServerRpc(ServerRpcParams rpcParams = default)
+        {
+            ulong senderClientId = rpcParams.Receive.SenderClientId;
+            this.DespawnPlayerOnClients(senderClientId);
         }
 
         private void SpawnPlayerOnClients(ulong clientId)
@@ -84,6 +111,16 @@ namespace Assets.Scripts.Factory
 
             // Spawn the player object on all clients
             playerNetworkObject.SpawnAsPlayerObject(clientId);
+
+            m_clients[clientId] = playerNetworkObject;
+        }
+
+        private void DespawnPlayerOnClients(ulong clientId)
+        {
+            Debug.Log($"DespawnPlayer - clientId: {clientId}");
+
+            var playerNetworkObject = m_clients[clientId];
+            playerNetworkObject.Despawn(true);
         }
 
         private void InitialiseBehaviours(GameObject actor)
@@ -171,6 +208,12 @@ namespace Assets.Scripts.Factory
         {
             this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
+        }
+
+        private void GameManager_OnRespawnTriggered(object sender, EventArgs e)
+        {
+            this.DespawnPlayer();
+            this.SpawnPlayer();
         }
     }
 }

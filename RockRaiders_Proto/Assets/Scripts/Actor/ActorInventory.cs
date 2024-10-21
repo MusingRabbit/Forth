@@ -61,6 +61,13 @@ namespace Assets.Scripts
             this.UpdateStoredItemWorldPos();
         }
 
+        public override void Reset()
+        {
+            this.ClearMainWeapon();
+            this.ClearSideArm();
+            m_selectedWeapon = SelectedWeapon.None;
+        }
+
         private void UpdateStoredItemWorldPos()
         {
             var sideArmObj = this.GetSideArm();
@@ -133,25 +140,30 @@ namespace Assets.Scripts
 
         public void ClearMainWeapon()
         {
-            this.ConfigureRigidBodyOnDrop(m_mainWeapon);
-            m_mainWeapon = null;
-
-            if (m_currentSelection == CurrentSelection.MainWeapon)
+            if (m_mainWeapon != null)
             {
-                this.SelectWeapon(CurrentSelection.None);
+                this.ConfigureRigidBodyOnDrop(m_mainWeapon);
+                m_mainWeapon = null;
+
+                if (m_currentSelection == CurrentSelection.MainWeapon)
+                {
+                    this.SelectWeapon(CurrentSelection.None);
+                }
             }
         }
 
         public void ClearSideArm()
         {
-            this.ConfigureRigidBodyOnDrop(m_sideArm);
-            m_sideArm = null;
-
-            if (m_currentSelection == CurrentSelection.SideArm)
+            if (m_sideArm != null)
             {
-                this.SelectWeapon(CurrentSelection.None);
-            }
+                this.ConfigureRigidBodyOnDrop(m_sideArm);
+                m_sideArm = null;
 
+                if (m_currentSelection == CurrentSelection.SideArm)
+                {
+                    this.SelectWeapon(CurrentSelection.None);
+                }
+            }
         }
 
         public void SelectWeapon(CurrentSelection selection)

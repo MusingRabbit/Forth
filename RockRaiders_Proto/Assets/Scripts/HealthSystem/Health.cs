@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Health
+namespace Assets.Scripts.HealthSystem
 {
-    public class HealthSystem : RRMonoBehaviour
+    public class Health : RRMonoBehaviour
     {
         private Hitpoints m_hp;
         private Rigidbody m_rigidBody;
@@ -16,14 +16,19 @@ namespace Assets.Scripts.Health
             }
         }
 
-        public HealthSystem()
+        public Health()
         {
             m_hp = new Hitpoints();
         }
 
         protected virtual void Start()
         {
-            this.Initialise();
+            Initialise();
+        }
+
+        public override void Reset()
+        {
+            m_hp.Reset();
         }
 
         public override void Initialise()
@@ -33,7 +38,7 @@ namespace Assets.Scripts.Health
 
         public void RegisterDamage(Damage damage)
         {
-            this.Register(damage.Base, damage.Multiplier);
+            Register(damage.Base, damage.Multiplier);
         }
 
         protected void Register(int damage, float multiplier)
@@ -59,7 +64,7 @@ namespace Assets.Scripts.Health
                 damage = (int)(rigidBody.mass * rigidBody.velocity.magnitude);
             }
 
-            this.Register(damage, 1.0f);
+            Register(damage, 1.0f);
         }
 
         protected int CalculateDamageRigidBodyCollision(Rigidbody rhsRigidBody, Damage rhsDamage)
@@ -77,7 +82,7 @@ namespace Assets.Scripts.Health
 
         public void RegisterRigidBodyCollisionWithDamage(Rigidbody rhsRigidBody, Damage rhsDamage)
         {
-            this.Register(this.CalculateDamageRigidBodyCollision(rhsRigidBody, rhsDamage), rhsDamage.Multiplier);
+            Register(CalculateDamageRigidBodyCollision(rhsRigidBody, rhsDamage), rhsDamage.Multiplier);
         }
     }
 }

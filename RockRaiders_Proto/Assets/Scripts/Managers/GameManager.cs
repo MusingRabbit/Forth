@@ -18,6 +18,8 @@ namespace Assets.Scripts.Managers
 
     public class GameManager : MonoBehaviour
     {
+        public event EventHandler<EventArgs> OnRespawnTriggered;
+
         private bool m_playerPaused;
 
         public bool PlayerPaused
@@ -83,7 +85,6 @@ namespace Assets.Scripts.Managers
         private void Start()
         {
             m_unityTransport = m_netManager.GetComponent<UnityTransport>();
-
         }
 
         private void Update()
@@ -94,9 +95,7 @@ namespace Assets.Scripts.Managers
                 {
                     m_inputManager.enabled = false;
                     m_playerPaused = true;
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-
+                    this.UnlockMouse();
                     m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
                 }
             }
@@ -113,8 +112,7 @@ namespace Assets.Scripts.Managers
         {
             m_inputManager.enabled = true;
             m_playerPaused = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            this.LockMouse();
             m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
         }
 
@@ -175,6 +173,8 @@ namespace Assets.Scripts.Managers
                 {
                     this.ConnectToRemoteHost();
                 }
+
+                this.LockMouse();
             }
             catch(Exception ex)
             {
@@ -182,10 +182,29 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        private void LockMouse()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private void UnlockMouse()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
         public void LoadSplashScreen()
         {
+            this.UnlockMouse();
             SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
             m_state = GameState.MainMenu;
+        }
+
+        internal void RespawnPlayer()
+        {
+            this.NotifyPauseMenuClosed();
+            this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
         }
 
 

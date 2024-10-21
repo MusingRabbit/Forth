@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Health
+namespace Assets.Scripts.HealthSystem
 {
     public class Damage : MonoBehaviour
     {

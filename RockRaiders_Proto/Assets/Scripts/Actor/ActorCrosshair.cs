@@ -48,7 +48,7 @@ namespace Assets.Scripts.Actor
 
         public ActorCrosshair()
         {
-            m_maxDistance = 999.9f;
+            m_maxDistance = 99999.9f;
         }
 
         public override void Initialise()
@@ -60,6 +60,13 @@ namespace Assets.Scripts.Actor
         private void Start()
         {
             this.Initialise();
+        }
+
+        public override void Reset()
+        {
+            m_point = Vector3.zero;
+            this.UpdateAimpointFromCamera = true;
+            m_maxDistance = 99999.9f;
         }
 
         private void UpdateDebugObjTransform()
@@ -95,5 +102,7 @@ namespace Assets.Scripts.Actor
         {
             Gizmos.DrawSphere(m_point, 0.5f);
         }
+
+
     }
 }

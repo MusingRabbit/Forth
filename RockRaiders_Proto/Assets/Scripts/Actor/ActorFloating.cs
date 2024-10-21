@@ -67,9 +67,7 @@ namespace Assets.Scripts.Actor
 
         public ActorFloating()
         {
-            m_moveForce = 10.0f;
-            m_maxSpeed = 22.0f;
-            m_rotationSpeed = 50.0f;
+            m_tgtRotation = Quaternion.identity;
         }
 
         public override void Initialise()
@@ -81,6 +79,14 @@ namespace Assets.Scripts.Actor
         private void Start()
         {
             this.Initialise();
+        }
+
+        public override void Reset()
+        {
+            m_moveForce = 20.0f;
+            m_maxSpeed = 50.0f;
+            m_rotationSpeed = 50.0f;
+            m_tgtRotation = Quaternion.identity;
         }
 
         private void Update()

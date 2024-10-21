@@ -1,4 +1,4 @@
-using Assets.Scripts.Health;
+using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Pickups.Weapons.ScriptableObjects;
 using Assets.Scripts.Util;
 using System.Collections;
@@ -72,7 +72,7 @@ namespace Assets.Scripts.Pickups.Weapons
                 {
                     StartCoroutine(PlayTrail(shootPos, hit.point, hit));
 
-                    var healthSys = hit.collider.gameObject.GetComponent<HealthSystem>();
+                    var healthSys = hit.collider.gameObject.GetComponent<Health>();
                     var damage = this.GetComponent<Damage>();
 
                     if (healthSys != null)

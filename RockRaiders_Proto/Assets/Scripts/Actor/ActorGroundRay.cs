@@ -91,6 +91,15 @@ public class ActorGroundRay : RRMonoBehaviour
         this.Initialise();
     }
 
+    public override void Reset()
+    {
+        m_pos = Vector3.zero;
+        m_rot = Quaternion.identity;
+        m_rayHit = false;
+        m_norm = Vector3.up;
+        m_height = 0;
+    }
+
     // Update is called once per frame
     void Update()
     {

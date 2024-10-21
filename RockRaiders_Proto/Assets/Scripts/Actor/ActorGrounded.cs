@@ -88,12 +88,6 @@ namespace Assets.Scripts.Actor
             m_jumpTimer.SetTimeSpan(TimeSpan.FromSeconds(m_jumpTimeout));
             m_jumpTimer.OnTimerElapsed += this.JumpTimer_OnTimerElapsed;
             m_canJump = true;
-
-            m_moveSpeed = 5.0f;
-            m_jumpForce = 20.0f;
-            m_jumpTimeout = 3.0f;
-            m_gravStrength = 20.0f;
-            m_rotationSpeed = 150.0f;
         }
 
         public override void Initialise()
@@ -107,6 +101,16 @@ namespace Assets.Scripts.Actor
         private void Start()
         {
             this.Initialise();
+        }
+
+        public override void Reset()
+        {
+            m_canJump = true;
+            m_crouch = false;
+            m_colDict.Clear();
+            m_moveVector = Vector3.zero;
+            m_tgtLookatRot = Quaternion.identity;
+            m_tgtSurfRot = Quaternion.identity;
         }
 
         private void Update()

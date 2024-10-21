@@ -55,6 +55,18 @@ namespace Assets.Scripts.Actor
             this.Initialise();
         }
 
+        public override void Reset()
+        {
+            this.SelectedWeapon = SelectedWeapon.None;
+            this.GravBootsEnabled = true;
+            this.IsFloating = false;
+            this.IsMoving = false;
+            this.IsCrouched = false;
+            this.FeetOnGround = false;
+            this.IsMovingForward = false;
+            this.Team = Team.None;
+        }
+
         public GameObject GetSelectedWeapon()
         {
             switch (this.SelectedWeapon)

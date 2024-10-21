@@ -42,7 +42,6 @@ public class ActorNetwork : NetworkBehaviour
 
     private PlayerInput m_controller;
     private ActorController m_actorController;
-    //private Crosshair m_crosshair;
     private ActorSpawnManager m_actorManager;
 
     private ActorCrosshair m_crosshair;
@@ -96,7 +95,7 @@ public class ActorNetwork : NetworkBehaviour
             this.transform.position = state.Position;
             this.transform.rotation = state.Rotation;
 
-            state.Controller.LookX = 0;
+            state.Controller.LookX = 0;                     //TODO : This is a hack. Send ActorCamera position instead....
             state.Controller.LookY = 0;
             m_crosshair.UpdateAimpointFromCamera = false;
             m_crosshair.AimPoint = state.CrosshairPosition;
@@ -171,6 +170,18 @@ public class ActorNetwork : NetworkBehaviour
     private void TransmitServerRpc(ActorNetData state)
     {
         m_playerState.Value = state;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        var childComponents = this.GetComponents<RRMonoBehaviour>();
+
+        foreach(var behaviour in childComponents)
+        {
+            behaviour.Reset();
+        }
+
+        base.OnNetworkDespawn();
     }
 
     public override void OnNetworkSpawn()

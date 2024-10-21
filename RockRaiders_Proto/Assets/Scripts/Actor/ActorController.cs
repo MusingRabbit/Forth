@@ -92,13 +92,13 @@ public class ActorController : RRMonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         this.Initialise();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (m_state.IsDead)
         {
@@ -145,6 +145,21 @@ public class ActorController : RRMonoBehaviour
         }
 
         this.UpdateSelectedWeaponWorldPos();
+    }
+
+    public override void Reset()
+    {
+        m_controller.Reset();
+        m_state.Reset();
+        m_floating.Reset();
+        m_grounded.Reset();
+        m_groundRay.Reset();
+        
+        m_animController.Reset();
+        m_crosshair.Reset();
+        m_health.Reset();
+
+        m_rigidBody.ResetVelocity();
     }
 
     private void Debug_DrawVelocityVector()

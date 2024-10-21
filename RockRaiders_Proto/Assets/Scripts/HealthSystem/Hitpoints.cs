@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Health
+namespace Assets.Scripts.HealthSystem
 {
-    public class Hitpoints 
+    public class Hitpoints
     {
         public event EventHandler<EventArgs> OnHitpointsDepleated;
         public event EventHandler<EventArgs> OnHitpointsFull;
@@ -72,7 +72,7 @@ namespace Assets.Scripts.Health
             if (newHp != m_currentHp)
             {
                 m_currentHp = newHp;
-                
+
 
                 if (m_currentHp <= 0)
                 {

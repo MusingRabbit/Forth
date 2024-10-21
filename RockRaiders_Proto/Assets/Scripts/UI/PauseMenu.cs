@@ -26,6 +26,11 @@ public class PauseMenu : GameMenu
         this.GameManager.NotifyPauseMenuClosed();
     }
 
+    public void Respawn()
+    {
+        this.GameManager.RespawnPlayer();
+    }
+
     public void Quit()
     {
         this.GameManager.QuitGame();
