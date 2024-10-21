@@ -1,4 +1,6 @@
 using Assets.Scripts.Actor;
+using Assets.Scripts.Managers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +8,15 @@ namespace Assets.Scripts.UI
 {
     public class UIGameOverlay : MonoBehaviour
     {
+        [SerializeField]
+        private GameManager m_gameManager;
+
+        [SerializeField]
+        private GameObject m_hud;
+
+        [SerializeField]
+        private GameObject m_pauseMenu;
+
         [SerializeField]
         private ActorController m_actor;
 
@@ -33,7 +44,10 @@ namespace Assets.Scripts.UI
         // Start is called before the first frame update
         void Start()
         {
-
+            if (m_gameManager == null)
+            {
+                m_gameManager = GameManager.Instance;
+            }
         }
 
         // Update is called once per frame
@@ -41,6 +55,17 @@ namespace Assets.Scripts.UI
         {
             this.UpdateGravBootsStatus();
             this.UpdateHealthStatus();
+
+            if (m_gameManager.PlayerPaused)
+            {
+                m_hud.SetActive(false);
+                m_pauseMenu.SetActive(true);
+            }
+            else
+            {
+                m_hud.SetActive(true);
+                m_pauseMenu.SetActive(false);
+            }
         }
 
         private void UpdateGravBootsStatus()

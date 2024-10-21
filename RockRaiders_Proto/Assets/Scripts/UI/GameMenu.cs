@@ -35,6 +35,11 @@ namespace Assets.Scripts.UI
 
         protected virtual void Start()
         {
+            if (m_gameManager == null)
+            {
+                m_gameManager = Assets.Scripts.Managers.GameManager.Instance;
+            }
+
             this.Model = m_gameManager.Settings;
         }
 

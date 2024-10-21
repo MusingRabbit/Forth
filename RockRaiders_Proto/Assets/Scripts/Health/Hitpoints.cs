@@ -72,7 +72,12 @@ namespace Assets.Scripts.Health
             if (newHp != m_currentHp)
             {
                 m_currentHp = newHp;
-                OnHitpointsDepleated.Invoke(this, EventArgs.Empty);
+                
+
+                if (m_currentHp <= 0)
+                {
+                    OnHitpointsDepleated.Invoke(this, EventArgs.Empty);
+                }
             }
         }
     }

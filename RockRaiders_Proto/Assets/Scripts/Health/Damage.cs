@@ -29,5 +29,11 @@ namespace Assets.Scripts.Health
                 m_multiplier = value;
             }
         }
+
+        public Damage()
+        {
+            m_baseDamage = 1;
+            m_multiplier = 1.0f;
+        }
     }
 }

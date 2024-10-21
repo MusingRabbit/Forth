@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Assets.Scripts;
 
 namespace Assets.Scripts.Actor
 {

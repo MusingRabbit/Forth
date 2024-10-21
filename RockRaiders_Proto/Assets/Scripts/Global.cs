@@ -33,4 +33,12 @@
         Loading,
         InGame
     }
+
+    public enum SelectedWeapon
+    {
+        None,
+        Main,
+        Sidearm,
+        Pack
+    }
 }

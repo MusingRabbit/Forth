@@ -1,3 +1,4 @@
+using Assets.Scripts.Health;
 using Assets.Scripts.Pickups.Weapons.ScriptableObjects;
 using Assets.Scripts.Util;
 using System.Collections;
@@ -70,6 +71,15 @@ namespace Assets.Scripts.Pickups.Weapons
                 if (rayCastHit)
                 {
                     StartCoroutine(PlayTrail(shootPos, hit.point, hit));
+
+                    var healthSys = hit.collider.gameObject.GetComponent<HealthSystem>();
+                    var damage = this.GetComponent<Damage>();
+
+                    if (healthSys != null)
+                    {
+                        healthSys.RegisterDamage(damage);
+                    }
+
                 }
                 else
                 {

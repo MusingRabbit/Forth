@@ -458,7 +458,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3567866040056171929}
-  - component: {fileID: 2378018039835733635}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -483,29 +482,6 @@ Transform:
   - {fileID: 3567866040060669799}
   m_Father: {fileID: 3567866041812562765}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &2378018039835733635
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3567866040056171928}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.23
-  m_Height: 1.18
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.06, z: 0}
 --- !u!1 &3567866040060669798
 GameObject:
   m_ObjectHideFlags: 0
@@ -2395,6 +2371,7 @@ GameObject:
   - component: {fileID: 22205327632624472}
   - component: {fileID: 6798134038945206027}
   - component: {fileID: 7602205902151228882}
+  - component: {fileID: 3559501841363505626}
   m_Layer: 0
   m_Name: Actor_Spaceman_Prototype
   m_TagString: Player
@@ -2672,6 +2649,29 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   m_debugDraw: 0
+--- !u!136 &3559501841363505626
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3567866041812562767}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.23
+  m_Height: 1.18
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.06, z: 0}
 --- !u!1 &4868829826838478126
 GameObject:
   m_ObjectHideFlags: 0

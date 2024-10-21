@@ -596,6 +596,7 @@ GameObject:
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
   - component: {fileID: 5737030189338390568}
+  - component: {fileID: 4389467978364081424}
   - component: {fileID: 5119795479301819221}
   - component: {fileID: 4510127233842751094}
   m_Layer: 0
@@ -766,6 +767,20 @@ MonoBehaviour:
   m_fireRate: 2
   m_trailConfig: {fileID: 11400000, guid: f38921452856c8344ab9c835f7e4c960, type: 2}
   m_shootConfig: {fileID: 11400000, guid: 1dcbb31e4ef88394eb3358f5fd9797a1, type: 2}
+--- !u!114 &4389467978364081424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 199210c4f05c21d43b6c131374412ed6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_baseDamage: 10
+  m_multiplier: 1
 --- !u!198 &5119795479301819221
 ParticleSystem:
   m_ObjectHideFlags: 0

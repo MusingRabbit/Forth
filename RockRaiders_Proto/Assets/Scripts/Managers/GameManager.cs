@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.UI.Models;
+﻿using Assets.Scripts.Input;
+using Assets.Scripts.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -17,6 +18,17 @@ namespace Assets.Scripts.Managers
 
     public class GameManager : MonoBehaviour
     {
+        private bool m_playerPaused;
+
+        public bool PlayerPaused
+        {
+            get
+            {
+                return m_playerPaused;
+            }
+        }
+
+
         [SerializeField]
         private NetworkManager m_netManager;
 
@@ -80,15 +92,30 @@ namespace Assets.Scripts.Managers
             {
                 if (m_inputManager.Controller.GetActionState(Input.ControllerActions.Pause) == Input.ActionState.Active)
                 {
+                    m_inputManager.enabled = false;
+                    m_playerPaused = true;
                     Cursor.lockState = CursorLockMode.None;
                     Cursor.visible = true;
-                }
-                else
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = true;
+
+                    m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
                 }
             }
+        }
+
+        public void QuitGame()
+        {
+            this.NotifyPauseMenuClosed();
+            m_netManager.Shutdown();
+            this.LoadSplashScreen();
+        }
+
+        public void NotifyPauseMenuClosed()
+        {
+            m_inputManager.enabled = true;
+            m_playerPaused = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
         }
 
         private void ConnectToRemoteHost()
@@ -157,7 +184,7 @@ namespace Assets.Scripts.Managers
 
         public void LoadSplashScreen()
         {
-            SceneManager.LoadScene("UI_SplashScreen", LoadSceneMode.Single);
+            SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
             m_state = GameState.MainMenu;
         }
 

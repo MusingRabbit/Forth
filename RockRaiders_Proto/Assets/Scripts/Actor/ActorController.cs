@@ -102,9 +102,10 @@ public class ActorController : RRMonoBehaviour
     {
         if (m_state.IsDead)
         {
-            this.StartDying();
+            this.DropSelectedWeapon();
             m_grounded.enabled = false;
             m_floating.enabled = false;
+            m_state.IsMoving = false;
             return;
         }
 
@@ -398,10 +399,6 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
-    public void StartDying()
-    {
-        this.DropSelectedWeapon();
-    }
     private void OnCollisionEnter(Collision collision)
     {
         foreach (var contact in collision.contacts)

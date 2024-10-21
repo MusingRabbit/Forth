@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -252,7 +253,13 @@ namespace Assets.Scripts.Input
 
         public void Reset()
         {
-            m_actionDict.Values.ToList().ForEach(x => x = ActionState.InActive);
+            var values = Enum.GetValues(typeof(ControllerActions));
+
+            foreach(var value in values)
+            {
+                m_actionDict[(ControllerActions)value] = ActionState.InActive;
+            }
+
             moveAxis.x = 0;
             moveAxis.y = 0;
             lookAxis.x = 0;
@@ -283,14 +290,8 @@ namespace Assets.Scripts.Input
                 }
             }
 
-            foreach (var item in result)
-            {
-                m_actionDict[item] = ActionState.InActive;
-            }
-
             return result;
         }
-
 
         public NetPlayerInput GetNetPlayerInput()
         {

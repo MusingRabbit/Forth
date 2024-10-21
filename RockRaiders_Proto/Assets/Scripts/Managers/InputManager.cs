@@ -63,6 +63,11 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        public void Reset()
+        {
+            m_controller?.Reset();
+        }
+
         public void RegisterPlayerController(PlayerInput controllerComponent)
         {
             if (controllerComponent == null)
@@ -72,6 +77,7 @@ namespace Assets.Scripts.Managers
 
             m_controller = controllerComponent;
         }
+
         private void UpdateControllerLookAxis()
         {
             //var currEvent = Event.current;
@@ -153,7 +159,7 @@ namespace Assets.Scripts.Managers
                 m_controller.SetActionState(ControllerActions.Crouch);
             }
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.X))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
             {
                 m_controller.SetActionState(ControllerActions.Pause);
             }
