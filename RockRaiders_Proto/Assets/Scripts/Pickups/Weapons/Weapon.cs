@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.Util;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -32,14 +33,38 @@ namespace Assets.Scripts.Pickups.Weapons
         [SerializeAs("WeaponSlot")]
         private WeaponSlot m_slot;
 
+        [SerializeField]
+        private int m_maxAmmo;
+
+        private int m_ammoCount;
+
         private TriggerState m_triggerState;
 
         private GameObject m_owner;
 
+        private Rigidbody m_rigidBody;
         private Rigidbody m_parentRigidBody;
 
         [SerializeField]
         private ActorCrosshair m_crosshair;
+
+        public bool CanFire => m_ammoCount >= 0 || m_maxAmmo == -1;
+
+        public int MaxAmmo
+        {
+            get
+            {
+                return m_maxAmmo;
+            }
+        }
+
+        public int Ammo
+        {
+            get
+            {
+                return m_ammoCount;
+            }
+        }
 
         public GameObject Owner
         {
@@ -115,11 +140,13 @@ namespace Assets.Scripts.Pickups.Weapons
             m_slot = WeaponSlot.Main;
             m_triggerState = TriggerState.Released;
             m_name = "Weapon";
+            m_maxAmmo = 150;
         }
 
         public virtual void Start()
         {
-
+            m_rigidBody = this.GetComponent<Rigidbody>();
+            this.ResetAmmo();
         }
 
         public virtual void Update()
@@ -143,7 +170,29 @@ namespace Assets.Scripts.Pickups.Weapons
 
         protected void Invoke_OnShotFired(Vector3 velocity, float mass)
         {
+            this.DecreaseAmmoCount();
             this.OnShotFired?.Invoke(this, new OnShotFiredEventArgs(velocity, mass));
+        }
+
+        private void DecreaseAmmoCount()
+        {
+            m_ammoCount--;
+        }
+
+        public void Reset()
+        {
+            if (m_rigidBody == null)
+            {
+                m_rigidBody = this.GetComponent<Rigidbody>();       // For some reason instantiated objects dont always run Start().....
+            }
+
+            m_rigidBody.ResetVelocity();
+            this.ResetAmmo();
+        }
+
+        public void ResetAmmo()
+        {
+            m_ammoCount = m_maxAmmo;
         }
     }
 }

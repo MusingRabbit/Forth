@@ -185,5 +185,20 @@ namespace Assets.Scripts
                     break;
             }
         }
+
+        public GameObject GetSelectedWeapon()
+        {
+            switch (m_selectedWeapon)
+            {
+                case SelectedWeapon.Main:
+                    return m_mainWeapon;
+                case SelectedWeapon.Sidearm:
+                    return m_sideArm;
+                case SelectedWeapon.Pack:
+                    break;
+            };
+
+            return null;
+        }
     }
 }

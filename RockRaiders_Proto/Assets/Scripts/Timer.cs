@@ -11,16 +11,54 @@ namespace Assets.Scripts
         private bool m_startTimer;
         private bool m_elapsed;
 
+        private bool m_autoReset;
+
         public event EventHandler<TimerElapsedEventArgs> OnTimerElapsed;
+
+        public bool Started
+        {
+            get
+            {
+                return m_currSeconds > 0;
+            }
+        }
+
+        public bool AutoReset
+        {
+            get
+            {
+                return m_autoReset;
+            }
+            set
+            {
+                m_autoReset = value;
+            }
+        }
+
+        public bool Elapsed
+        {
+            get
+            {
+                return m_elapsed;
+            }
+        }
 
         public Timer()
         {
+            m_autoReset = true;
             m_elapsed = false;
+        }
+
+        public Timer(TimeSpan timeSpan)
+            :this()
+        {
+            this.SetTimeSpan(timeSpan);
         }
 
         public void Start()
         {
             m_startTimer = true;
+
         }
 
         public void Stop()
@@ -37,9 +75,14 @@ namespace Assets.Scripts
 
             if (TimeSpan.FromSeconds(m_currSeconds) > m_timerSpan)
             {
-                OnTimerElapsed.Invoke(this, new TimerElapsedEventArgs());
+                OnTimerElapsed?.Invoke(this, new TimerElapsedEventArgs());
                 m_elapsed = true;
-                this.ResetTimer();
+
+                if (m_autoReset)
+                {
+                    this.ResetTimer();
+                }
+
                 m_startTimer = false;
             }
         }
@@ -53,6 +96,7 @@ namespace Assets.Scripts
         public void ResetTimer()
         {
             m_currSeconds = 0.0f;
+            m_elapsed = false;
         }
 
     }

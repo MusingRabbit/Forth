@@ -52,7 +52,7 @@ namespace Assets.Scripts.Pickups.Weapons
         public override void Fire()
         {
             var deltaTime = Time.time - m_lastShotTime;
-            var canFire = deltaTime > 1.0f / m_fireRate;
+            var canFire = this.CanFire && (deltaTime > 1.0f / m_fireRate);
 
             if (canFire)
             {

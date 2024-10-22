@@ -49,7 +49,7 @@ namespace Assets.Scripts.Pickups.Weapons
             if (OwnerRigidBody != null)
             {
                 var deltaTime = Time.time - m_lastShotTime;
-                var canFire = deltaTime > 1.0f / m_fireRate;
+                var canFire = this.CanFire && deltaTime > 1.0f / m_fireRate;
 
                 var spreadX = Random.Range(-m_spread, m_spread);
                 var spreadY = Random.Range(-m_spread, m_spread);

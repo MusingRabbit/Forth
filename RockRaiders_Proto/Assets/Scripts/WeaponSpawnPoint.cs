@@ -9,6 +9,14 @@ namespace Assets.Scripts
         [SerializeField]
         private WeaponType m_weaponType;
 
+        public WeaponType WeaponType
+        {
+            get
+            {
+                return m_weaponType;
+            }
+        }
+
         public WeaponSpawnPoint()
         {
             m_weaponType = WeaponType.AssaultRifle;

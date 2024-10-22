@@ -34,7 +34,7 @@ namespace Assets.Scripts.Factory
         private GameManager m_gameManager;
 
         [SerializeField]
-        private List<GameObject> m_spawnPoints;
+        private List<SpawnPoint> m_spawnPoints;
 
         [SerializeField]
         private UIGameOverlay m_uiOverlay;
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Factory
         public ActorSpawnManager()
         {
             instance = this;
-            m_spawnPoints = new List<GameObject>();
+            m_spawnPoints = new List<SpawnPoint>();
             m_clients = new Dictionary<ulong, NetworkObject>();
         }
 
@@ -105,7 +105,7 @@ namespace Assets.Scripts.Factory
             Debug.Log($"SpawnPlayerOnClients - clientId: {clientId}");
 
             // Instantiate player object
-            GameObject player = Instantiate(m_playerPrefab);
+            GameObject player = GameObject.Instantiate(m_playerPrefab);
 
             this.InitialiseBehaviours(player);
 
@@ -205,7 +205,7 @@ namespace Assets.Scripts.Factory
         private GameObject GetSpawnPoint(GameObject actor)
         {
             var controller = actor.GetComponent<ActorController>();
-            var spawmPoints = m_spawnPoints.Select(x => x.GetComponent<SpawnPoint>()).Where(x => x.Team == controller.Team).ToList();
+            var spawmPoints = m_spawnPoints.Where(x => x.Team == controller.Team).ToList();
             var rndIdx = Random.Range(0, spawmPoints.Count - 1);
             return spawmPoints[rndIdx].gameObject;
         }

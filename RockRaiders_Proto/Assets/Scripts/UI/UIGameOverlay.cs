@@ -1,5 +1,6 @@
 using Assets.Scripts.Actor;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Pickups.Weapons;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,9 @@ namespace Assets.Scripts.UI
 
         [SerializeField]
         private Text m_txtHitpointsValue;
+
+        [SerializeField]
+        private Text m_txtAmmoCountValue;
 
         private ActorState m_actorState;
 
@@ -58,6 +62,7 @@ namespace Assets.Scripts.UI
         {
             this.UpdateGravBootsStatus();
             this.UpdateHealthStatus();
+            this.UpdateAmmoStatus();
 
             if (m_gameManager.PlayerPaused)
             {
@@ -89,9 +94,43 @@ namespace Assets.Scripts.UI
         private void UpdateHealthStatus()
         {
             var hp = m_actorState?.Health ?? -1;
-            var txtTint = hp > 30 ? Color.green : Color.red;
+            var txtTint = GetColourFromPercentage(hp);
             m_txtHitpointsValue.text = hp > 0 ? hp.ToString() + "%" : "Unknown";
             m_txtHitpointsValue.color = txtTint;
+        }
+
+        private Color GetColourFromPercentage(float percentage)
+        {
+            if (percentage < 30)
+            {
+                return Color.red;
+            }
+
+            if (percentage < 50)
+            {
+                return Color.yellow;
+            }
+
+            return Color.green;
+        }
+
+        private void UpdateAmmoStatus()
+        {
+            var weaponObj = m_actorState.Inventory.GetSelectedWeapon();
+            var ammoCount = -1;
+            var maxAmmo = 0;
+            var ammoPercentage = 0.0f;
+
+            if (weaponObj != null)
+            {
+                var wpn = weaponObj.GetComponent<Weapon>();
+                ammoCount = wpn.Ammo;
+                ammoPercentage = ((float)wpn.Ammo / (float)wpn.MaxAmmo) * 100.0f;
+                maxAmmo = wpn.MaxAmmo;
+            }
+
+            m_txtAmmoCountValue.text = ammoCount > -1 ? ammoCount.ToString() : maxAmmo == -1 ? "Infinite" : "Unknown";
+            m_txtAmmoCountValue.color = this.GetColourFromPercentage(ammoPercentage);
         }
     }
 }
