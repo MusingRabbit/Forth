@@ -49,6 +49,15 @@ namespace Assets.Scripts.Factory
             m_clients = new Dictionary<ulong, NetworkObject>();
         }
 
+        public void Awake()
+        {
+            if (m_gameManager == null)
+            {
+                m_gameManager = GameManager.Instance;
+                m_gameManager.OnRespawnTriggered += GameManager_OnRespawnTriggered;
+            }
+        }
+
         public void Start()
         {
             if (m_gameManager == null)

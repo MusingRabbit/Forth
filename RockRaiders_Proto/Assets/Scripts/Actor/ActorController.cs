@@ -376,7 +376,7 @@ public class ActorController : RRMonoBehaviour
         var deltaVector = rArmPos - crossPos;
         var rotation = Quaternion.LookRotation(deltaVector, this.transform.up);
 
-        Debug.Log(rotation.eulerAngles);
+        //Debug.Log(rotation.eulerAngles);
 
         bool inverted = this.transform.up.y < 0.0f;
 

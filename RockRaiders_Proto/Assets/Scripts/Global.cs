@@ -41,4 +41,14 @@
         Sidearm,
         Pack
     }
+
+    public enum WeaponType
+    {
+        Pistol=0,
+        AssaultRifle,
+        LaserPistol,
+        LaserRifle,
+        PlasmaRifle,
+        RocketLauncher,
+    }
 }

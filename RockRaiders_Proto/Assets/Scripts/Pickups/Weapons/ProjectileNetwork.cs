@@ -28,7 +28,10 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public void SpawnProjectile(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
-            this.SpawnProjectileServerRpc(position, rotation, velocityOffset, muzzleVelocity);
+            if (this.IsOwner)
+            {
+                this.SpawnProjectileServerRpc(position, rotation, velocityOffset, muzzleVelocity);
+            }
         }
 
         public void DespawnProjectile(GameObject projectile)
@@ -79,7 +82,7 @@ namespace Assets.Scripts.Pickups.Weapons
         }
 
 
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc]
         private void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             var projectile = this.CreateProjectile(position, rotation, velocityOffset, muzzleVelocity);
