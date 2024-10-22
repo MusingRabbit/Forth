@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Input;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Input;
 using Assets.Scripts.UI.Models;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,23 @@ namespace Assets.Scripts.Managers
         public event EventHandler<EventArgs> OnRespawnTriggered;
 
         private bool m_playerPaused;
+        private bool m_playerAwaitingRespawn;
+
+        private Dictionary<ulong, GameObject> m_players;
 
         public bool PlayerPaused
         {
             get
             {
                 return m_playerPaused;
+            }
+        }
+
+        public bool PlayerAwaitingRespawn
+        {
+            get
+            {
+                return m_playerAwaitingRespawn;
             }
         }
 
@@ -67,6 +79,7 @@ namespace Assets.Scripts.Managers
             m_settings = new SettingsModel();
 
             m_clientPrefabs = new Dictionary<ulong, NetworkPrefab>();
+            m_players = new Dictionary<ulong, GameObject>();
         }
 
         private void Awake()
@@ -85,6 +98,12 @@ namespace Assets.Scripts.Managers
         private void Start()
         {
             m_unityTransport = m_netManager.GetComponent<UnityTransport>();
+            m_netManager.OnConnectionEvent += NetManager_OnConnectionEvent;
+        }
+
+        private void NetManager_OnConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
+        {
+            Debug.Log("Client Id : " + arg2.ClientId + "| Event type : " + arg2.EventType);
         }
 
         private void Update()
@@ -97,6 +116,15 @@ namespace Assets.Scripts.Managers
                     m_playerPaused = true;
                     this.UnlockMouse();
                     m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
+                }
+
+                if (this.PlayerAwaitingRespawn)
+                {
+                    if (m_inputManager.Controller.GetActionState(Input.ControllerActions.Trigger) == ActionState.Active)
+                    {
+                        this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
+                        m_playerAwaitingRespawn = false;
+                    }
                 }
             }
         }
@@ -124,7 +152,11 @@ namespace Assets.Scripts.Managers
             }
 
             m_unityTransport.SetConnectionData(m_settings.MatchSettings.ServerIP, m_settings.MatchSettings.Port);
-            m_netManager.StartClient();
+
+            if (!m_netManager.StartClient())
+            {
+                this.LoadSplashScreen();
+            };
         }
 
         private void StartSessionAsHost()
@@ -175,6 +207,7 @@ namespace Assets.Scripts.Managers
                 }
 
                 this.LockMouse();
+                m_state = GameState.InGame;
             }
             catch(Exception ex)
             {
@@ -197,14 +230,54 @@ namespace Assets.Scripts.Managers
         public void LoadSplashScreen()
         {
             this.UnlockMouse();
-            SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
             m_state = GameState.MainMenu;
+            SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
+            
         }
 
         internal void RespawnPlayer()
         {
             this.NotifyPauseMenuClosed();
             this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void DeregisterPlayer(ulong clientId)
+        {
+            if (m_players.ContainsKey(clientId))
+            {
+                var playerActor = m_players[clientId];
+
+                var playerState = playerActor.GetComponent<ActorState>();
+
+                playerState.OnStateChanged -= this.PlayerState_OnStateChanged;
+
+                m_players.Remove(clientId);
+                Debug.Log("GameManager => Deregistered : Client Id : " + clientId + "| Name : " + playerState.PlayerName);
+            }
+        }
+
+        internal void RegisterPlayer(ulong clientId, GameObject playerActor)
+        {
+            var actorNetwork = playerActor.GetComponent<ActorNetwork>();
+            var playerState = playerActor.GetComponent<ActorState>();
+
+            if (actorNetwork.IsOwner)
+            {
+                actorNetwork.PlayerName = this.Settings.GameSettings.PlayerName;
+            }
+
+            playerState.OnStateChanged += this.PlayerState_OnStateChanged;
+
+            m_players[clientId] = playerActor;
+            Debug.Log("GameManager => Registered : Client Id : " + clientId + "| Name : " + playerState.PlayerName);
+        }
+
+        private void PlayerState_OnStateChanged(object sender, Events.OnStateChangedEventArgs e)
+        {
+            if (e.State.IsDead)
+            {
+                m_playerAwaitingRespawn = true;
+            }
         }
 
 

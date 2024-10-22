@@ -115,6 +115,12 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
+            if (m_state.IsDead)
+            {
+                this.ApplyGravity();
+                return;
+            }
+
             var moveX = m_controller?.MoveAxis.x * (m_moveSpeed * Time.deltaTime) ?? 0.0f;
             var moveZ = m_controller?.MoveAxis.y * (m_moveSpeed * Time.deltaTime) ?? 0.0f;
             m_moveVector = new Vector3(moveX, 0.0f, moveZ);
@@ -163,13 +169,16 @@ namespace Assets.Scripts.Actor
 
             if (m_groundRay.Hit)
             {
-
-                var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
-                m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
-
+                this.ApplyGravity();
                 m_rigidBody.AddForce(m_moveVector * (m_moveSpeed / 10), ForceMode.Impulse);
             }
 
+        }
+
+        private void ApplyGravity()
+        {
+            var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
+            m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
         }
 
         private Vector3 GetMoveVector(SurfaceRotationInfo info, Vector2 moveAxis)

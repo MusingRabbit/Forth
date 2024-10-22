@@ -1,43 +1,168 @@
 ﻿using UnityEngine;
 using Assets.Scripts;
+using System;
+using Assets.Scripts.Events;
 
 namespace Assets.Scripts.Actor
 {
     public class ActorState : RRMonoBehaviour
     {
-        public Team Team { get; set; }
+        private bool m_stateChanged;
+        public event EventHandler<OnStateChangedEventArgs> OnStateChanged;
 
-        public SelectedWeapon SelectedWeapon { get; set; }
-        public ActorInventory Inventory { get; set; }
+        private ActorHealth m_health;
 
-        public bool GravBootsEnabled { get; set; }
+        private Team m_team;
+        private SelectedWeapon m_selectedWeapon;
+        bool m_gravBootsEnabled;
+        private bool m_isMoving;
+        private bool m_isFloating;
+        private bool m_feetOnGround;
+        private bool m_isCrouched;
+        private bool m_isMovingForward;
+        private bool m_isDead;
+        private int m_hp;
 
-        public bool IsMoving { get; set; }
-        public bool IsFloating { get; set; }
+        public Team Team
+        {
+            get
+            {
+                return m_team;
+            }
+            set
+            {
+                if (m_team != value)
+                {
+                    m_team = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
 
-        public bool FeetOnGround { get; set; }
-
-        public bool IsCrouched { get; set; }
-        public bool IsMovingForward { get; set; }
-
+        public SelectedWeapon SelectedWeapon
+        {
+            get
+            {
+                return m_selectedWeapon;
+            }
+            set
+            {
+                if (m_selectedWeapon != value)
+                {
+                    m_selectedWeapon = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        
+        public bool GravBootsEnabled
+        {
+            get
+            {
+                return m_gravBootsEnabled;
+            }
+            set
+            {
+                if (m_gravBootsEnabled != value)
+                {
+                    m_gravBootsEnabled = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        public bool IsMoving
+        {
+            get
+            {
+                return m_isMoving;
+            }
+            set
+            {
+                if (m_isMoving != value)
+                {
+                    m_isMoving = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        public bool IsFloating
+        {
+            get
+            {
+                return m_isFloating;
+            }
+            set
+            {
+                if (m_isFloating != value)
+                {
+                    m_isFloating = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        public bool FeetOnGround
+        {
+            get
+            {
+                return m_feetOnGround;
+            }
+            set
+            {
+                if (m_feetOnGround != value)
+                {
+                    m_feetOnGround = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        public bool IsCrouched
+        {
+            get
+            {
+                return m_isCrouched;
+            }
+            set
+            {
+                if (m_isCrouched != value)
+                {
+                    m_isCrouched = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
+        public bool IsMovingForward
+        {
+            get
+            {
+                return m_isMovingForward;
+            }
+            set
+            {
+                if (m_isMovingForward != value)
+                {
+                    m_isMovingForward = value;
+                    m_stateChanged = true;
+                }
+            }
+        }
         public bool IsDead
         {
             get
             {
-                return m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead ;
+                return m_isDead;
             }
         }
-
         public int Health
         {
             get
             {
-                return m_health?.Hitpoints.Current ?? 0;
+                return m_hp;
             }
         }
 
+        public string PlayerName { get; set; }
 
-        private ActorHealth m_health;
+        public ActorInventory Inventory { get; set; }
 
         public ActorState()
         {
@@ -53,6 +178,29 @@ namespace Assets.Scripts.Actor
         private void Start()
         {
             this.Initialise();
+        }
+
+        private void Update()
+        {
+            var isDead = m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead;
+            var hp = m_health?.Hitpoints.Current ?? 0;
+
+            if (isDead != m_isDead)
+            {
+                m_isDead = isDead;
+                m_stateChanged = true;
+            }
+
+            if (hp != m_hp)
+            {
+                m_hp = hp;
+                m_stateChanged = true;
+            }
+
+            if (m_stateChanged)
+            {
+                this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
+            }
         }
 
         public override void Reset()
@@ -92,16 +240,19 @@ namespace Assets.Scripts.Actor
                     if (this.Inventory.HasMainWeapon())
                     {
                         this.SelectedWeapon = SelectedWeapon.Main;
+                        this.Inventory.SelectWeapon(SelectedWeapon.Main);
                     }
                     break;
                 case SelectedWeapon.Sidearm:
                     if (this.Inventory.HasSideArm())
                     {
                         this.SelectedWeapon = SelectedWeapon.Sidearm;
+                        this.Inventory.SelectWeapon(SelectedWeapon.Sidearm);
                     }
                     break;
                 case SelectedWeapon.None:
                     this.SelectedWeapon = SelectedWeapon.None;
+                    this.Inventory.SelectWeapon(SelectedWeapon.None);
                     break;
             }
         }

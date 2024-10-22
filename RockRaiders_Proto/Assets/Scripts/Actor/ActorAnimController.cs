@@ -5,6 +5,8 @@ namespace Assets.Scripts.Actor
 {
     public class ActorAnimController : RRMonoBehaviour
     {
+        private bool m_deathAnimPlayed = false; 
+
         private const string ANIM_IDLE = "Idle";
         private const string ANIM_CROUCH_IDLE = "Actor_Crouch_Idle";
 
@@ -31,6 +33,9 @@ namespace Assets.Scripts.Actor
         private const string ANIM_FLOAT_MAINWEP = "Float_MainWep";
         private const string ANIM_FLOAT_EMPTY = "Float_Empty";
 
+        private const string ANIM_DEAD = "Dead";
+        private const string ANIM_FLOAT_DEAD = "Float_Dead";
+
         [SerializeField]
         private Animator m_animator;
 
@@ -50,7 +55,28 @@ namespace Assets.Scripts.Actor
 
         public void PlayAnimationForActorState(ActorState state)
         {
-            m_animator.Play(this.GetAnimationForActorState(state));
+
+            if (state.IsDead)
+            {
+                if (state.IsFloating)
+                {
+                    m_animator.Play(ANIM_FLOAT_DEAD);
+                    m_deathAnimPlayed = true;
+                }
+                else
+                {
+                    if (!m_deathAnimPlayed)
+                    {
+                        m_animator.Play(ANIM_DEAD);
+                        m_deathAnimPlayed = true;
+                    }
+                }
+            }
+            else
+            {
+                m_deathAnimPlayed = false;
+                m_animator.Play(this.GetAnimationForActorState(state));
+            }
         }
 
         private string GetAnimationForActorState(ActorState state)

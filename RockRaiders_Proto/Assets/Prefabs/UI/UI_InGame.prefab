@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_gameManager: {fileID: 0}
   m_hud: {fileID: 7724850702729842312}
+  m_ded: {fileID: 6048579501212506002}
   m_pauseMenu: {fileID: 2770146747361062643}
   m_actor: {fileID: 0}
   m_txtGravBootsEnabled: {fileID: 3043086264092347484}
@@ -364,6 +365,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5199696027277817422, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139755862691274259, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Name
       value: UI_Overlay
@@ -399,6 +408,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6048579501212506002 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 41471068262495480, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+  m_PrefabInstance: {fileID: 6008798841884042090}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7279601821517590400 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3919783126516190442, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}

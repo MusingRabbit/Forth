@@ -15,6 +15,9 @@ namespace Assets.Scripts.UI
         private GameObject m_hud;
 
         [SerializeField]
+        private GameObject m_ded;
+
+        [SerializeField]
         private GameObject m_pauseMenu;
 
         [SerializeField]
@@ -61,9 +64,15 @@ namespace Assets.Scripts.UI
                 m_hud.SetActive(false);
                 m_pauseMenu.SetActive(true);
             }
+            else if (m_gameManager.PlayerAwaitingRespawn)
+            {
+                m_ded.SetActive(true);
+                m_hud.SetActive(false);
+            }
             else
             {
                 m_hud.SetActive(true);
+                m_ded.SetActive(false);
                 m_pauseMenu.SetActive(false);
             }
         }

@@ -103,8 +103,7 @@ public class ActorController : RRMonoBehaviour
         if (m_state.IsDead)
         {
             this.DropSelectedWeapon();
-            m_grounded.enabled = false;
-            m_floating.enabled = false;
+            m_animController.PlayAnimationForActorState(m_state);
             m_state.IsMoving = false;
             return;
         }
@@ -386,7 +385,7 @@ public class ActorController : RRMonoBehaviour
         var rotAmt = Quaternion.Euler(0, 0, inverted ? -rotation.eulerAngles.x : rotation.eulerAngles.x);
         var rotAmtZ = Mathf.Abs(rotAmt.eulerAngles.z - 180 < 0 ? rotAmt.eulerAngles.z : rotAmt.eulerAngles.z - 360);
 
-        Debug.Log("rotAmtZ : " + rotAmtZ);
+        //Debug.Log("rotAmtZ : " + rotAmtZ);
 
         if (rotAmtZ < 25)
         {

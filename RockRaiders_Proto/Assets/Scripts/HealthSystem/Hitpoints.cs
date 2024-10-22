@@ -44,6 +44,25 @@ namespace Assets.Scripts.HealthSystem
             m_currentHp = m_maxHp;
         }
 
+        public void SetHitPoints(int amount)
+        {
+            if (m_currentHp != amount)
+            {
+                m_currentHp = amount;
+
+                if (m_currentHp <= 0)
+                {
+                    OnHitpointsDepleated?.Invoke(this, EventArgs.Empty);
+                }
+
+                if (m_currentHp >= m_maxHp)
+                {
+                    m_currentHp = m_maxHp;
+                    OnHitpointsFull?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
         public void AddHitPoints(int amount)
         {
             var newHp = m_currentHp + amount;
@@ -57,7 +76,7 @@ namespace Assets.Scripts.HealthSystem
 
                 if (maxHp)
                 {
-                    OnHitpointsFull.Invoke(this, EventArgs.Empty);
+                    OnHitpointsFull?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -76,7 +95,7 @@ namespace Assets.Scripts.HealthSystem
 
                 if (m_currentHp <= 0)
                 {
-                    OnHitpointsDepleated.Invoke(this, EventArgs.Empty);
+                    OnHitpointsDepleated?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

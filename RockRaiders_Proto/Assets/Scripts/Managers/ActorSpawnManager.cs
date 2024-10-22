@@ -112,6 +112,8 @@ namespace Assets.Scripts.Factory
             // Spawn the player object on all clients
             playerNetworkObject.SpawnAsPlayerObject(clientId);
 
+            m_gameManager.RegisterPlayer(clientId, player);
+
             m_clients[clientId] = playerNetworkObject;
         }
 
@@ -120,6 +122,9 @@ namespace Assets.Scripts.Factory
             Debug.Log($"DespawnPlayer - clientId: {clientId}");
 
             var playerNetworkObject = m_clients[clientId];
+
+            m_gameManager.DeregisterPlayer(clientId);
+
             playerNetworkObject.Despawn(true);
         }
 

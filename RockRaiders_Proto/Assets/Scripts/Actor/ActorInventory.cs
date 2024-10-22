@@ -2,18 +2,8 @@
 
 namespace Assets.Scripts
 {
-    public enum CurrentSelection
-    {
-        None = 0,
-        MainWeapon = 1,
-        SideArm = 2
-    }
-
     public class ActorInventory : RRMonoBehaviour
     {
-        [SerializeField]
-        private CurrentSelection m_currentSelection;
-
         [SerializeField]
         private GameObject m_mainWeapon;
 
@@ -32,6 +22,7 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject m_packHolster;
 
+        [SerializeField]
         private SelectedWeapon m_selectedWeapon;
 
         public SelectedWeapon SelectedWeapon
@@ -56,9 +47,14 @@ namespace Assets.Scripts
             m_selectedWeapon = SelectedWeapon.None;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             this.UpdateStoredItemWorldPos();
+        }
+
+        private void Update()
+        {
+            
         }
 
         public override void Reset()
@@ -113,7 +109,6 @@ namespace Assets.Scripts
             weapon.GetComponent<Rigidbody>().detectCollisions = true;
         }
 
-
         public GameObject GetMainWeapon()
         {
             return m_mainWeapon;
@@ -143,11 +138,12 @@ namespace Assets.Scripts
             if (m_mainWeapon != null)
             {
                 this.ConfigureRigidBodyOnDrop(m_mainWeapon);
+
                 m_mainWeapon = null;
 
-                if (m_currentSelection == CurrentSelection.MainWeapon)
+                if (m_selectedWeapon == SelectedWeapon.Main)
                 {
-                    this.SelectWeapon(CurrentSelection.None);
+                    this.SelectWeapon(SelectedWeapon.None);
                 }
             }
         }
@@ -157,33 +153,34 @@ namespace Assets.Scripts
             if (m_sideArm != null)
             {
                 this.ConfigureRigidBodyOnDrop(m_sideArm);
+
                 m_sideArm = null;
 
-                if (m_currentSelection == CurrentSelection.SideArm)
+                if (m_selectedWeapon == SelectedWeapon.Sidearm)
                 {
-                    this.SelectWeapon(CurrentSelection.None);
+                    this.SelectWeapon(SelectedWeapon.None);
                 }
             }
         }
 
-        public void SelectWeapon(CurrentSelection selection)
+        public void SelectWeapon(SelectedWeapon selection)
         {
-            m_currentSelection = CurrentSelection.None;
+            m_selectedWeapon = SelectedWeapon.None;
 
             switch (selection)
             {
-                case CurrentSelection.MainWeapon:
+                case SelectedWeapon.Main:
 
                     if (m_mainWeapon != null)
                     {
-                        m_currentSelection = selection;
+                        m_selectedWeapon = selection;
                     }
                     break;
-                case CurrentSelection.SideArm:
+                case SelectedWeapon.Sidearm:
 
                     if (m_sideArm != null)
                     {
-                        m_currentSelection = selection;
+                        m_selectedWeapon = selection;
                     }
                     break;
             }

@@ -9,6 +9,8 @@
         public GameSettingsModel()
         {
             this.Resolution = "800x600@59.94";
+            this.PlayerName = "Player";
+            this.FullScreen = false;
         }
     }
 }

@@ -28,6 +28,8 @@ namespace Assets.Scripts.Actor
 
         private Quaternion m_tgtRotation;
 
+        private ActorState m_state;
+
         public GameObject Head
         {
             get
@@ -74,6 +76,7 @@ namespace Assets.Scripts.Actor
         {
             m_controller = this.GetComponent<PlayerInput>();
             m_rigidBody = this.GetComponent<Rigidbody>();
+            m_state = this.GetComponent<ActorState>();
         }
 
         private void Start()
@@ -91,6 +94,11 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
+            if (m_state.IsDead)
+            {
+                return;
+            }
+
             var moveInput = new Vector3(m_controller.MoveAxis.x, 0, m_controller.MoveAxis.y).normalized;
             var isMoving = moveInput.magnitude > 0;
 
