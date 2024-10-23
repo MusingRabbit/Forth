@@ -34,6 +34,14 @@ namespace Assets.Scripts.Actor
             this.Initialise();
         }
 
+        private void Update()
+        {
+            if (m_state == ActorHealthState.Dying)
+            {
+                this.SetActorHealthState(ActorHealthState.Dead);
+            }
+        }
+
         public override void Reset()
         {
             m_state = ActorHealthState.Live;

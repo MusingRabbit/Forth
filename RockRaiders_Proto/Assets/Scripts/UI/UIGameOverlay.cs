@@ -1,6 +1,8 @@
 using Assets.Scripts.Actor;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Services;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +35,9 @@ namespace Assets.Scripts.UI
         [SerializeField]
         private Text m_txtAmmoCountValue;
 
+        [SerializeField]
+        private TMP_Text m_txtNotificationText;
+
         private ActorState m_actorState;
 
         public ActorController Actor
@@ -55,7 +60,11 @@ namespace Assets.Scripts.UI
             {
                 m_gameManager = GameManager.Instance;
             }
+
+            NotificationService.Instance.OnPlayerKilled += this.NotificationService_OnPlayerKilled;
         }
+
+
 
         // Update is called once per frame
         void Update()
@@ -131,6 +140,11 @@ namespace Assets.Scripts.UI
 
             m_txtAmmoCountValue.text = ammoCount > -1 ? ammoCount.ToString() : maxAmmo == -1 ? "Infinite" : "Unknown";
             m_txtAmmoCountValue.color = this.GetColourFromPercentage(ammoPercentage);
+        }
+
+        private void NotificationService_OnPlayerKilled(object sender, Events.OnNotificationEventArgs e)
+        {
+            m_txtNotificationText.text = e.Data.Message + "\n" + m_txtNotificationText.text;
         }
     }
 }

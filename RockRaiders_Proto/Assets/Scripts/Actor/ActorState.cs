@@ -2,6 +2,7 @@
 using Assets.Scripts;
 using System;
 using Assets.Scripts.Events;
+using Unity.VisualScripting;
 
 namespace Assets.Scripts.Actor
 {
@@ -22,6 +23,7 @@ namespace Assets.Scripts.Actor
         private bool m_isMovingForward;
         private bool m_isDead;
         private int m_hp;
+        private bool m_isDying;
 
         public Team Team
         {
@@ -152,6 +154,15 @@ namespace Assets.Scripts.Actor
                 return m_isDead;
             }
         }
+
+        public bool IsDying
+        {
+            get
+            {
+                return m_isDying;
+            }
+        }
+
         public int Health
         {
             get
@@ -163,6 +174,7 @@ namespace Assets.Scripts.Actor
         public string PlayerName { get; set; }
 
         public ActorInventory Inventory { get; set; }
+        public GameObject KilledBy { get; internal set; }
 
         public ActorState()
         {
@@ -182,8 +194,11 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
+            var isDying = m_health.State == ActorHealthState.Dying;
             var isDead = m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead;
             var hp = m_health?.Hitpoints.Current ?? 0;
+
+            m_isDying = isDying;
 
             if (isDead != m_isDead)
             {
@@ -213,6 +228,9 @@ namespace Assets.Scripts.Actor
             this.FeetOnGround = false;
             this.IsMovingForward = false;
             this.Team = Team.None;
+            this.KilledBy = null;
+            m_isDead = false;
+            m_isDying = false;
         }
 
         public GameObject GetSelectedWeapon()

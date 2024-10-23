@@ -54,6 +54,7 @@ MonoBehaviour:
   m_txtGravBootsEnabled: {fileID: 3043086264092347484}
   m_txtHitpointsValue: {fileID: 3260174791130802251}
   m_txtAmmoCountValue: {fileID: 7504208419529637621}
+  m_txtNotificationText: {fileID: 8180936078085632089}
 --- !u!1001 &703249197821113569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -282,13 +283,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3006778207182820201}
     m_Modifications:
+    - target: {fileID: 807223494416581329, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 862942190480098208, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -374
+      value: -335
       objectReference: {fileID: 0}
     - target: {fileID: 862942190480098208, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_LocalPosition.y
       value: 594
+      objectReference: {fileID: 0}
+    - target: {fileID: 2225307367570836927, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -428
+      objectReference: {fileID: 0}
+    - target: {fileID: 2297494626852950036, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -62.67299
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505761204638903342, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3439057302485373523, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -335
+      objectReference: {fileID: 0}
+    - target: {fileID: 3439057302485373523, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 559
       objectReference: {fileID: 0}
     - target: {fileID: 3919783126516190442, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Pivot.x
@@ -370,17 +395,53 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3933711982536551151, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -62.67299
+      objectReference: {fileID: 0}
     - target: {fileID: 4059894445043445218, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4271602096769981855, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4528415341195525762, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -62.67299
       objectReference: {fileID: 0}
     - target: {fileID: 5199696027277817422, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5663115589394359331, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_Text
+      value: 'Grav Boots : '
+      objectReference: {fileID: 0}
+    - target: {fileID: 5663115589394359331, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6139755862691274259, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426395215969077735, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -428
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608835943745281552, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -335
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608835943745281552, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 556
+      objectReference: {fileID: 0}
+    - target: {fileID: 6855213176120959415, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -428
       objectReference: {fileID: 0}
     - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Name
@@ -389,6 +450,18 @@ PrefabInstance:
     - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8743945798676295478, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_Text
+      value: Enabled
+      objectReference: {fileID: 0}
+    - target: {fileID: 8743945798676295478, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9105712228024060705, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -443,3 +516,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4059894445043445218, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
   m_PrefabInstance: {fileID: 6008798841884042090}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8180936078085632089 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2516118771991466803, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+  m_PrefabInstance: {fileID: 6008798841884042090}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Services;
 using Assets.Scripts.UI.Models;
 using System;
 using UnityEngine;
@@ -54,7 +55,7 @@ namespace Assets.Scripts.UI
             }
             catch(Exception ex)
             {
-                Debug.LogError("Failed to update game model. " + ex.Message);
+                NotificationService.Instance.Error("Failed to update game model. " + ex.Message);
             }
         }
 

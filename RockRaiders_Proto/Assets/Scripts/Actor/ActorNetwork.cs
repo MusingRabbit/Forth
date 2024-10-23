@@ -228,7 +228,6 @@ public class ActorNetwork : NetworkBehaviour
     {
         if (m_actorManager == null)
         {
-            Debug.Log("Actor manager is null. Fix this hack.");
             m_actorManager = ActorSpawnManager.Instance;
         }
 

@@ -51,4 +51,14 @@
         PlasmaRifle,
         RocketLauncher,
     }
+
+    public enum MessageType
+    {
+        Info,
+        Warning,
+        Error,
+        PlayerKilled,
+        PlayerSpawned,
+
+    }
 }

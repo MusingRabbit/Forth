@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Input;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Services;
 using Assets.Scripts.UI;
 using System;
 using System.Collections.Generic;
@@ -102,7 +103,7 @@ namespace Assets.Scripts.Factory
 
         private void SpawnPlayerOnClients(ulong clientId)
         {
-            Debug.Log($"SpawnPlayerOnClients - clientId: {clientId}");
+            NotificationService.Instance.Info($"ClientId: {clientId}");
 
             // Instantiate player object
             GameObject player = GameObject.Instantiate(m_playerPrefab);
@@ -128,7 +129,7 @@ namespace Assets.Scripts.Factory
 
         private void DespawnPlayerOnClients(ulong clientId)
         {
-            Debug.Log($"DespawnPlayer - clientId: {clientId}");
+            NotificationService.Instance.Info($"ClientId: {clientId}");
 
             var playerNetworkObject = m_clients[clientId];
 

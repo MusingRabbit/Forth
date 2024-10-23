@@ -5,7 +5,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 {
     public class Projectile : MonoBehaviour
     {
-
+        private Weapon m_owner;
 
         [SerializeField]
         private TimeSpan m_lifeSpan;
@@ -38,6 +38,18 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             set
             {
                 m_mass = value;
+            }
+        }
+
+        public Weapon Weapon
+        {
+            get
+            {
+                return m_owner;
+            }
+            set
+            {
+                m_owner = value;
             }
         }
 

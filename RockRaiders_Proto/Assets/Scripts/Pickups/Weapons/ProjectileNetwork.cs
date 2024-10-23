@@ -12,6 +12,7 @@ namespace Assets.Scripts.Pickups.Weapons
         private GameObject m_projectilePrefab;
 
         private Projectile m_projectile;
+        private Weapon m_weapon;
 
         public Projectile Projectile
         {
@@ -24,6 +25,7 @@ namespace Assets.Scripts.Pickups.Weapons
         private void Start()
         {
             m_projectile = m_projectilePrefab.GetComponent<Projectile>();
+            m_weapon = this.gameObject.GetComponent<Weapon>();
         }
 
         public void SpawnProjectile(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
@@ -71,6 +73,7 @@ namespace Assets.Scripts.Pickups.Weapons
             var rigidBody = instance.GetComponent<Rigidbody>();
             var projectile = instance.GetComponent<Projectile>();
 
+            projectile.Weapon = m_weapon;
             projectile.MuzzleVelocity = muzzleVelocity;
             instance.transform.position = position;
             instance.transform.rotation = rotation;

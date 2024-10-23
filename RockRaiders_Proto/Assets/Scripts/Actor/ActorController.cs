@@ -3,6 +3,8 @@ using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
 using Assets.Scripts.Input;
 using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Pickups.Weapons.Projectiles;
+using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
 using UnityEngine;
@@ -426,6 +428,7 @@ public class ActorController : RRMonoBehaviour
 
             if (gameObj.IsProjectile())
             {
+                var projectile = gameObj.GetComponent<Projectile>();
                 var projCollider = gameObj.GetComponent<CapsuleCollider>();
 
                 if (m_headBoxCollider.bounds.Intersects(projCollider.bounds)) // Check if it's a headshot.
@@ -436,6 +439,24 @@ public class ActorController : RRMonoBehaviour
                 {
                     m_health.RegisterProjectileHit(gameObj, 1.0f);
                 }
+
+                var attacker = projectile.Weapon.Owner;
+
+                if (attacker == null)
+                {
+                    // Strange
+                    NotificationService.Instance.Warning("NULL Attacker?!");
+                }
+                else
+                {
+                    var isDying = m_health.State == ActorHealthState.Dying;
+
+                    if (isDying)
+                    {
+                        m_state.KilledBy = attacker;
+                    }
+                }
+
             }
         }
     }

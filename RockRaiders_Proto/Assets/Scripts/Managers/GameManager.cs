@@ -1,11 +1,13 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Input;
+using Assets.Scripts.Services;
 using Assets.Scripts.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -103,7 +105,7 @@ namespace Assets.Scripts.Managers
 
         private void NetManager_OnConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
         {
-            Debug.Log("Client Id : " + arg2.ClientId + "| Event type : " + arg2.EventType);
+            NotificationService.Instance.Info("Client Id : " + arg2.ClientId + "| Event type : " + arg2.EventType);
         }
 
         private void Update()
@@ -252,7 +254,8 @@ namespace Assets.Scripts.Managers
                 playerState.OnStateChanged -= this.PlayerState_OnStateChanged;
 
                 m_players.Remove(clientId);
-                Debug.Log("GameManager => Deregistered : Client Id : " + clientId + "| Name : " + playerState.PlayerName);
+
+                NotificationService.Instance.Info("Deregistered: Client Id: " + clientId + " | Name : " + playerState.PlayerName);
             }
         }
 
@@ -269,15 +272,27 @@ namespace Assets.Scripts.Managers
             playerState.OnStateChanged += this.PlayerState_OnStateChanged;
 
             m_players[clientId] = playerActor;
-            Debug.Log("GameManager => Registered : Client Id : " + clientId + "| Name : " + playerState.PlayerName);
+
+            NotificationService.Instance.Info("Registered : Client Id : " + clientId + " | Name : " + playerState.PlayerName);
+
         }
 
         private void PlayerState_OnStateChanged(object sender, Events.OnStateChangedEventArgs e)
         {
+            if (e.State.IsDying)
+            {
+                this.HandleActorDeath(e.Actor);
+            }
+
             if (e.State.IsDead)
             {
                 m_playerAwaitingRespawn = true;
             }
+        }
+
+        private void HandleActorDeath(GameObject actor)
+        {
+            NotificationService.Instance.NotifyPlayerKilled(actor);
         }
 
 

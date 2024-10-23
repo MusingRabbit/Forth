@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,7 +118,7 @@ namespace Assets.Scripts.Managers
 
                 if (!data.IsAvailable)
                 {
-                    Debug.LogWarning("WeaponSpawnManager.InitialiseAndSpawnAllWeapons | Attempting to spawn a weapon on a spawn point that is not available.");
+                    NotificationService.Instance.Warning("Attempting to spawn a weapon on a spawn point that is not available.");
                     continue;
                 }
 
@@ -182,7 +183,7 @@ namespace Assets.Scripts.Managers
             {
                 if (spawn.Weapon == null)
                 {
-                    Debug.LogWarning("WeaponSpawnManager.CheckWeaponOwnershipState | No weapon has been assigned to spawn point");
+                    NotificationService.Instance.Warning("No weapon has been assigned to spawn point");
                     continue;
                 }
 
@@ -209,7 +210,7 @@ namespace Assets.Scripts.Managers
                 return availableSpawns[rndIdx];
             }
 
-            Debug.LogWarning("WeaponSpawnManager.GetAvailableSpawnPoint | No available spawn points left.");
+            NotificationService.Instance.Warning("No available spawn points left.");
 
             return null;
             

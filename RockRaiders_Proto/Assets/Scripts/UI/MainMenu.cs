@@ -1,3 +1,4 @@
+using Assets.Scripts.Services;
 using Assets.Scripts.UI.Models;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Assets.Scripts.UI
 
         public void QuitGame()
         {
-            Debug.Log("Quit clicked.");
+            NotificationService.Instance.Info("Quit");
             Application.Quit();
         }
 
