@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using Assets.Scripts;
 using System;
 using Assets.Scripts.Events;
-using Unity.VisualScripting;
+using Assets.Scripts.Services;
 
 namespace Assets.Scripts.Actor
 {
@@ -194,27 +193,38 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
+            
             var isDying = m_health.State == ActorHealthState.Dying;
             var isDead = m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead;
             var hp = m_health?.Hitpoints.Current ?? 0;
 
-            m_isDying = isDying;
+           
+
+            if (isDying != m_isDying)
+            {
+                m_isDying = isDying;
+                NotificationService.Instance.Info("Is Dying");
+                m_stateChanged = true;
+            }
 
             if (isDead != m_isDead)
             {
                 m_isDead = isDead;
                 m_stateChanged = true;
+                NotificationService.Instance.Info("Is Dead");
             }
 
             if (hp != m_hp)
             {
                 m_hp = hp;
                 m_stateChanged = true;
+                NotificationService.Instance.Info($"HP : {hp}");
             }
 
             if (m_stateChanged)
             {
                 this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
+                m_stateChanged = false;
             }
         }
 

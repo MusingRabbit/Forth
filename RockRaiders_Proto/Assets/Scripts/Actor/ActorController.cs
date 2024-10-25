@@ -138,11 +138,16 @@ public class ActorController : RRMonoBehaviour
 
     private void LateUpdate()
     {
-        this.UpdateActorHeadRotation();
+        var canAnimate = !(m_state.IsDying || m_state.IsDying);
 
-        if (m_state.SelectedWeapon != SelectedWeapon.None && !m_state.IsFloating)
+        if (canAnimate)
         {
-            this.UpdateActorArmRotation();
+            this.UpdateActorHeadRotation();
+
+            if (m_state.SelectedWeapon != SelectedWeapon.None && !m_state.IsFloating)
+            {
+                this.UpdateActorArmRotation();
+            }
         }
 
         this.UpdateSelectedWeaponWorldPos();

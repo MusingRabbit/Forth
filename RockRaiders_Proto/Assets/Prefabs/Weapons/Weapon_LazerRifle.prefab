@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 4364847471044331403}
   - component: {fileID: 6464692950264930314}
   - component: {fileID: 2608546729855405266}
-  - component: {fileID: 1591483823692987831}
+  - component: {fileID: 7414581234792028705}
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
   - component: {fileID: 5737030189338390568}
@@ -683,7 +683,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1591483823692987831
+--- !u!114 &7414581234792028705
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -761,6 +761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: LazerRifle
   m_slot: 0
+  m_maxAmmo: 150
   m_crosshair: {fileID: 0}
   m_magazineSize: 100
   m_totalCapacity: 100

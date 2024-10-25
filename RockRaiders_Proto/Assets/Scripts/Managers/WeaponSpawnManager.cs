@@ -3,12 +3,8 @@ using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace Assets.Scripts.Managers
 {

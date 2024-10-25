@@ -2,6 +2,7 @@ using Assets.Scripts;
 using Assets.Scripts.Actor;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Input;
+using Assets.Scripts.Services;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,10 +12,11 @@ internal struct ActorNetData : INetworkSerializable
     public Vector3 Position;
     public Quaternion Rotation;
     public NetPlayerInput Controller;
+    public NetActorInventory Inventory;
     public Vector3 CrosshairPosition;
     public int SelectedWeapon;
     public int Hitpoints;
-    public string PlayerName;
+
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) 
         where T : IReaderWriter
@@ -22,8 +24,9 @@ internal struct ActorNetData : INetworkSerializable
         serializer.SerializeValue(ref this.IsReady);
         serializer.SerializeValue(ref this.Position);
         serializer.SerializeValue(ref this.Rotation);
-        serializer.SerializeValue(ref this.CrosshairPosition);
         serializer.SerializeValue(ref this.Controller);
+        serializer.SerializeValue(ref this.Inventory);
+        serializer.SerializeValue(ref this.CrosshairPosition);
         serializer.SerializeValue(ref this.SelectedWeapon);
         serializer.SerializeValue(ref this.Hitpoints);
     }
@@ -57,6 +60,7 @@ public class ActorNetwork : NetworkBehaviour
 
     [SerializeField]
     private bool m_serverAuth;
+    private ActorNetData m_lastState;
 
     public ActorSpawnManager ActorSpawnManager
     {
@@ -79,6 +83,11 @@ public class ActorNetwork : NetworkBehaviour
         set
         {
             m_playerName = value;
+
+            if (!this.IsServer)
+            {
+                this.UpdatePlayerNameServerRpc(value);
+            }
         }
     }
 
@@ -117,18 +126,17 @@ public class ActorNetwork : NetworkBehaviour
 
             if (state.IsReady)
             {
-                m_playerName = state.PlayerName;
-
                 this.transform.position = state.Position;
                 this.transform.rotation = state.Rotation;
 
-                state.Controller.LookX = 0;                     //TODO : This is a hack. Send ActorCamera position instead....
-                state.Controller.LookY = 0;
+
                 m_crosshair.UpdateAimpointFromCamera = false;
                 m_crosshair.AimPoint = state.CrosshairPosition;
 
                 m_health.Hitpoints.SetHitPoints(state.Hitpoints);
 
+                state.Controller.LookX = 0;                     //TODO : This is a hack. Send ActorCamera position instead....
+                state.Controller.LookY = 0;
                 m_controller.SetStateFromNetPlayerInput(state.Controller);
                 m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
                 m_actorController.State.PlayerName = m_playerName;
@@ -136,19 +144,24 @@ public class ActorNetwork : NetworkBehaviour
         }
     }
 
-    private void SendState()
+    private ActorNetData GetState()
     {
-        var state = new ActorNetData
+        return new ActorNetData
         {
             IsReady = true,
-            PlayerName = m_playerName,
             Position = this.transform.position,
             Rotation = this.transform.rotation,
             Controller = m_controller.GetNetPlayerInput(),
             CrosshairPosition = m_crosshair.AimPoint,
-            SelectedWeapon = (int)m_actorController.GetComponent<ActorState>().SelectedWeapon,
+            SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
             Hitpoints = m_health.Hitpoints.Current,
         };
+    }
+
+    private void SendState()
+    {
+        var state = this.GetState();
+        m_lastState = state;
 
         if (this.IsServer || !m_serverAuth)
         {
@@ -187,6 +200,12 @@ public class ActorNetwork : NetworkBehaviour
     }
 
     [ServerRpc]
+    private void UpdatePlayerNameServerRpc(string name)
+    {
+        m_playerName = name;
+    }
+
+    [ServerRpc]
     private void SetParentServerRpc(SetParentRpcData data)
     {
         if (!data.HasChildId)
@@ -207,9 +226,73 @@ public class ActorNetwork : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void TransmitServerRpc(ActorNetData state)
+    private void TransmitServerRpc(ActorNetData clientState)
     {
-        m_playerState.Value = state;
+        NotificationService.Instance.Info("");
+
+        var serverState = this.GetState();
+
+        var rb = this.GetComponent<Rigidbody>();
+
+        var allowance = 1.0f;
+        var fDiff = (clientState.Position - serverState.Position).magnitude;
+
+        if (fDiff <= rb.velocity.magnitude + allowance)
+        {
+            serverState.Position = clientState.Position;
+        }
+        else
+        {
+            
+            NotificationService.Instance.Info($"Change in position ({fDiff}) > current velocity ({rb.velocity.magnitude}). Correcting.");
+            clientState.Position = serverState.Position;
+        }
+
+        serverState.Rotation = clientState.Rotation;
+        serverState.CrosshairPosition = clientState.CrosshairPosition;
+        serverState.Controller = clientState.Controller;
+        serverState.SelectedWeapon = clientState.SelectedWeapon;
+
+        NotificationService.Instance.Info($"State HP : {m_lastState.Hitpoints}->{serverState.Hitpoints}");
+
+        m_playerState.Value = serverState;
+
+        this.TransmitCorrectedStateClientRpc(serverState);
+    }
+
+    [ClientRpc]
+    private void TransmitCorrectedStateClientRpc(ActorNetData state)
+    {
+        if (this.IsServer)
+        {
+            return;
+        }
+
+        NotificationService.Instance.Info("");
+
+        if (m_lastState.Position != state.Position)
+        {
+            this.transform.position = state.Position;
+        }
+
+        if (m_lastState.Hitpoints != state.Hitpoints)
+        {
+            NotificationService.Instance.Info($"Correcting HP : {m_lastState.Hitpoints}->{state.Hitpoints}");
+            m_health.Hitpoints.Current = state.Hitpoints;
+        }
+
+        var hasMainWeapon = m_actorController.State.Inventory.HasMainWeapon();
+        var hasSideArm = m_actorController.State.Inventory.HasSideArm();
+
+        if (hasMainWeapon && state.Inventory.MainSlot == WeaponType.None)
+        {
+            m_actorController.State.Inventory.ClearMainWeapon();
+        }
+
+        if (hasSideArm && state.Inventory.SideArm == WeaponType.None)
+        {
+            m_actorController.State.Inventory.ClearSideArm();
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -235,10 +318,12 @@ public class ActorNetwork : NetworkBehaviour
 
         if (this.IsOwner)
         {
+            NotificationService.Instance.Info("Preparing local player actor ");
             m_actorManager.PrepareLocalPlayerActor(this.gameObject);
         }
         else
         {
+            NotificationService.Instance.Info("Preparing remote player actor");
             m_actorManager.PrepareRemotePlayerActor(this.gameObject);
         }
 

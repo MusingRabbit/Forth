@@ -40,6 +40,8 @@ namespace Assets.Scripts.Actor
             {
                 this.SetActorHealthState(ActorHealthState.Dead);
             }
+
+            m_state = this.Hitpoints.Current > 0 ? ActorHealthState.Live : ActorHealthState.Dying;
         }
 
         public override void Reset()

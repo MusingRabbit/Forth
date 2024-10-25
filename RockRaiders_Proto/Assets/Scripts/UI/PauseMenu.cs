@@ -1,8 +1,5 @@
 using Assets.Scripts.UI;
 using Assets.Scripts.UI.Models;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class PauseMenu : GameMenu
 {

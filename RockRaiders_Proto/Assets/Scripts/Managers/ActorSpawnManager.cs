@@ -122,8 +122,6 @@ namespace Assets.Scripts.Factory
             // Spawn the player object on all clients
             playerNetworkObject.SpawnAsPlayerObject(clientId);
 
-            m_gameManager.RegisterPlayer(clientId, player);
-
             m_clients[clientId] = playerNetworkObject;
         }
 
@@ -217,12 +215,19 @@ namespace Assets.Scripts.Factory
             this.RegisterActorOnInputManager(actor);
             this.CreateActorCamera(actor, true);
             this.SetupUIOverlay(actor);
+
+            var netObj = actor.GetComponent<ActorNetwork>();
+            m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
             this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
+
+
+            var netObj = actor.GetComponent<ActorNetwork>();
+            m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
 
         private void GameManager_OnRespawnTriggered(object sender, EventArgs e)

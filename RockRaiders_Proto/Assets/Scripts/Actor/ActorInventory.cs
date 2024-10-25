@@ -1,7 +1,22 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Pickups.Weapons;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
+    public struct NetActorInventory : INetworkSerializable
+    {
+        public WeaponType MainSlot;
+        public WeaponType SideArm;
+        public WeaponType Pack;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref this.MainSlot);
+            serializer.SerializeValue(ref this.SideArm);
+        }
+    }
+
     public class ActorInventory : RRMonoBehaviour
     {
         [SerializeField]
@@ -95,12 +110,35 @@ namespace Assets.Scripts
                 m_mainWeapon = mainWeapon;
                 this.ConfigureRigidBodyOnPickup(mainWeapon);
             }
+
+        }
+
+        public NetActorInventory GetNetActorInventory()
+        {
+            return new NetActorInventory { MainSlot = GetWeaponType(SelectedWeapon.Main), SideArm = GetWeaponType(SelectedWeapon.Sidearm) };
         }
 
         private void ConfigureRigidBodyOnPickup(GameObject weapon)
         {
             weapon.GetComponent<Rigidbody>().isKinematic = true;
             weapon.GetComponent<Rigidbody>().detectCollisions = false;
+        }
+
+        private WeaponType GetWeaponType(SelectedWeapon selectedWeapon)
+        {
+            switch (selectedWeapon)
+            {
+                case SelectedWeapon.None:
+                    return WeaponType.None;
+                case SelectedWeapon.Main:
+                    return this.GetMainWeapon().GetComponent<Weapon>().WeaponType;
+                case SelectedWeapon.Sidearm:
+                    return this.GetSideArm().GetComponent<Weapon>().WeaponType;
+                case SelectedWeapon.Pack:
+                    break;
+            }
+
+            return WeaponType.None;
         }
 
         private void ConfigureRigidBodyOnDrop(GameObject weapon)

@@ -1,8 +1,6 @@
 using Assets.Scripts.Input;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using Input = UnityEngine.Input;
 
 namespace Assets.Scripts.Managers
 {

@@ -44,7 +44,8 @@
 
     public enum WeaponType
     {
-        Pistol=0,
+        None = 0,
+        Pistol,
         AssaultRifle,
         LaserPistol,
         LaserRifle,

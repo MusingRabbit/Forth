@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,9 +23,10 @@ namespace Assets.Scripts.Managers
         public event EventHandler<EventArgs> OnRespawnTriggered;
 
         private bool m_playerPaused;
-        private bool m_playerAwaitingRespawn;
+        private bool m_localPlayerAwaitingRespawn;
 
         private Dictionary<ulong, GameObject> m_players;
+        private GameObject m_localPlayer;
 
         public bool PlayerPaused
         {
@@ -36,11 +36,11 @@ namespace Assets.Scripts.Managers
             }
         }
 
-        public bool PlayerAwaitingRespawn
+        public bool LocalPlayerAwaitingRespawn
         {
             get
             {
-                return m_playerAwaitingRespawn;
+                return m_localPlayerAwaitingRespawn;
             }
         }
 
@@ -120,12 +120,12 @@ namespace Assets.Scripts.Managers
                     m_inputManager.Controller.SetActionState(ControllerActions.Pause, ActionState.InActive);
                 }
 
-                if (this.PlayerAwaitingRespawn)
+                if (this.LocalPlayerAwaitingRespawn)
                 {
                     if (m_inputManager.Controller.GetActionState(Input.ControllerActions.Trigger) == ActionState.Active)
                     {
                         this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
-                        m_playerAwaitingRespawn = false;
+                        m_localPlayerAwaitingRespawn = false;
                     }
                 }
             }
@@ -264,9 +264,11 @@ namespace Assets.Scripts.Managers
             var actorNetwork = playerActor.GetComponent<ActorNetwork>();
             var playerState = playerActor.GetComponent<ActorState>();
 
-            if (actorNetwork.IsOwner)
+            if (actorNetwork.IsLocalPlayer)
             {
                 actorNetwork.PlayerName = this.Settings.GameSettings.PlayerName;
+                playerState.PlayerName = actorNetwork.PlayerName;
+                m_localPlayer = playerActor;
             }
 
             playerState.OnStateChanged += this.PlayerState_OnStateChanged;
@@ -284,9 +286,9 @@ namespace Assets.Scripts.Managers
                 this.HandleActorDeath(e.Actor);
             }
 
-            if (e.State.IsDead)
+            if (e.State.IsDead && e.Actor == m_localPlayer)
             {
-                m_playerAwaitingRespawn = true;
+                m_localPlayerAwaitingRespawn = true;
             }
         }
 

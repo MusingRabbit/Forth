@@ -62,7 +62,7 @@ namespace Assets.Scripts.Pickups.Weapons
                 if (canFire)
                 {
                     m_lastShotTime = Time.time;
-                    m_pwNet.SpawnProjectile(
+                    m_pwNet.SpawnProjectile(this,
                         m_muzzle.transform.position,
                         rotation,
                         velOffset,

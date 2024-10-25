@@ -28,11 +28,12 @@ namespace Assets.Scripts.Pickups.Weapons
             m_weapon = this.gameObject.GetComponent<Weapon>();
         }
 
-        public void SpawnProjectile(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
+        public void SpawnProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             if (this.IsOwner)
             {
-                this.SpawnProjectileServerRpc(position, rotation, velocityOffset, muzzleVelocity);
+                var wpnnetObjId = weapon.GetComponent<NetworkObject>().NetworkObjectId;
+                this.SpawnProjectileServerRpc(wpnnetObjId, position, rotation, velocityOffset, muzzleVelocity);
             }
         }
 
@@ -66,14 +67,14 @@ namespace Assets.Scripts.Pickups.Weapons
             networkObject.Despawn(true);
         }
 
-        private GameObject CreateProjectile(Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
+        private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
         {
             var instance = Instantiate(m_projectilePrefab);
 
             var rigidBody = instance.GetComponent<Rigidbody>();
             var projectile = instance.GetComponent<Projectile>();
 
-            projectile.Weapon = m_weapon;
+            projectile.Weapon = weapon;
             projectile.MuzzleVelocity = muzzleVelocity;
             instance.transform.position = position;
             instance.transform.rotation = rotation;
@@ -86,24 +87,26 @@ namespace Assets.Scripts.Pickups.Weapons
 
 
         [ServerRpc]
-        private void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
+        private void SpawnProjectileServerRpc(ulong wpnNetObjId, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
-            var projectile = this.CreateProjectile(position, rotation, velocityOffset, muzzleVelocity);
+            var wpnObj = this.GetNetworkObject(wpnNetObjId);
+            var weapon = wpnObj.gameObject.GetComponent<Weapon>();
+            var projectile = this.CreateProjectile(weapon, position, rotation, velocityOffset, muzzleVelocity);
             var netObj = projectile.GetComponent<NetworkObject>();
             netObj.Spawn(true);
 
             //SpawnProjectileClientRpc(position, rotation, currVelocity, muzzleVelocity);
         }
 
-        [ClientRpc]
-        private void SpawnProjectileClientRpc(Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
-        {
-            if (this.IsOwner)
-            {
-                return;
-            }
+        //[ClientRpc]
+        //private void SpawnProjectileClientRpc(Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
+        //{
+        //    if (this.IsOwner)
+        //    {
+        //        return;
+        //    }
 
-            this.CreateProjectile(position, rotation, currVelocity, muzzleVelocity);
-        }
+        //    this.CreateProjectile(position, rotation, currVelocity, muzzleVelocity);
+        //}
     }
 }

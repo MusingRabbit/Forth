@@ -62,6 +62,8 @@ namespace Assets.Scripts.UI
             }
 
             NotificationService.Instance.OnPlayerKilled += this.NotificationService_OnPlayerKilled;
+
+            m_txtNotificationText.text = string.Empty;
         }
 
 
@@ -78,7 +80,7 @@ namespace Assets.Scripts.UI
                 m_hud.SetActive(false);
                 m_pauseMenu.SetActive(true);
             }
-            else if (m_gameManager.PlayerAwaitingRespawn)
+            else if (m_gameManager.LocalPlayerAwaitingRespawn)
             {
                 m_ded.SetActive(true);
                 m_hud.SetActive(false);
@@ -125,6 +127,11 @@ namespace Assets.Scripts.UI
 
         private void UpdateAmmoStatus()
         {
+            if (m_actorState == null)
+            {
+                return;
+            }
+
             var weaponObj = m_actorState.Inventory.GetSelectedWeapon();
             var ammoCount = -1;
             var maxAmmo = 0;

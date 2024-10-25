@@ -66,7 +66,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         public virtual void Start()
         {
             m_rigidBody = GetComponent<Rigidbody>();
-            m_rigidBody.velocity += transform.forward * m_muzzleVelcity;
+            m_rigidBody.AddForce(transform.forward * m_muzzleVelcity, ForceMode.Impulse);
             m_rigidBody.mass = m_mass;
             m_startTime = Time.time;
             m_lifeSpan = TimeSpan.FromSeconds(5);

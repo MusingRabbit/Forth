@@ -1,13 +1,8 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Assets.Scripts.Services
@@ -159,6 +154,7 @@ namespace Assets.Scripts.Services
             var state = playerActor.GetComponent<ActorState>();
             var rhsState = state.KilledBy?.GetComponent<ActorState>();
             var killedBy = rhsState?.PlayerName ?? "Unknown";
+            var playerName = state?.PlayerName ?? "Unknown";
 
             var messageData = new PlayerKilledData
             {
@@ -166,7 +162,7 @@ namespace Assets.Scripts.Services
                 Killer = state.KilledBy
             };
 
-            this.Notify(MessageType.PlayerKilled,$"{state.PlayerName} killed by {killedBy}", messageData);
+            this.Notify(MessageType.PlayerKilled, $"{playerName} killed by {killedBy}", messageData);
         }
     }
 }

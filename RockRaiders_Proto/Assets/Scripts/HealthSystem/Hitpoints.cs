@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace Assets.Scripts.HealthSystem
 {
@@ -25,6 +24,10 @@ namespace Assets.Scripts.HealthSystem
             get
             {
                 return m_currentHp;
+            }
+            set
+            {
+                m_currentHp = value;
             }
         }
 

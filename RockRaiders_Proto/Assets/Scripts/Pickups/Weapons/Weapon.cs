@@ -34,6 +34,9 @@ namespace Assets.Scripts.Pickups.Weapons
         private WeaponSlot m_slot;
 
         [SerializeField]
+        private WeaponType m_type;
+
+        [SerializeField]
         private int m_maxAmmo;
 
         private int m_ammoCount;
@@ -120,6 +123,14 @@ namespace Assets.Scripts.Pickups.Weapons
             protected set
             {
                 m_slot = value;
+            }
+        }
+
+        public WeaponType WeaponType
+        {
+            get
+            {
+                return m_type;
             }
         }
 

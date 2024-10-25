@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Managers;
-using Assets.Scripts.UI.Models;
+﻿using Assets.Scripts.UI.Models;
 using Assets.Scripts.UI.Validators;
 using TMPro;
 using UnityEngine;

@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Pickups.Weapons;
-using Assets.Scripts.Util;
+﻿using Assets.Scripts.Util;
 using UnityEngine;
 
 namespace Assets.Scripts
