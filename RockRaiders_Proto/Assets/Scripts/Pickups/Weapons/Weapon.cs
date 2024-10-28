@@ -30,8 +30,6 @@ namespace Assets.Scripts.Pickups.Weapons
         [SerializeAs("Name")]
         private string m_name;
 
-        //private Timer m_dropTimer;
-
         [SerializeField]
         [SerializeAs("WeaponSlot")]
         private WeaponSlot m_slot;
@@ -50,6 +48,8 @@ namespace Assets.Scripts.Pickups.Weapons
         private TriggerState m_triggerState;
 
         private GameObject m_owner;
+
+        private Timer m_dropTimer;
 
         private Rigidbody m_rigidBody;
         private Rigidbody m_parentRigidBody;
@@ -173,8 +173,10 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public Weapon()
         {
-            //m_dropTimer = new Timer(TimeSpan.FromSeconds(3));
-            //m_dropTimer.AutoReset = false;
+            m_dropTimer = new Timer(TimeSpan.FromSeconds(3));
+            m_dropTimer.AutoReset = false;
+            m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
+
             m_slot = WeaponSlot.Main;
             m_triggerState = TriggerState.Released;
             m_name = "Weapon";
@@ -192,6 +194,8 @@ namespace Assets.Scripts.Pickups.Weapons
             if (m_rigidBody == null)
             {
                 m_rigidBody = this.GetComponent<Rigidbody>();
+                m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
+                m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
             }
 
             switch (m_triggerState)
@@ -205,15 +209,14 @@ namespace Assets.Scripts.Pickups.Weapons
 
             m_triggerState = TriggerState.Released;
 
-            //m_dropTimer.Tick();
+            m_dropTimer.Tick();
 
-            //if (m_dropTimer.Elapsed)
-            //{
-            //    m_dropTimer.Stop();
+            if (m_dropTimer.Elapsed)
+            {
+                m_dropTimer.Stop();
 
-            //    m_rigidBody.isKinematic = false;
-            //    m_rigidBody.detectCollisions = true;
-            //}
+                m_rigidBody.detectCollisions = true;
+            }
         }
 
         public virtual void Fire()
@@ -248,12 +251,23 @@ namespace Assets.Scripts.Pickups.Weapons
             m_ammoCount = m_maxAmmo;
         }
 
+        public void SetPickedUp()
+        {
+            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
+        }
+
+        private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
+        {
+            m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
+        }
+
         public void SetDropped()
         {
-            //m_rigidBody.isKinematic = false;
-            //m_rigidBody.detectCollisions = false;
-            //m_dropTimer.ResetTimer();
-            //m_dropTimer.Start();
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
+            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
+            m_dropTimer.ResetTimer();
+            m_dropTimer.Start();
         }
     }
 }

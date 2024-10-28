@@ -274,17 +274,11 @@ public class ActorController : RRMonoBehaviour
 
     private void DropSelectedWeapon()
     {
+        
         var weaponObj = m_state.GetSelectedWeapon();
 
         if (weaponObj != null)
         {
-            var weapon = weaponObj.GetComponent<Weapon>();
-            var rb = weaponObj.GetComponent<Rigidbody>();
-            rb.isKinematic = false;
-            rb.detectCollisions = false;
-            rb.AddForce(weaponObj.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
-            rb.angularVelocity = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
-
             switch (m_state.SelectedWeapon)
             {
                 case SelectedWeapon.None:
@@ -305,17 +299,23 @@ public class ActorController : RRMonoBehaviour
             m_dropTimer.Start();
             m_canPickup = false;
 
+            var weapon = weaponObj.GetComponent<Weapon>();
+            var rb = weaponObj.GetComponent<Rigidbody>();
+            
+            rb.AddForce(weaponObj.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
+            rb.angularVelocity = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
             weapon.Owner = null;
             weapon.Crosshair = null;
             weapon.OnShotFired -= this.Weapon_OnShotFired;
+            weapon.SetDropped();
 
-            var wpnRb = weapon.GetComponent<Rigidbody>();
-            wpnRb.detectCollisions = true;
+            NotificationService.Instance.Info(weaponObj.ToString());
         }
     }
 
     private void PickupWeapon(GameObject weaponObj)
     {
+        NotificationService.Instance.Info(weaponObj.ToString());
         var weapon = weaponObj.GetComponent<Weapon>();
 
         switch (weapon.WeaponSlot)
@@ -344,6 +344,7 @@ public class ActorController : RRMonoBehaviour
         weapon.Crosshair = m_crosshair;
         weapon.Owner = this.gameObject;
         weapon.OnShotFired += this.Weapon_OnShotFired;
+        weapon.SetPickedUp();
     }
 
     private void Weapon_OnShotFired(object sender, OnShotFiredEventArgs e)

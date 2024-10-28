@@ -135,7 +135,6 @@ namespace Assets.Scripts.Pickups.Weapons
             projectile.MuzzleVelocity = muzzleVelocity;
             instance.transform.position = position;
             instance.transform.rotation = rotation;
-            rigidBody.isKinematic = false;
             rigidBody.velocity += currVelocity;
             instance.SetActive(true);
 

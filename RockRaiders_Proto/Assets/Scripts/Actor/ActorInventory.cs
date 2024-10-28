@@ -16,6 +16,8 @@ namespace Assets.Scripts
         public bool Equals(NetActorInventory other)
         {
             return 
+                this.MainWeaponNetworkObjectId == other.MainWeaponNetworkObjectId &&
+                this.SidearmNetworkObjectId == other.SidearmNetworkObjectId &&
                 this.MainWeaponType == other.MainWeaponType && 
                 this.SideArmType == other.SideArmType && 
                 this.Pack == other.Pack;
@@ -152,40 +154,38 @@ namespace Assets.Scripts
 
         public void SetInventoryFromActorInventoryState(ActorInventoryState state)
         {
-            var hasMainWeapon = this.HasMainWeapon();
-            var hasSideArm = this.HasSideArm();
-
-            if (hasMainWeapon)
+            if (this.HasMainWeapon())
             {
                 if (state.MainWeaponType != this.GetMainWeaponType())
                 {
                     this.ClearMainWeapon();
                 }
             }
+            else if (state.MainWeapon != null)
+            {
+                this.SetMainWeapon(state.MainWeapon.gameObject);
+            }
 
-            if (hasSideArm)
+            if (this.HasSideArm())
             {
                 if (state.SideArmType != this.GetSideArmType())
                 {
                     this.ClearSideArm();
                 }
             }
-
-
-            if (state.MainWeapon != null)
-            {
-                this.SetMainWeapon(state.MainWeapon.gameObject);
-            }
-
-            if (state.SideArm != null)
+            else if (state.SideArm != null)
             {
                 this.SetMainWeapon(state.SideArm.gameObject);
             }
+
+
+
+
         }
 
         private void ConfigureRigidBodyOnPickup(GameObject weapon)
         {
-            weapon.GetComponent<Rigidbody>().isKinematic = true;
+            weapon.GetComponent<Weapon>().SetPickedUp();
             weapon.GetComponent<Rigidbody>().detectCollisions = false;
         }
 
@@ -218,6 +218,7 @@ namespace Assets.Scripts
 
         private void ConfigureRigidBodyOnDrop(GameObject weapon)
         {
+            weapon.GetComponent<Weapon>().SetDropped();
             var rb = weapon.GetComponent<Rigidbody>();
             rb.detectCollisions = true;
         }

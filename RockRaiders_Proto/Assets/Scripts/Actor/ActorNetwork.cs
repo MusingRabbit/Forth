@@ -111,7 +111,8 @@ public class ActorNetwork : NetworkBehaviour
 
     public ActorNetwork()
     {
-        m_updateStateTimer = new Timer(TimeSpan.FromSeconds(0.25f));
+        m_updateStateTimer = new Timer(TimeSpan.FromSeconds(0.125f));
+        m_updateStateTimer.AutoReset = false;
     }
 
     private void Awake()
@@ -135,10 +136,14 @@ public class ActorNetwork : NetworkBehaviour
         {
             m_controller = this.GetComponent<PlayerInput>();
         }
+
+        m_updateStateTimer.Start();
     }
 
     private void Update()
     {
+        m_updateStateTimer.Tick();
+
         if (this.IsOwner)
         {
             this.SendState();
@@ -147,8 +152,6 @@ public class ActorNetwork : NetworkBehaviour
         {
             this.UpdateActor();
         }
-
-        m_updateStateTimer.Tick();
     }
 
     private void UpdateActorTransform()
@@ -172,7 +175,9 @@ public class ActorNetwork : NetworkBehaviour
     private void UpdateActorState()
     {
         var state = m_actorState.Value;
-        m_health.Hitpoints.SetHitPoints(state.Hitpoints);
+
+        m_health.Hitpoints.SetHitPoints(state.Hitpoints); 
+        m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
         m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
     }
 
@@ -185,12 +190,15 @@ public class ActorNetwork : NetworkBehaviour
         if (m_actorState.Value.IsReady)
         {
             this.UpdateActorTransform();
+            this.UpdateActorState();
             this.UpdateActorControl();
+            
 
-            if (m_updateStateTimer.Elapsed)
-            {
-                this.UpdateActorState();
-            }
+            //if (m_updateStateTimer.Elapsed)
+            //{
+            //    m_updateStateTimer.ResetTimer();
+            //    this.UpdateActorState();
+            //}
         }
     }
 

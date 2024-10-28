@@ -287,6 +287,11 @@ namespace Assets.Scripts.Actor
 
         public void SelectWeapon(SelectedWeapon weapon)
         {
+            if (this.SelectedWeapon == weapon)
+            {
+                return;
+            }
+
             switch (weapon)
             {
                 case SelectedWeapon.Main:
