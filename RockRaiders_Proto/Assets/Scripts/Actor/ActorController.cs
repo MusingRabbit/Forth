@@ -8,6 +8,7 @@ using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ActorController : RRMonoBehaviour
 {
@@ -60,6 +61,7 @@ public class ActorController : RRMonoBehaviour
         m_dropTimer = new Timer();
         m_dropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
         m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
+        m_dropTimer.AutoReset = false;
         m_canPickup = true;
     }
 
@@ -279,8 +281,9 @@ public class ActorController : RRMonoBehaviour
             var weapon = weaponObj.GetComponent<Weapon>();
             var rb = weaponObj.GetComponent<Rigidbody>();
             rb.isKinematic = false;
-            rb.detectCollisions = true;
-            rb.AddForce(weaponObj.transform.right.normalized * m_dropForce, ForceMode.Impulse);
+            rb.detectCollisions = false;
+            rb.AddForce(weaponObj.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
+            rb.angularVelocity = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
 
             switch (m_state.SelectedWeapon)
             {
@@ -298,12 +301,16 @@ public class ActorController : RRMonoBehaviour
 
             m_state.SelectWeapon(SelectedWeapon.None);
 
+            m_dropTimer.ResetTimer();
             m_dropTimer.Start();
             m_canPickup = false;
 
             weapon.Owner = null;
             weapon.Crosshair = null;
             weapon.OnShotFired -= this.Weapon_OnShotFired;
+
+            var wpnRb = weapon.GetComponent<Rigidbody>();
+            wpnRb.detectCollisions = true;
         }
     }
 
@@ -331,8 +338,9 @@ public class ActorController : RRMonoBehaviour
                 break;
         }
 
-        weaponObj.GetComponent<Rigidbody>().isKinematic = true;
-        weaponObj.GetComponent<Rigidbody>().detectCollisions = false;
+        var wpnRb = weaponObj.GetComponent<Rigidbody>();
+        wpnRb.detectCollisions = false;
+        wpnRb.angularVelocity = Vector3.zero;
         weapon.Crosshair = m_crosshair;
         weapon.Owner = this.gameObject;
         weapon.OnShotFired += this.Weapon_OnShotFired;
@@ -444,25 +452,12 @@ public class ActorController : RRMonoBehaviour
                 {
                     m_health.RegisterProjectileHit(gameObj, 1.0f);
                 }
-
-                var attacker = projectile.Weapon.Owner;
-
-                if (attacker == null)
-                {
-                    // Strange
-                    NotificationService.Instance.Warning("NULL Attacker?!");
-                }
-                else
-                {
-                    var isDying = m_health.State == ActorHealthState.Dying;
-
-                    if (isDying)
-                    {
-                        m_state.KilledBy = attacker;
-                    }
-                }
-
             }
         }
+    }
+
+    public float GetCurrentMoveSpeed()
+    {
+        return m_state.IsFloating ? m_floating.MoveSpeed : m_grounded.MoveSpeed;
     }
 }

@@ -3,16 +3,27 @@ using UnityEngine;
 
 namespace Assets.Scripts.HealthSystem
 {
-    public class Health : RRMonoBehaviour
+    public class Health : RRMonoBehaviour, IHealth
     {
         private Hitpoints m_hp;
         private Rigidbody m_rigidBody;
+        protected Damage m_lastDamage;
+
+        private Damage LastDamagedBy => m_lastDamage;
 
         public Hitpoints Hitpoints
         {
             get
             {
                 return m_hp;
+            }
+        }
+
+        public Damage LastDamage
+        {
+            get
+            {
+                return m_lastDamage;
             }
         }
 
@@ -38,6 +49,7 @@ namespace Assets.Scripts.HealthSystem
 
         public void RegisterDamage(Damage damage)
         {
+            m_lastDamage = damage;
             Register(damage.Base, damage.Multiplier);
         }
 
@@ -74,6 +86,7 @@ namespace Assets.Scripts.HealthSystem
                 throw new InvalidOperationException("GameObject has no rigidbody.");
             }
 
+            m_lastDamage = rhsDamage;
             var rhsObj = rhsDamage.gameObject;
             var damage = rhsDamage.Base;
 

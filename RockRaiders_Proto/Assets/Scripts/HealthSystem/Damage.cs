@@ -16,6 +16,10 @@ namespace Assets.Scripts.HealthSystem
             {
                 return m_baseDamage;
             }
+            set
+            {
+                m_baseDamage = value;
+            }
         }
 
         public float Multiplier

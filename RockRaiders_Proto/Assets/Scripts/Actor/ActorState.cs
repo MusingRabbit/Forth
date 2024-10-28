@@ -2,6 +2,8 @@
 using System;
 using Assets.Scripts.Events;
 using Assets.Scripts.Services;
+using Unity.VisualScripting;
+using Assets.Scripts.HealthSystem;
 
 namespace Assets.Scripts.Actor
 {
@@ -11,7 +13,7 @@ namespace Assets.Scripts.Actor
         public event EventHandler<OnStateChangedEventArgs> OnStateChanged;
 
         private ActorHealth m_health;
-
+        private ActorNetwork m_network;
         private Team m_team;
         private SelectedWeapon m_selectedWeapon;
         bool m_gravBootsEnabled;
@@ -23,6 +25,9 @@ namespace Assets.Scripts.Actor
         private bool m_isDead;
         private int m_hp;
         private bool m_isDying;
+        private string m_playerName;
+
+        private GameObject m_lastHitBy;
 
         public Team Team
         {
@@ -37,6 +42,18 @@ namespace Assets.Scripts.Actor
                     m_team = value;
                     m_stateChanged = true;
                 }
+            }
+        }
+
+        public GameObject LastHitBy
+        {
+            get
+            {
+                return m_lastHitBy;
+            }
+            set
+            {
+                m_lastHitBy = value;
             }
         }
 
@@ -170,10 +187,19 @@ namespace Assets.Scripts.Actor
             }
         }
 
-        public string PlayerName { get; set; }
+        public string PlayerName
+        {
+            get
+            {
+                return m_playerName;
+            }
+            set
+            {
+                m_playerName = value;
+            }
+        }
 
         public ActorInventory Inventory { get; set; }
-        public GameObject KilledBy { get; internal set; }
 
         public ActorState()
         {
@@ -184,6 +210,7 @@ namespace Assets.Scripts.Actor
         {
             this.Inventory = this.GetComponent<ActorInventory>();
             m_health = this.GetComponent<ActorHealth>();
+            m_network = this.GetComponent<ActorNetwork>();
         }
 
         private void Start()
@@ -193,12 +220,9 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
-            
             var isDying = m_health.State == ActorHealthState.Dying;
-            var isDead = m_health.State == ActorHealthState.Dying || m_health.State == ActorHealthState.Dead;
+            var isDead = m_health.State == ActorHealthState.Dead;
             var hp = m_health?.Hitpoints.Current ?? 0;
-
-           
 
             if (isDying != m_isDying)
             {
@@ -210,6 +234,7 @@ namespace Assets.Scripts.Actor
             if (isDead != m_isDead)
             {
                 m_isDead = isDead;
+                m_isDying = false;
                 m_stateChanged = true;
                 NotificationService.Instance.Info("Is Dead");
             }
@@ -223,7 +248,8 @@ namespace Assets.Scripts.Actor
 
             if (m_stateChanged)
             {
-                this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
+                NotificationService.Instance.Info($"State Changed : {m_playerName} |Dying:{this.IsDying}|Dead:{this.IsDead}|HP:{hp}");
+                 this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
                 m_stateChanged = false;
             }
         }
@@ -238,7 +264,6 @@ namespace Assets.Scripts.Actor
             this.FeetOnGround = false;
             this.IsMovingForward = false;
             this.Team = Team.None;
-            this.KilledBy = null;
             m_isDead = false;
             m_isDying = false;
         }

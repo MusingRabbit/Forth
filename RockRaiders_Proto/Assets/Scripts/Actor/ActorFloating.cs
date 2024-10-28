@@ -66,6 +66,7 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        public float MoveSpeed { get { return m_moveForce; } }
 
         public ActorFloating()
         {

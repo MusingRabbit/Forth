@@ -1,112 +1,100 @@
-﻿using Assets.Scripts.Pickups.Weapons.Projectiles;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Pickups.Weapons.Projectiles;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace Assets.Scripts.Pickups.Weapons
 {
-
-    public class ProjectileNetwork : NetworkBehaviour
+    internal class ProjectileNetwork : NetworkBehaviour
     {
-        [SerializeField]
-        private GameObject m_projectilePrefab;
-
+        private NetworkVariable<ulong> m_wpnNetworkObjectId;
+        private NetworkVariable<ulong> m_hitNetworkObjectId;
         private Projectile m_projectile;
-        private Weapon m_weapon;
 
-        public Projectile Projectile
+        public ulong WeaponNetworkObjectId
         {
             get
             {
-                return m_projectile;
+                return m_wpnNetworkObjectId.Value;
             }
+            set
+            {
+                m_wpnNetworkObjectId.Value = value;
+            }
+        }
+
+        public ulong HitNetworkObjectId
+        {
+            get
+            {
+                return m_hitNetworkObjectId.Value;
+            }
+            set
+            {
+                m_hitNetworkObjectId.Value = value;
+            }
+        }
+
+        public ProjectileNetwork()
+        {
+            m_hitNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
+            m_hitNetworkObjectId.OnValueChanged += OnHitNetworkObjectChanged;
+
+            m_wpnNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
+            m_wpnNetworkObjectId.OnValueChanged += OnNetworkObjectValueChanged;
+        }
+
+        private void Awake()
+        {
+            m_projectile = this.GetComponent<Projectile>();
         }
 
         private void Start()
         {
-            m_projectile = m_projectilePrefab.GetComponent<Projectile>();
-            m_weapon = this.gameObject.GetComponent<Weapon>();
+            m_projectile = this.GetComponent<Projectile>();
         }
 
-        public void SpawnProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
+        private void Update()
         {
-            if (this.IsOwner)
+            
+        }
+
+        private void OnHitNetworkObjectChanged(ulong previousValue, ulong newValue)
+        {
+            if (newValue != 0)
             {
-                var wpnnetObjId = weapon.GetComponent<NetworkObject>().NetworkObjectId;
-                this.SpawnProjectileServerRpc(wpnnetObjId, position, rotation, velocityOffset, muzzleVelocity);
+                var gameObj = this.NetworkManager.SpawnManager.SpawnedObjects[newValue];
+                var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[m_wpnNetworkObjectId.Value];
+
+                var actorState = gameObj.GetComponent<ActorState>();
+
+                if (actorState != null)
+                {
+                    actorState.LastHitBy = weaponObj.gameObject;
+                }
             }
         }
 
-        public void DespawnProjectile(GameObject projectile)
+        private void OnNetworkObjectValueChanged(ulong oldVal, ulong value)
         {
-            var networkObject = projectile.GetComponent<NetworkObject>();
-
-            if (networkObject == null)
-            {
-                throw new InvalidOperationException("Projectile does not have a NetworkComponent.");
-            }
-
-            if (!this.IsOwner)
-            {
-                return;
-            }
-
-            this.DespawnProjectileServerRpc(networkObject.NetworkObjectId);
+            var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[value];
+            m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
         }
 
-        [ServerRpc]
-        private void DespawnProjectileServerRpc(ulong networkObjId)
+        public void SetWeaponNetworkObjectId(ulong weaponObjId)
         {
-            var networkObject = this.GetNetworkObject(networkObjId);
-
-            if (networkObject == null)
-            {
-                throw new NullReferenceException($"No network object could be found for id : {NetworkObjectId}");
-            }
-
-            networkObject.Despawn(true);
+            m_wpnNetworkObjectId.Value = weaponObjId;
+            var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[weaponObjId];
+            m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
         }
 
-        private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
+        public override void OnNetworkSpawn()
         {
-            var instance = Instantiate(m_projectilePrefab);
-
-            var rigidBody = instance.GetComponent<Rigidbody>();
-            var projectile = instance.GetComponent<Projectile>();
-
-            projectile.Weapon = weapon;
-            projectile.MuzzleVelocity = muzzleVelocity;
-            instance.transform.position = position;
-            instance.transform.rotation = rotation;
-            rigidBody.isKinematic = false;
-            rigidBody.velocity += currVelocity;
-            instance.SetActive(true);
-
-            return instance;
+            //
         }
-
-
-        [ServerRpc]
-        private void SpawnProjectileServerRpc(ulong wpnNetObjId, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
-        {
-            var wpnObj = this.GetNetworkObject(wpnNetObjId);
-            var weapon = wpnObj.gameObject.GetComponent<Weapon>();
-            var projectile = this.CreateProjectile(weapon, position, rotation, velocityOffset, muzzleVelocity);
-            var netObj = projectile.GetComponent<NetworkObject>();
-            netObj.Spawn(true);
-
-            //SpawnProjectileClientRpc(position, rotation, currVelocity, muzzleVelocity);
-        }
-
-        //[ClientRpc]
-        //private void SpawnProjectileClientRpc(Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
-        //{
-        //    if (this.IsOwner)
-        //    {
-        //        return;
-        //    }
-
-        //    this.CreateProjectile(position, rotation, currVelocity, muzzleVelocity);
-        //}
     }
 }

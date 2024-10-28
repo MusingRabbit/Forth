@@ -1,20 +1,40 @@
 ﻿using Assets.Scripts.Pickups.Weapons;
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public struct NetActorInventory : INetworkSerializable
+    public struct NetActorInventory : INetworkSerializable, IEquatable<NetActorInventory>
     {
-        public WeaponType MainSlot;
-        public WeaponType SideArm;
+        public WeaponType MainWeaponType;
+        public ulong MainWeaponNetworkObjectId;
+        public WeaponType SideArmType;
+        public ulong SidearmNetworkObjectId;
         public WeaponType Pack;
+
+        public bool Equals(NetActorInventory other)
+        {
+            return 
+                this.MainWeaponType == other.MainWeaponType && 
+                this.SideArmType == other.SideArmType && 
+                this.Pack == other.Pack;
+        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref this.MainSlot);
-            serializer.SerializeValue(ref this.SideArm);
+            serializer.SerializeValue(ref this.MainWeaponType);
+            serializer.SerializeValue(ref this.SideArmType);
         }
+    }
+
+    public class ActorInventoryState
+    {
+        public WeaponType MainWeaponType { get; set; }
+        public Weapon MainWeapon { get; set; }
+        public WeaponType SideArmType { get; set; }
+        public Weapon SideArm { get; set; }
+        public WeaponType PackType { get; set; }
     }
 
     public class ActorInventory : RRMonoBehaviour
@@ -115,13 +135,68 @@ namespace Assets.Scripts
 
         public NetActorInventory GetNetActorInventory()
         {
-            return new NetActorInventory { MainSlot = GetWeaponType(SelectedWeapon.Main), SideArm = GetWeaponType(SelectedWeapon.Sidearm) };
+            var weaponObj = this.GetMainWeapon();
+            var mwNetworkObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
+
+            var sidearmObj = this.GetSideArm();
+            var saNetworkObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
+
+            return new NetActorInventory
+            {
+                MainWeaponType = GetWeaponType(SelectedWeapon.Main),
+                MainWeaponNetworkObjectId = mwNetworkObjId,
+                SideArmType = GetWeaponType(SelectedWeapon.Sidearm),
+                SidearmNetworkObjectId = saNetworkObjId
+            };
+        }
+
+        public void SetInventoryFromActorInventoryState(ActorInventoryState state)
+        {
+            var hasMainWeapon = this.HasMainWeapon();
+            var hasSideArm = this.HasSideArm();
+
+            if (hasMainWeapon)
+            {
+                if (state.MainWeaponType != this.GetMainWeaponType())
+                {
+                    this.ClearMainWeapon();
+                }
+            }
+
+            if (hasSideArm)
+            {
+                if (state.SideArmType != this.GetSideArmType())
+                {
+                    this.ClearSideArm();
+                }
+            }
+
+
+            if (state.MainWeapon != null)
+            {
+                this.SetMainWeapon(state.MainWeapon.gameObject);
+            }
+
+            if (state.SideArm != null)
+            {
+                this.SetMainWeapon(state.SideArm.gameObject);
+            }
         }
 
         private void ConfigureRigidBodyOnPickup(GameObject weapon)
         {
             weapon.GetComponent<Rigidbody>().isKinematic = true;
             weapon.GetComponent<Rigidbody>().detectCollisions = false;
+        }
+
+        public WeaponType GetMainWeaponType()
+        {
+            return this.GetMainWeapon().GetComponent<Weapon>().WeaponType;
+        }
+
+        public WeaponType GetSideArmType()
+        {
+            return this.GetSideArm().GetComponent<Weapon>().WeaponType;
         }
 
         private WeaponType GetWeaponType(SelectedWeapon selectedWeapon)
@@ -143,8 +218,8 @@ namespace Assets.Scripts
 
         private void ConfigureRigidBodyOnDrop(GameObject weapon)
         {
-            weapon.GetComponent<Rigidbody>().isKinematic = false;
-            weapon.GetComponent<Rigidbody>().detectCollisions = true;
+            var rb = weapon.GetComponent<Rigidbody>();
+            rb.detectCollisions = true;
         }
 
         public GameObject GetMainWeapon()

@@ -2,18 +2,19 @@ using Assets.Scripts;
 using Assets.Scripts.Actor;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Input;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
+using Assets.Scripts.Util;
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-internal struct ActorNetData : INetworkSerializable
+public struct ActorStateData : INetworkSerializable
 {
     public bool IsReady;
-    public Vector3 Position;
-    public Quaternion Rotation;
-    public NetPlayerInput Controller;
     public NetActorInventory Inventory;
-    public Vector3 CrosshairPosition;
     public int SelectedWeapon;
     public int Hitpoints;
 
@@ -22,13 +23,43 @@ internal struct ActorNetData : INetworkSerializable
         where T : IReaderWriter
     {
         serializer.SerializeValue(ref this.IsReady);
-        serializer.SerializeValue(ref this.Position);
-        serializer.SerializeValue(ref this.Rotation);
-        serializer.SerializeValue(ref this.Controller);
         serializer.SerializeValue(ref this.Inventory);
-        serializer.SerializeValue(ref this.CrosshairPosition);
         serializer.SerializeValue(ref this.SelectedWeapon);
         serializer.SerializeValue(ref this.Hitpoints);
+    }
+}
+
+public struct ActorControlData : INetworkSerializable
+{
+    public Vector3 CrosshairPosition;
+    public NetPlayerInput Controller;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref this.Controller);
+        serializer.SerializeValue(ref this.CrosshairPosition);
+    }
+}
+
+public struct ActorTransformData : INetworkSerializable
+{
+    public Vector3 Position;
+    public Quaternion Rotation;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref this.Position);
+        serializer.SerializeValue(ref this.Rotation);
+    }
+}
+
+public struct PlayerNetData : INetworkSerializable
+{
+    public FixedString128Bytes PlayerName;
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref this.PlayerName);
     }
 }
 
@@ -49,18 +80,22 @@ internal struct SetParentRpcData : INetworkSerializable
 
 public class ActorNetwork : NetworkBehaviour
 {
-    private NetworkVariable<ActorNetData> m_playerState;
+    private NetworkVariable<PlayerNetData> m_playerData;
+    private NetworkVariable<ActorStateData> m_actorState;
+    private NetworkVariable<ActorControlData> m_actorControl;
+    private NetworkVariable<ActorTransformData> m_actorTransform;
 
-    private string m_playerName;
     private PlayerInput m_controller;
     private ActorController m_actorController;
+    private ActorGrounded m_actorGrounded;
     private ActorHealth m_health;
     private ActorSpawnManager m_actorManager;
     private ActorCrosshair m_crosshair;
 
+    private Timer m_updateStateTimer;
+
     [SerializeField]
     private bool m_serverAuth;
-    private ActorNetData m_lastState;
 
     public ActorSpawnManager ActorSpawnManager
     {
@@ -74,32 +109,19 @@ public class ActorNetwork : NetworkBehaviour
         }
     }
 
-    public string PlayerName
-    {
-        get
-        {
-            return m_playerName;
-        }
-        set
-        {
-            m_playerName = value;
-
-            if (!this.IsServer)
-            {
-                this.UpdatePlayerNameServerRpc(value);
-            }
-        }
-    }
-
     public ActorNetwork()
     {
-
+        m_updateStateTimer = new Timer(TimeSpan.FromSeconds(0.25f));
     }
 
     private void Awake()
     {
-        var permission = m_serverAuth ? NetworkVariableWritePermission.Server : NetworkVariableWritePermission.Owner;
-        m_playerState = new NetworkVariable<ActorNetData>(writePerm: permission);
+        var permission = NetworkVariableWritePermission.Server;//this.IsServer ? NetworkVariableWritePermission.Server : NetworkVariableWritePermission.Owner;
+        m_actorState = new NetworkVariable<ActorStateData>(writePerm: permission);
+        m_actorControl = new NetworkVariable<ActorControlData>(writePerm: permission);
+        m_actorTransform = new NetworkVariable<ActorTransformData>(writePerm: permission);
+
+        m_playerData = new NetworkVariable<PlayerNetData>(writePerm: NetworkVariableWritePermission.Owner);
     }
 
     private void Start()
@@ -107,6 +129,7 @@ public class ActorNetwork : NetworkBehaviour
         m_crosshair = this.GetComponent<ActorCrosshair>();
         m_actorController = this.GetComponent<ActorController>();
         m_health = this.GetComponent<ActorHealth>();
+        m_actorGrounded = this.GetComponent<ActorGrounded>();
 
         if (m_controller == null)
         {
@@ -122,54 +145,167 @@ public class ActorNetwork : NetworkBehaviour
         }
         else
         {
-            var state = m_playerState.Value;
+            this.UpdateActor();
+        }
 
-            if (state.IsReady)
+        m_updateStateTimer.Tick();
+    }
+
+    private void UpdateActorTransform()
+    {
+        var state = m_actorTransform.Value;
+
+        this.transform.position = state.Position;
+        this.transform.rotation = state.Rotation;
+    }
+
+    private void UpdateActorControl()
+    {
+        var state = m_actorControl.Value;
+        m_crosshair.UpdateAimpointFromCamera = false;
+        m_crosshair.AimPoint = state.CrosshairPosition;
+        state.Controller.LookX = 0;                     //TODO : This is a hack. Send ActorCamera position instead....
+        state.Controller.LookY = 0;
+        m_controller.SetStateFromNetPlayerInput(state.Controller);
+    }
+
+    private void UpdateActorState()
+    {
+        var state = m_actorState.Value;
+        m_health.Hitpoints.SetHitPoints(state.Hitpoints);
+        m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
+    }
+
+    private void UpdateActor()
+    {
+        var playerData = m_playerData.Value;
+
+        m_actorController.State.PlayerName = playerData.PlayerName.ToString();
+
+        if (m_actorState.Value.IsReady)
+        {
+            this.UpdateActorTransform();
+            this.UpdateActorControl();
+
+            if (m_updateStateTimer.Elapsed)
             {
-                this.transform.position = state.Position;
-                this.transform.rotation = state.Rotation;
-
-
-                m_crosshair.UpdateAimpointFromCamera = false;
-                m_crosshair.AimPoint = state.CrosshairPosition;
-
-                m_health.Hitpoints.SetHitPoints(state.Hitpoints);
-
-                state.Controller.LookX = 0;                     //TODO : This is a hack. Send ActorCamera position instead....
-                state.Controller.LookY = 0;
-                m_controller.SetStateFromNetPlayerInput(state.Controller);
-                m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
-                m_actorController.State.PlayerName = m_playerName;
+                this.UpdateActorState();
             }
         }
     }
 
-    private ActorNetData GetState()
+    public void Reset()
     {
-        return new ActorNetData
+        if (this.IsOwner)
+        {
+            var permission = NetworkVariableWritePermission.Server;//this.IsServer ? NetworkVariableWritePermission.Server : NetworkVariableWritePermission.Owner;
+            m_actorState = new NetworkVariable<ActorStateData>(writePerm: permission);
+            m_actorControl = new NetworkVariable<ActorControlData>(writePerm: permission);
+            m_actorTransform = new NetworkVariable<ActorTransformData>(writePerm: permission);
+
+            m_playerData = new NetworkVariable<PlayerNetData>(writePerm: NetworkVariableWritePermission.Owner);
+        }
+    }
+
+    private ActorStateData GetActorState()
+    {
+        return new ActorStateData
         {
             IsReady = true,
-            Position = this.transform.position,
-            Rotation = this.transform.rotation,
-            Controller = m_controller.GetNetPlayerInput(),
-            CrosshairPosition = m_crosshair.AimPoint,
             SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
             Hitpoints = m_health.Hitpoints.Current,
         };
     }
 
-    private void SendState()
+    private ActorTransformData GetActorTransform()
     {
-        var state = this.GetState();
-        m_lastState = state;
-
-        if (this.IsServer || !m_serverAuth)
+        return new ActorTransformData
         {
-            m_playerState.Value = state;
+            Position = this.transform.position,
+            Rotation = this.transform.rotation,
+        };
+    }
+
+    private ActorControlData GetActorControl()
+    {
+        return new ActorControlData
+        {
+            Controller = m_controller.GetNetPlayerInput(),
+            CrosshairPosition = m_crosshair.AimPoint,
+        };
+    }
+
+    public void SetState(ActorStateData state)
+    {
+        m_actorState.Value = state;
+    }
+
+    private void SendActorTransform()
+    {
+        var state = this.GetActorTransform();
+
+        if (this.IsServer)
+        {
+            m_actorTransform.Value = state;
         }
         else
         {
-            this.TransmitServerRpc(state);
+            this.TransmitActorTransformServerRpc(this.OwnerClientId, m_actorTransform.Value);
+        }
+    }
+
+    private void SendActorControl()
+    {
+        var state = this.GetActorControl();
+
+        if (this.IsServer)
+        {
+            m_actorControl.Value = state;
+        }
+        else
+        {
+            this.TransmitActorControlServerRpc(this.OwnerClientId, m_actorControl.Value);
+        }
+    }
+
+    private void SendActorState()
+    {
+        var state = this.GetActorState();
+
+        if (this.IsServer)
+        {
+            m_actorState.Value = state;
+        }
+        else
+        {
+            this.TransmitActorStateServerRpc(this.OwnerClientId, m_actorState.Value);
+        }
+    }
+
+
+    private void SendState()
+    {
+        var playerNetData = new PlayerNetData { PlayerName = GameManager.Instance.Settings.GameSettings.PlayerName ?? string.Empty };
+
+        var state = this.GetActorState();
+        var transform = this.GetActorTransform();
+        var control = this.GetActorControl();
+
+        if (this.IsServer) //|| !m_serverAuth)
+        {
+            m_actorState.Value = state;
+            m_actorTransform.Value = transform;
+            m_actorControl.Value = control;
+            m_playerData.Value = playerNetData;
+
+            m_actorController.State.PlayerName = playerNetData.PlayerName.ToString();
+        }
+        else
+        {
+            this.TransmitActorStateServerRpc(this.OwnerClientId, state);
+            this.TransmitActorControlServerRpc(this.OwnerClientId, control);
+            this.TransmitActorTransformServerRpc(this.OwnerClientId, transform);
+            this.TransmitPlayerNetDataServerRpc(playerNetData);
         }
     }
 
@@ -199,13 +335,9 @@ public class ActorNetwork : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void UpdatePlayerNameServerRpc(string name)
-    {
-        m_playerName = name;
-    }
 
-    [ServerRpc]
+
+    [Rpc(SendTo.Server)]
     private void SetParentServerRpc(SetParentRpcData data)
     {
         if (!data.HasChildId)
@@ -225,73 +357,112 @@ public class ActorNetwork : NetworkBehaviour
         childNetObj.transform.parent = parentNetObj.gameObject.transform;
     }
 
-    [ServerRpc]
-    private void TransmitServerRpc(ActorNetData clientState)
+    [Rpc(SendTo.Server)]
+    private void TransmitPlayerNetDataServerRpc(PlayerNetData playerNetData)
     {
-        NotificationService.Instance.Info("");
+        //NotificationService.Instance.Info("Player Name : " + playerName);
+        this.SendPlayerNetDataToClientRpc(playerNetData);
+    }
 
-        var serverState = this.GetState();
-
+    [Rpc(SendTo.Server)]
+    private void TransmitActorTransformServerRpc(ulong ownerClientId, ActorTransformData clientState)
+    {
+        var serverState = this.GetActorTransform();
         var rb = this.GetComponent<Rigidbody>();
 
-        var allowance = 1.0f;
+        var tolerance = m_actorController.GetCurrentMoveSpeed();
         var fDiff = (clientState.Position - serverState.Position).magnitude;
 
-        if (fDiff <= rb.velocity.magnitude + allowance)
+        if (fDiff <= rb.velocity.magnitude + tolerance)
         {
             serverState.Position = clientState.Position;
         }
         else
         {
-            
             NotificationService.Instance.Info($"Change in position ({fDiff}) > current velocity ({rb.velocity.magnitude}). Correcting.");
             clientState.Position = serverState.Position;
+            this.SendCorrectedActorTransformToClientRpc(serverState);
         }
 
         serverState.Rotation = clientState.Rotation;
-        serverState.CrosshairPosition = clientState.CrosshairPosition;
-        serverState.Controller = clientState.Controller;
-        serverState.SelectedWeapon = clientState.SelectedWeapon;
-
-        NotificationService.Instance.Info($"State HP : {m_lastState.Hitpoints}->{serverState.Hitpoints}");
-
-        m_playerState.Value = serverState;
-
-        this.TransmitCorrectedStateClientRpc(serverState);
+        m_actorTransform.Value = serverState;
     }
 
-    [ClientRpc]
-    private void TransmitCorrectedStateClientRpc(ActorNetData state)
+    [Rpc(SendTo.Server)]
+    private void TransmitActorControlServerRpc(ulong ownerClientId, ActorControlData clientState)
     {
-        if (this.IsServer)
+        var serverState = this.GetActorControl();
+
+        serverState.CrosshairPosition = clientState.CrosshairPosition;
+        serverState.Controller = clientState.Controller;
+
+        m_actorControl.Value = serverState;
+    }
+
+
+    [Rpc(SendTo.Server)]
+    private void TransmitActorStateServerRpc(ulong clientId, ActorStateData clientState)
+    {
+        var serverState = this.GetActorState();
+
+        bool inValid = false;
+
+        if (serverState.SelectedWeapon != clientState.SelectedWeapon)
         {
-            return;
+            serverState.SelectedWeapon = clientState.SelectedWeapon;
+            inValid = true;
         }
 
-        NotificationService.Instance.Info("");
-
-        if (m_lastState.Position != state.Position)
+        if (!serverState.Inventory.Equals(clientState.Inventory))
         {
-            this.transform.position = state.Position;
+            NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to client");
+            serverState.Inventory = clientState.Inventory;
+            inValid = true;
         }
 
-        if (m_lastState.Hitpoints != state.Hitpoints)
+        if (clientState.Hitpoints != serverState.Hitpoints)
         {
-            NotificationService.Instance.Info($"Correcting HP : {m_lastState.Hitpoints}->{state.Hitpoints}");
-            m_health.Hitpoints.Current = state.Hitpoints;
+            NotificationService.Instance.Info($"State HP : {serverState.Hitpoints}->{clientState.Hitpoints}");
+            clientState.Hitpoints = serverState.Hitpoints;
+            inValid = true;
         }
 
-        var hasMainWeapon = m_actorController.State.Inventory.HasMainWeapon();
-        var hasSideArm = m_actorController.State.Inventory.HasSideArm();
-
-        if (hasMainWeapon && state.Inventory.MainSlot == WeaponType.None)
+        if (inValid)
         {
-            m_actorController.State.Inventory.ClearMainWeapon();
+            this.SendCorrectedActorStateToClientRpc(serverState);
+        }
+        
+        m_actorState.Value = serverState;
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SendPlayerNetDataToClientRpc(PlayerNetData playerNetData)
+    {
+        if (m_actorController != null)
+        {
+            m_actorController.State.PlayerName = playerNetData.PlayerName.ToString();
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SendCorrectedActorTransformToClientRpc(ActorTransformData actorState)
+    {
+        this.transform.position = actorState.Position;
+        this.transform.rotation = actorState.Rotation;
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SendCorrectedActorStateToClientRpc(ActorStateData actorState)
+    {
+        if (m_health != null)
+        {
+            m_health.Hitpoints.SetHitPoints(actorState.Hitpoints);
         }
 
-        if (hasSideArm && state.Inventory.SideArm == WeaponType.None)
+        if (m_actorController != null)
         {
-            m_actorController.State.Inventory.ClearSideArm();
+            m_actorController.State.Inventory.SetInventoryFromActorInventoryState(actorState.Inventory.ToActorInventoryState());
+            m_actorController.State.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
         }
     }
 

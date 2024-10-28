@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.Pickups.Weapons;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -152,17 +153,43 @@ namespace Assets.Scripts.Services
         public void NotifyPlayerKilled(GameObject playerActor)
         {
             var state = playerActor.GetComponent<ActorState>();
-            var rhsState = state.KilledBy?.GetComponent<ActorState>();
-            var killedBy = rhsState?.PlayerName ?? "Unknown";
-            var playerName = state?.PlayerName ?? "Unknown";
+            var playerName = state.PlayerName ?? "Unknown";
+            string messageText = string.Empty;
 
             var messageData = new PlayerKilledData
             {
-                Killed = playerActor,
-                Killer = state.KilledBy
+                Killed = playerActor
             };
 
-            this.Notify(MessageType.PlayerKilled, $"{playerName} killed by {killedBy}", messageData);
+            if (state.LastHitBy != null)
+            {
+                var weaponObj = state.LastHitBy;
+
+                Debug.Log("Player Killed : Weapon: " + weaponObj.name);
+
+                var rhsActor = weaponObj.GetComponent<Weapon>().Owner;
+
+                Debug.Log("Player Killed : RHSActor: " + rhsActor.name);
+
+                var rhsState = rhsActor.GetComponent<ActorState>();
+
+                Debug.Log("Player Killed : RHSState: " + rhsState?.name + "|" + rhsState.PlayerName);
+
+                var killedBy = rhsState.PlayerName ?? "Unknown";
+
+                messageData.Killer = rhsActor;
+
+                messageText = $"{playerName} killed by {killedBy}";
+            }
+            else
+            {
+                messageText = $"{playerName} killed by UNKNOWN";
+            }
+
+
+            Debug.Log(messageText);
+
+            this.Notify(MessageType.PlayerKilled, messageText, messageData);
         }
     }
 }

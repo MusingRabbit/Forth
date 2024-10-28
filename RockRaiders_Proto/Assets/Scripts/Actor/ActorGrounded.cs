@@ -80,6 +80,14 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        public float MoveSpeed
+        {
+            get
+            {
+                return m_moveSpeed;
+            }
+        }
+
         public ActorGrounded()
         {
             m_colDict = new Dictionary<int, Collision>();

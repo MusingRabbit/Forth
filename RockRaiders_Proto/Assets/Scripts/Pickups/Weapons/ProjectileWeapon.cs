@@ -27,14 +27,14 @@ namespace Assets.Scripts.Pickups.Weapons
 
         private float m_lastShotTime;
         private GameObject m_muzzle;
-        private ProjectileNetwork m_pwNet;
+        private ProjectileSpawnManager m_projectileSpawner;
 
 
         // Start is called before the first frame update
         public override void Start()
         {
             m_muzzle = gameObject.FindChild("Projectile_Exit");
-            m_pwNet = gameObject.GetComponent<ProjectileNetwork>();
+            m_projectileSpawner = gameObject.GetComponent<ProjectileSpawnManager>();
             base.Start();
         }
 
@@ -62,13 +62,13 @@ namespace Assets.Scripts.Pickups.Weapons
                 if (canFire)
                 {
                     m_lastShotTime = Time.time;
-                    m_pwNet.SpawnProjectile(this,
+                    m_projectileSpawner.SpawnProjectile(this.gameObject,
                         m_muzzle.transform.position,
                         rotation,
                         velOffset,
                         m_muzzleVelocity);
 
-                    Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_pwNet.Projectile.Mass);
+                    Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
                 }
             }
         }

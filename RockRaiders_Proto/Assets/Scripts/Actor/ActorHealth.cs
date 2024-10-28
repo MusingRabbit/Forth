@@ -39,6 +39,11 @@ namespace Assets.Scripts.Actor
             if (m_state == ActorHealthState.Dying)
             {
                 this.SetActorHealthState(ActorHealthState.Dead);
+                return;
+            }
+            else if (m_state == ActorHealthState.Dead)
+            {
+                return;
             }
 
             m_state = this.Hitpoints.Current > 0 ? ActorHealthState.Live : ActorHealthState.Dying;
@@ -74,11 +79,13 @@ namespace Assets.Scripts.Actor
 
         public void RegisterHeadHit(Damage damage)
         {
+            m_lastDamage = damage;
             this.Register(damage.Base, m_headHitMultiplier);
         }
 
         public void RegisterTorsoHit(Damage damage)
         {
+            m_lastDamage = damage;
             this.Register(damage.Base, m_torsoHitMultiplier);
         }
 
@@ -96,9 +103,8 @@ namespace Assets.Scripts.Actor
         {
             var projRb = projectile.GetComponent<Rigidbody>();
             var projDmg = projectile.GetComponent<Damage>();
-
-            var damage = this.CalculateDamageRigidBodyCollision(projRb, projDmg);
-            this.Register(damage, multiplier);
+            m_lastDamage = projDmg;
+            this.Register(projDmg.Base, multiplier);
         }
     }
 }

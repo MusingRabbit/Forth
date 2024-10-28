@@ -249,13 +249,14 @@ namespace Assets.Scripts.Managers
             {
                 var playerActor = m_players[clientId];
 
+                var actorNetwork = playerActor.GetComponent<ActorNetwork>();
                 var playerState = playerActor.GetComponent<ActorState>();
 
                 playerState.OnStateChanged -= this.PlayerState_OnStateChanged;
 
                 m_players.Remove(clientId);
 
-                NotificationService.Instance.Info("Deregistered: Client Id: " + clientId + " | Name : " + playerState.PlayerName);
+                NotificationService.Instance.Info("Deregistered: Client Id: " + clientId);
             }
         }
 
@@ -266,8 +267,6 @@ namespace Assets.Scripts.Managers
 
             if (actorNetwork.IsLocalPlayer)
             {
-                actorNetwork.PlayerName = this.Settings.GameSettings.PlayerName;
-                playerState.PlayerName = actorNetwork.PlayerName;
                 m_localPlayer = playerActor;
             }
 
@@ -275,12 +274,12 @@ namespace Assets.Scripts.Managers
 
             m_players[clientId] = playerActor;
 
-            NotificationService.Instance.Info("Registered : Client Id : " + clientId + " | Name : " + playerState.PlayerName);
+            NotificationService.Instance.Info("Registered : Client Id : " + clientId );
 
         }
 
         private void PlayerState_OnStateChanged(object sender, Events.OnStateChangedEventArgs e)
-        {
+         {
             if (e.State.IsDying)
             {
                 this.HandleActorDeath(e.Actor);

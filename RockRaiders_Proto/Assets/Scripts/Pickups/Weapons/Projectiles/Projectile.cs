@@ -1,11 +1,14 @@
 using System;
+using System.Linq.Expressions;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Assets.Scripts.Pickups.Weapons.Projectiles
 {
     public class Projectile : MonoBehaviour
     {
-        private Weapon m_owner;
+        [SerializeField]
+        private Weapon m_weapon;
 
         [SerializeField]
         private TimeSpan m_lifeSpan;
@@ -16,6 +19,8 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 
         private float m_startTime;
         private float m_muzzleVelcity;
+
+        private bool m_isDespawning;
 
         public float MuzzleVelocity
         {
@@ -45,16 +50,16 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         {
             get
             {
-                return m_owner;
+                return m_weapon;
             }
             set
             {
-                m_owner = value;
+                m_weapon = value;
             }
         }
 
         private Rigidbody m_rigidBody;
-        private ProjectileNetwork m_projNetwork;
+        private ProjectileSpawnManager m_projNetwork;
 
         private void Awake()
         {
@@ -65,13 +70,13 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         // Start is called before the first frame update
         public virtual void Start()
         {
-            m_rigidBody = GetComponent<Rigidbody>();
+            m_rigidBody = this.GetComponent<Rigidbody>();
             m_rigidBody.AddForce(transform.forward * m_muzzleVelcity, ForceMode.Impulse);
             m_rigidBody.mass = m_mass;
             m_startTime = Time.time;
             m_lifeSpan = TimeSpan.FromSeconds(5);
 
-            m_projNetwork = GetComponent<ProjectileNetwork>();
+            m_projNetwork = this.GetComponent<ProjectileSpawnManager>();
         }
 
         // Update is called once per frame
@@ -88,9 +93,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 
         private void OnCollisionEnter(Collision collision)
         {
-            //Destroy(this.gameObject);
-            m_projNetwork.DespawnProjectile(gameObject);
-            //Destroy(this.gameObject);
+            if (!m_isDespawning)
+            {
+                m_projNetwork.DespawnProjectile(gameObject, collision);
+                m_isDespawning = true;
+            }
         }
     }
 }

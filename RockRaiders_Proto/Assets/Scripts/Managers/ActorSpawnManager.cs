@@ -3,6 +3,7 @@ using Assets.Scripts.Input;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +43,14 @@ namespace Assets.Scripts.Factory
 
 
         private Dictionary<ulong, NetworkObject> m_clients;
-
+       // private static Dictionary<ulong, string> playerNameDictionary;
+        
         public ActorSpawnManager()
         {
             instance = this;
             m_spawnPoints = new List<SpawnPoint>();
             m_clients = new Dictionary<ulong, NetworkObject>();
+            //playerNameDictionary = new Dictionary<ulong, string>();
         }
 
         public void Awake()
@@ -101,6 +104,30 @@ namespace Assets.Scripts.Factory
             this.DespawnPlayerOnClients(senderClientId);
         }
 
+        //[Rpc(SendTo.Server)]
+        //private void SetPlayerNameServerRpc(ulong clientId, string playerName)
+        //{
+        //    if (playerNameDictionary.ContainsKey(clientId))
+        //    {
+        //        playerNameDictionary[clientId] = playerName;
+        //    }
+
+        //    else
+        //    {
+        //        playerNameDictionary.Add(clientId, playerName);
+        //    }
+            
+        //    this.SendUpdatedPlayerNamesClientRpc(JsonConvert.SerializeObject(playerNameDictionary));
+        //}
+
+        //[Rpc(SendTo.ClientsAndHost)]
+        //private void SendUpdatedPlayerNamesClientRpc(string dictJson)
+        //{
+        //    var dict = JsonConvert.DeserializeObject<Dictionary<ulong, string>>(dictJson);
+        //    playerNameDictionary = dict;
+        //}
+
+
         private void SpawnPlayerOnClients(ulong clientId)
         {
             NotificationService.Instance.Info($"ClientId: {clientId}");
@@ -123,6 +150,7 @@ namespace Assets.Scripts.Factory
             playerNetworkObject.SpawnAsPlayerObject(clientId);
 
             m_clients[clientId] = playerNetworkObject;
+            
         }
 
         private void DespawnPlayerOnClients(ulong clientId)
@@ -217,16 +245,40 @@ namespace Assets.Scripts.Factory
             this.SetupUIOverlay(actor);
 
             var netObj = actor.GetComponent<ActorNetwork>();
+
+            //this.SetupPlayerName(netObj);
+
             m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
+
+        //private void SetupPlayerName(ActorNetwork netObj)
+        //{
+        //    var playerName = m_gameManager.Settings.GameSettings.PlayerName;
+
+        //    if (this.IsServer)
+        //    {
+        //        playerNameDictionary[netObj.OwnerClientId] = playerName;
+        //    }
+        //    else
+        //    {
+        //        this.SetPlayerNameServerRpc(netObj.OwnerClientId, playerName);
+        //    }
+
+        //    netObj.PlayerName = playerName;
+        //}
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
             this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
 
-
             var netObj = actor.GetComponent<ActorNetwork>();
+
+            //if (playerNameDictionary.ContainsKey(netObj.OwnerClientId))
+            //{
+            //    netObj.PlayerName = playerNameDictionary[netObj.OwnerClientId];
+            //}
+
             m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
 

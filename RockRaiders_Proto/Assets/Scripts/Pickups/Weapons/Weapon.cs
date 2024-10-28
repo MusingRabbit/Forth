@@ -2,6 +2,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.Util;
 using System;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -29,9 +30,14 @@ namespace Assets.Scripts.Pickups.Weapons
         [SerializeAs("Name")]
         private string m_name;
 
+        //private Timer m_dropTimer;
+
         [SerializeField]
         [SerializeAs("WeaponSlot")]
         private WeaponSlot m_slot;
+
+        [SerializeField]
+        private int m_weaponDamage;
 
         [SerializeField]
         private WeaponType m_type;
@@ -51,6 +57,8 @@ namespace Assets.Scripts.Pickups.Weapons
         [SerializeField]
         private ActorCrosshair m_crosshair;
 
+        private ulong m_networkOwnerId;
+
         public bool CanFire => m_ammoCount >= 0 || m_maxAmmo == -1;
 
         public int MaxAmmo
@@ -69,6 +77,14 @@ namespace Assets.Scripts.Pickups.Weapons
             }
         }
 
+        public int Damage
+        {
+            get
+            {
+                return m_weaponDamage;
+            }
+        }
+
         public GameObject Owner
         {
             get
@@ -79,6 +95,15 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 m_owner = value;
                 m_parentRigidBody = m_owner?.GetComponent<Rigidbody>();
+                m_networkOwnerId = m_owner?.GetComponent<NetworkObject>().NetworkObjectId ?? uint.MaxValue;
+            }
+        }
+
+        public ulong NetworkObjectId
+        {
+            get
+            {
+                return m_networkOwnerId;
             }
         }
 
@@ -148,6 +173,8 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public Weapon()
         {
+            //m_dropTimer = new Timer(TimeSpan.FromSeconds(3));
+            //m_dropTimer.AutoReset = false;
             m_slot = WeaponSlot.Main;
             m_triggerState = TriggerState.Released;
             m_name = "Weapon";
@@ -162,6 +189,11 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public virtual void Update()
         {
+            if (m_rigidBody == null)
+            {
+                m_rigidBody = this.GetComponent<Rigidbody>();
+            }
+
             switch (m_triggerState)
             {
                 case TriggerState.Released:
@@ -172,6 +204,16 @@ namespace Assets.Scripts.Pickups.Weapons
             }
 
             m_triggerState = TriggerState.Released;
+
+            //m_dropTimer.Tick();
+
+            //if (m_dropTimer.Elapsed)
+            //{
+            //    m_dropTimer.Stop();
+
+            //    m_rigidBody.isKinematic = false;
+            //    m_rigidBody.detectCollisions = true;
+            //}
         }
 
         public virtual void Fire()
@@ -204,6 +246,14 @@ namespace Assets.Scripts.Pickups.Weapons
         public void ResetAmmo()
         {
             m_ammoCount = m_maxAmmo;
+        }
+
+        public void SetDropped()
+        {
+            //m_rigidBody.isKinematic = false;
+            //m_rigidBody.detectCollisions = false;
+            //m_dropTimer.ResetTimer();
+            //m_dropTimer.Start();
         }
     }
 }

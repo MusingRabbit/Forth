@@ -184,6 +184,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Weapon
   m_slot: 1
+  m_weaponDamage: 20
+  m_type: 0
+  m_maxAmmo: 30
   m_crosshair: {fileID: 0}
   m_magazineSize: 8
   m_totalCapacity: 60
