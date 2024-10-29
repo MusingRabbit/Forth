@@ -249,9 +249,9 @@ GameObject:
   - component: {fileID: 7028054406554175109}
   - component: {fileID: 7687817217295237894}
   - component: {fileID: 6802321659798816900}
+  - component: {fileID: 4068920403755082656}
   - component: {fileID: 6007266945376615922}
   - component: {fileID: 5142310603201142521}
-  - component: {fileID: 4068920403755082656}
   - component: {fileID: 6769624834214156026}
   - component: {fileID: 5121600181889252215}
   - component: {fileID: 1726368187522168186}
@@ -343,6 +343,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_weapon: {fileID: 0}
   m_mass: 0.05
+--- !u!114 &4068920403755082656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048868486205371406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1643425809
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &6007266945376615922
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,27 +390,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_baseDamage: 1
   m_multiplier: 1
---- !u!114 &4068920403755082656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048868486205371406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1643425809
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &6769624834214156026
 MonoBehaviour:
   m_ObjectHideFlags: 0

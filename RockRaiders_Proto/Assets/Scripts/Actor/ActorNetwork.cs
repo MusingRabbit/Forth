@@ -176,7 +176,8 @@ public class ActorNetwork : NetworkBehaviour
     {
         var state = m_actorState.Value;
 
-        m_health.Hitpoints.SetHitPoints(state.Hitpoints); 
+        m_health.Hitpoints.SetHitPoints(state.Hitpoints);
+
         m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
         m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
     }
@@ -222,6 +223,7 @@ public class ActorNetwork : NetworkBehaviour
             IsReady = true,
             SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
             Hitpoints = m_health.Hitpoints.Current,
+            Inventory = m_actorController.State.Inventory.GetNetActorInventory(),
         };
     }
 
@@ -423,7 +425,7 @@ public class ActorNetwork : NetworkBehaviour
 
         if (!serverState.Inventory.Equals(clientState.Inventory))
         {
-            NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to client");
+            NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to server");
             serverState.Inventory = clientState.Inventory;
             inValid = true;
         }
@@ -439,6 +441,7 @@ public class ActorNetwork : NetworkBehaviour
         {
             this.SendCorrectedActorStateToClientRpc(serverState);
         }
+
         
         m_actorState.Value = serverState;
     }
@@ -469,7 +472,9 @@ public class ActorNetwork : NetworkBehaviour
 
         if (m_actorController != null)
         {
-            m_actorController.State.Inventory.SetInventoryFromActorInventoryState(actorState.Inventory.ToActorInventoryState());
+            var serverState = actorState.Inventory.ToActorInventoryState();
+            var currState = m_actorController.State.Inventory.GetActorInventoryState();
+            m_actorController.State.Inventory.SetInventoryFromActorInventoryState(serverState);
             m_actorController.State.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
         }
     }

@@ -57,21 +57,7 @@ namespace Assets.Scripts.Actor
             }
         }
 
-        public SelectedWeapon SelectedWeapon
-        {
-            get
-            {
-                return m_selectedWeapon;
-            }
-            set
-            {
-                if (m_selectedWeapon != value)
-                {
-                    m_selectedWeapon = value;
-                    m_stateChanged = true;
-                }
-            }
-        }
+        public SelectedWeapon SelectedWeapon => this.Inventory.SelectedWeapon;
         
         public bool GravBootsEnabled
         {
@@ -203,7 +189,7 @@ namespace Assets.Scripts.Actor
 
         public ActorState()
         {
-            this.SelectedWeapon = SelectedWeapon.None;
+
         }
 
         public override void Initialise()
@@ -227,7 +213,6 @@ namespace Assets.Scripts.Actor
             if (isDying != m_isDying)
             {
                 m_isDying = isDying;
-                NotificationService.Instance.Info("Is Dying");
                 m_stateChanged = true;
             }
 
@@ -236,14 +221,12 @@ namespace Assets.Scripts.Actor
                 m_isDead = isDead;
                 m_isDying = false;
                 m_stateChanged = true;
-                NotificationService.Instance.Info("Is Dead");
             }
 
             if (hp != m_hp)
             {
                 m_hp = hp;
                 m_stateChanged = true;
-                NotificationService.Instance.Info($"HP : {hp}");
             }
 
             if (m_stateChanged)
@@ -256,7 +239,7 @@ namespace Assets.Scripts.Actor
 
         public override void Reset()
         {
-            this.SelectedWeapon = SelectedWeapon.None;
+
             this.GravBootsEnabled = true;
             this.IsFloating = false;
             this.IsMoving = false;
@@ -287,32 +270,33 @@ namespace Assets.Scripts.Actor
 
         public void SelectWeapon(SelectedWeapon weapon)
         {
-            if (this.SelectedWeapon == weapon)
-            {
-                return;
-            }
+            this.Inventory.SelectWeapon(weapon);
+            //if (this.SelectedWeapon == weapon)
+            //{
+            //    return;
+            //}
 
-            switch (weapon)
-            {
-                case SelectedWeapon.Main:
-                    if (this.Inventory.HasMainWeapon())
-                    {
-                        this.SelectedWeapon = SelectedWeapon.Main;
-                        this.Inventory.SelectWeapon(SelectedWeapon.Main);
-                    }
-                    break;
-                case SelectedWeapon.Sidearm:
-                    if (this.Inventory.HasSideArm())
-                    {
-                        this.SelectedWeapon = SelectedWeapon.Sidearm;
-                        this.Inventory.SelectWeapon(SelectedWeapon.Sidearm);
-                    }
-                    break;
-                case SelectedWeapon.None:
-                    this.SelectedWeapon = SelectedWeapon.None;
-                    this.Inventory.SelectWeapon(SelectedWeapon.None);
-                    break;
-            }
+            //switch (weapon)
+            //{
+            //    case SelectedWeapon.Main:
+            //        if (this.Inventory.HasMainWeapon())
+            //        {
+            //            this.SelectedWeapon = SelectedWeapon.Main;
+            //            this.Inventory.SelectWeapon(SelectedWeapon.Main);
+            //        }
+            //        break;
+            //    case SelectedWeapon.Sidearm:
+            //        if (this.Inventory.HasSideArm())
+            //        {
+            //            this.SelectedWeapon = SelectedWeapon.Sidearm;
+            //            this.Inventory.SelectWeapon(SelectedWeapon.Sidearm);
+            //        }
+            //        break;
+            //    case SelectedWeapon.None:
+            //        this.SelectedWeapon = SelectedWeapon.None;
+            //        this.Inventory.SelectWeapon(SelectedWeapon.None);
+            //        break;
+            //}
         }
     }
 }

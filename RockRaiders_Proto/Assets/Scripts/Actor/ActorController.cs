@@ -20,13 +20,9 @@ public class ActorController : RRMonoBehaviour
     private ActorGroundRay m_groundRay;
     private ActorCrosshair m_crosshair;
     private ActorHealth m_health;
+    private ActorPickup m_pickup;
     private Rigidbody m_rigidBody;
-    private double m_dropTimeOut = 1.0f;
-    private float m_dropForce = 3.0f;
 
-    private Timer m_dropTimer;
-
-    private bool m_canPickup;
 
     private GameObject m_body;
     private GameObject m_head;
@@ -58,11 +54,7 @@ public class ActorController : RRMonoBehaviour
 
     public ActorController()
     {
-        m_dropTimer = new Timer();
-        m_dropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
-        m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
-        m_dropTimer.AutoReset = false;
-        m_canPickup = true;
+
     }
 
     public override void Initialise()
@@ -84,6 +76,10 @@ public class ActorController : RRMonoBehaviour
         m_animController = this.GetComponent<ActorAnimController>();
         m_crosshair = this.GetComponent<ActorCrosshair>();
         m_health = this.GetComponent<ActorHealth>();
+        m_pickup = this.GetComponent<ActorPickup>();
+
+        m_pickup.OnItemPickedUp += Pickup_OnItemPickedUp;
+        m_pickup.OnItemDropped += Pickup_OnItemDropped;
 
         m_headBoxCollider = m_head.GetComponent<BoxCollider>();
 
@@ -106,13 +102,13 @@ public class ActorController : RRMonoBehaviour
     {
         if (m_state.IsDead)
         {
-            this.DropSelectedWeapon();
+            m_pickup.DropSelectedWeapon();
             m_animController.PlayAnimationForActorState(m_state);
             m_state.IsMoving = false;
             return;
         }
 
-        m_dropTimer.Tick();
+        //m_dropTimer.Tick();
 
         m_state.Team = m_team;
 
@@ -198,7 +194,7 @@ public class ActorController : RRMonoBehaviour
                 case ControllerActions.Use:
                     break;
                 case ControllerActions.Drop:
-                    this.DropSelectedWeapon();
+                    m_pickup.DropSelectedWeapon();
                     break;
                 case ControllerActions.Throw:
                     break;
@@ -262,89 +258,6 @@ public class ActorController : RRMonoBehaviour
     private void ToggleGravBoots()
     {
         m_state.GravBootsEnabled = !m_state.GravBootsEnabled;
-    }
-
-    private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
-    {
-        m_dropTimer.Stop();
-        m_dropTimer.ResetTimer();
-
-        m_canPickup = true;
-    }
-
-    private void DropSelectedWeapon()
-    {
-        
-        var weaponObj = m_state.GetSelectedWeapon();
-
-        if (weaponObj != null)
-        {
-            switch (m_state.SelectedWeapon)
-            {
-                case SelectedWeapon.None:
-                    break;
-                case SelectedWeapon.Main:
-                    m_state.Inventory.ClearMainWeapon();
-                    break;
-                case SelectedWeapon.Sidearm:
-                    m_state.Inventory.ClearSideArm();
-                    break;
-                case SelectedWeapon.Pack:
-                    break;
-            }
-
-            m_state.SelectWeapon(SelectedWeapon.None);
-
-            m_dropTimer.ResetTimer();
-            m_dropTimer.Start();
-            m_canPickup = false;
-
-            var weapon = weaponObj.GetComponent<Weapon>();
-            var rb = weaponObj.GetComponent<Rigidbody>();
-            
-            rb.AddForce(weaponObj.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
-            rb.angularVelocity = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
-            weapon.Owner = null;
-            weapon.Crosshair = null;
-            weapon.OnShotFired -= this.Weapon_OnShotFired;
-            weapon.SetDropped();
-
-            NotificationService.Instance.Info(weaponObj.ToString());
-        }
-    }
-
-    private void PickupWeapon(GameObject weaponObj)
-    {
-        NotificationService.Instance.Info(weaponObj.ToString());
-        var weapon = weaponObj.GetComponent<Weapon>();
-
-        switch (weapon.WeaponSlot)
-        {
-            case WeaponSlot.Main:
-
-                if (!m_state.Inventory.HasMainWeapon())
-                {
-                    m_state.Inventory.SetMainWeapon(weaponObj);
-                }
-
-                break;
-            case WeaponSlot.Sidearm:
-
-                if (!m_state.Inventory.HasSideArm())
-                {
-                    m_state.Inventory.SetSideArm(weaponObj);
-                }
-
-                break;
-        }
-
-        var wpnRb = weaponObj.GetComponent<Rigidbody>();
-        wpnRb.detectCollisions = false;
-        wpnRb.angularVelocity = Vector3.zero;
-        weapon.Crosshair = m_crosshair;
-        weapon.Owner = this.gameObject;
-        weapon.OnShotFired += this.Weapon_OnShotFired;
-        weapon.SetPickedUp();
     }
 
     private void Weapon_OnShotFired(object sender, OnShotFiredEventArgs e)
@@ -435,9 +348,10 @@ public class ActorController : RRMonoBehaviour
         {
             var gameObj = contact.otherCollider.gameObject;
 
-            if (gameObj.IsWeapon() && m_canPickup)
+            if (gameObj.IsWeapon())
             {
-                this.PickupWeapon(gameObj);
+                var weapon = gameObj.GetComponent<Weapon>();
+                m_pickup.PickupWeapon(weapon);
             }
 
             if (gameObj.IsProjectile())
@@ -460,5 +374,23 @@ public class ActorController : RRMonoBehaviour
     public float GetCurrentMoveSpeed()
     {
         return m_state.IsFloating ? m_floating.MoveSpeed : m_grounded.MoveSpeed;
+    }
+
+    private void Pickup_OnItemDropped(object sender, OnPickupEventArgs e)
+    {
+        if (e.Item.gameObject.IsWeapon())
+        {
+            var weapon = e.Item.GetComponent<Weapon>();
+            weapon.OnShotFired -= this.Weapon_OnShotFired;
+        }
+    }
+
+    private void Pickup_OnItemPickedUp(object sender, OnPickupEventArgs e)
+    {
+        if (e.Item.gameObject.IsWeapon())
+        {
+            var weapon = e.Item.GetComponent<Weapon>();
+            weapon.OnShotFired += this.Weapon_OnShotFired;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
 using Unity.Netcode;
@@ -21,7 +22,7 @@ namespace Assets.Scripts.Pickups.Weapons
         Pulled
     }
 
-    public class Weapon : MonoBehaviour
+    public class Weapon : PickupItem
     {
         public event EventHandler<OnShotFiredEventArgs> OnShotFired;
 
@@ -183,14 +184,23 @@ namespace Assets.Scripts.Pickups.Weapons
             m_maxAmmo = 150;
         }
 
-        public virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+
             m_rigidBody = this.GetComponent<Rigidbody>();
             this.ResetAmmo();
+
+            if (m_type == WeaponType.None)
+            {
+                NotificationService.Instance.Warning("Weapon type is set to 'None'! " + this.Name);
+            }
         }
 
-        public virtual void Update()
+        protected override void Update()
         {
+            base.Update();
+
             if (m_rigidBody == null)
             {
                 m_rigidBody = this.GetComponent<Rigidbody>();
@@ -208,14 +218,12 @@ namespace Assets.Scripts.Pickups.Weapons
             }
 
             m_triggerState = TriggerState.Released;
-
             m_dropTimer.Tick();
 
             if (m_dropTimer.Elapsed)
             {
                 m_dropTimer.Stop();
-
-                m_rigidBody.detectCollisions = true;
+                //m_rigidBody.detectCollisions = true;
             }
         }
 
@@ -260,6 +268,7 @@ namespace Assets.Scripts.Pickups.Weapons
         private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
             m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
         }
 
         public void SetDropped()

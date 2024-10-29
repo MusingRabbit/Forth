@@ -15,12 +15,12 @@ namespace Assets.Scripts.Util
             NetworkObject mainWeapon = null;
             NetworkObject sidearm = null;
 
-            if (netActInv.MainWeaponType != WeaponType.None)
+            if (netActInv.MainWeaponType != WeaponType.None && netActInv.MainWeaponNetworkObjectId > 0)
             {
                 mainWeapon = NetworkManager.Singleton.SpawnManager.SpawnedObjects[netActInv.MainWeaponNetworkObjectId];
             }
 
-            if (netActInv.SideArmType != WeaponType.None)
+            if (netActInv.SideArmType != WeaponType.None && netActInv.SidearmNetworkObjectId > 0)
             {
                 sidearm = NetworkManager.Singleton.SpawnManager.SpawnedObjects[netActInv.SidearmNetworkObjectId];
             }

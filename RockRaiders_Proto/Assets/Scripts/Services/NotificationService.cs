@@ -93,7 +93,7 @@ namespace Assets.Scripts.Services
             return $"{DateTime.Now.ToShortTimeString()}|{className}|{memberName} : ";
         }
 
-        public void Info(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        public void Info(string message = "", [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             var prefix = this.GetMessagePrefix(callerFilePath, callerMemberName);
             var fullMessage = prefix + message;
@@ -146,8 +146,6 @@ namespace Assets.Scripts.Services
                 case MessageType.PlayerSpawned:
                     break;
             }
-
-            
         }
 
         public void NotifyPlayerKilled(GameObject playerActor)

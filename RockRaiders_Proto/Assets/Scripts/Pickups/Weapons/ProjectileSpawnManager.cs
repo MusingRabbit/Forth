@@ -12,8 +12,6 @@ namespace Assets.Scripts.Pickups.Weapons
 
     public class ProjectileSpawnManager : NetworkBehaviour
     {
-
-
         [SerializeField]
         private GameObject m_projectilePrefab;
 
@@ -34,13 +32,16 @@ namespace Assets.Scripts.Pickups.Weapons
 
         }
 
-        public void SpawnProjectile(GameObject weaponObj, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
+        public bool SpawnProjectile(GameObject weaponObj, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             if (this.IsOwner)
             {
                 var wpnnetObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
                 this.SpawnProjectileServerRpc(wpnnetObjId, position, rotation, velocityOffset, muzzleVelocity);
+                return true;
             }
+
+            return false;
         }
 
         public void DespawnProjectile(GameObject projectile, Collision collision)
@@ -148,7 +149,7 @@ namespace Assets.Scripts.Pickups.Weapons
             var wpnObj = this.GetNetworkObject(wpnNetObjId);
             var weapon = wpnObj.gameObject.GetComponent<Weapon>();
 
-            NotificationService.Instance.Info("Weapn Name : "  + wpnObj.name);
+            NotificationService.Instance.Info("Weapon Name : "  + wpnObj.name);
 
             var projectile = this.CreateProjectile(weapon, position, rotation, velocityOffset, muzzleVelocity);
             var damage = projectile.GetComponent<Damage>();

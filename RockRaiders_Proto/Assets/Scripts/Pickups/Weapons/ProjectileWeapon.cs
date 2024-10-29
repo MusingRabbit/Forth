@@ -31,7 +31,7 @@ namespace Assets.Scripts.Pickups.Weapons
 
 
         // Start is called before the first frame update
-        public override void Start()
+        protected override void Start()
         {
             m_muzzle = gameObject.FindChild("Projectile_Exit");
             m_projectileSpawner = gameObject.GetComponent<ProjectileSpawnManager>();
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Pickups.Weapons
         }
 
         // Update is called once per frame
-        public override void Update()
+        protected override void Update()
         {
             base.Update();
         }
@@ -62,13 +62,14 @@ namespace Assets.Scripts.Pickups.Weapons
                 if (canFire)
                 {
                     m_lastShotTime = Time.time;
-                    m_projectileSpawner.SpawnProjectile(this.gameObject,
+                    if (m_projectileSpawner.SpawnProjectile(this.gameObject,
                         m_muzzle.transform.position,
                         rotation,
                         velOffset,
-                        m_muzzleVelocity);
-
-                    Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
+                        m_muzzleVelocity))
+                    {
+                        Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
+                    }
                 }
             }
         }

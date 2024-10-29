@@ -1,4 +1,7 @@
-﻿using Assets.Scripts.Pickups.Weapons;
+﻿using Assets.Scripts.Events;
+using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Services;
+using Assets.Scripts.Util;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -26,21 +29,35 @@ namespace Assets.Scripts
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref this.MainWeaponType);
+            serializer.SerializeValue(ref this.MainWeaponNetworkObjectId);
             serializer.SerializeValue(ref this.SideArmType);
+            serializer.SerializeValue(ref this.SidearmNetworkObjectId);
+            serializer.SerializeValue(ref this.Pack);
         }
     }
 
-    public class ActorInventoryState
+    public class ActorInventoryState : IEquatable<ActorInventoryState>
     {
         public WeaponType MainWeaponType { get; set; }
         public Weapon MainWeapon { get; set; }
         public WeaponType SideArmType { get; set; }
         public Weapon SideArm { get; set; }
         public WeaponType PackType { get; set; }
+
+        public bool Equals(ActorInventoryState other)
+        {
+            return this.MainWeaponType == other.MainWeaponType && 
+                this.SideArmType == other.SideArmType && 
+                this.MainWeapon == other.MainWeapon && 
+                this.SideArm == other.SideArm;
+        }
     }
 
     public class ActorInventory : RRMonoBehaviour
     {
+        public event EventHandler<OnPickupEventArgs> OnMainWeaponCleared;
+        public event EventHandler<OnPickupEventArgs> OnSidearmCleared;
+
         [SerializeField]
         private GameObject m_mainWeapon;
 
@@ -103,21 +120,28 @@ namespace Assets.Scripts
 
         private void UpdateStoredItemWorldPos()
         {
-            var sideArmObj = this.GetSideArm();
-
-            if (m_selectedWeapon != SelectedWeapon.Sidearm && sideArmObj != null)
+            if (this.HasSideArm())
             {
-                sideArmObj.transform.position = m_sideArmHolster.transform.position;
-                sideArmObj.transform.rotation = m_sideArmHolster.transform.rotation;
+                var sideArmObj = this.GetSideArm();
+
+                if (m_selectedWeapon != SelectedWeapon.Sidearm && sideArmObj != null)
+                {
+                    sideArmObj.transform.position = m_sideArmHolster.transform.position;
+                    sideArmObj.transform.rotation = m_sideArmHolster.transform.rotation;
+                }
             }
 
-            var mainWeaponObj = this.GetMainWeapon();
-
-            if (m_selectedWeapon != SelectedWeapon.Main && mainWeaponObj != null)
+            if (this.HasMainWeapon())
             {
-                mainWeaponObj.transform.position = m_mainWeaponHolster.transform.position;
-                mainWeaponObj.transform.rotation = m_mainWeaponHolster.transform.rotation;
+                var mainWeaponObj = this.GetMainWeapon();
+
+                if (m_selectedWeapon != SelectedWeapon.Main && mainWeaponObj != null)
+                {
+                    mainWeaponObj.transform.position = m_mainWeaponHolster.transform.position;
+                    mainWeaponObj.transform.rotation = m_mainWeaponHolster.transform.rotation;
+                }
             }
+
         }
 
         public bool HasMainWeapon()
@@ -129,74 +153,74 @@ namespace Assets.Scripts
         {
             if (m_mainWeapon == null)
             {
+                NotificationService.Instance.Info();
                 m_mainWeapon = mainWeapon;
-                this.ConfigureRigidBodyOnPickup(mainWeapon);
             }
+        }
 
+        public ActorInventoryState GetActorInventoryState()
+        {
+            return this.GetNetActorInventory().ToActorInventoryState();
         }
 
         public NetActorInventory GetNetActorInventory()
         {
-            var weaponObj = this.GetMainWeapon();
-            var mwNetworkObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
+            ulong mwNetworkObjId, saNetworkObjId;
+            mwNetworkObjId = saNetworkObjId = 0;
 
-            var sidearmObj = this.GetSideArm();
-            var saNetworkObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
+            if (this.HasMainWeapon())
+            {
+                var weaponObj = this.GetMainWeapon();
+                mwNetworkObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
+            }
+
+            if (this.HasSideArm())
+            {
+                var sidearmObj = this.GetSideArm();
+                saNetworkObjId = sidearmObj.GetComponent<NetworkObject>().NetworkObjectId;
+            }
+
 
             return new NetActorInventory
             {
-                MainWeaponType = GetWeaponType(SelectedWeapon.Main),
+                MainWeaponType = this.GetWeaponType(SelectedWeapon.Main),
                 MainWeaponNetworkObjectId = mwNetworkObjId,
-                SideArmType = GetWeaponType(SelectedWeapon.Sidearm),
+                SideArmType = this.GetWeaponType(SelectedWeapon.Sidearm),
                 SidearmNetworkObjectId = saNetworkObjId
             };
         }
 
         public void SetInventoryFromActorInventoryState(ActorInventoryState state)
         {
-            if (this.HasMainWeapon())
+            if (state.MainWeaponType != this.GetMainWeaponType())
             {
-                if (state.MainWeaponType != this.GetMainWeaponType())
-                {
-                    this.ClearMainWeapon();
-                }
+                this.ClearMainWeapon();
             }
-            else if (state.MainWeapon != null)
+
+            if (state.MainWeapon != null)
             {
                 this.SetMainWeapon(state.MainWeapon.gameObject);
             }
 
-            if (this.HasSideArm())
+            if (state.SideArmType != this.GetSideArmType())
             {
-                if (state.SideArmType != this.GetSideArmType())
-                {
-                    this.ClearSideArm();
-                }
-            }
-            else if (state.SideArm != null)
-            {
-                this.SetMainWeapon(state.SideArm.gameObject);
+                this.ClearSideArm();
             }
 
-
-
-
-        }
-
-        private void ConfigureRigidBodyOnPickup(GameObject weapon)
-        {
-            weapon.GetComponent<Weapon>().SetPickedUp();
-            weapon.GetComponent<Rigidbody>().detectCollisions = false;
+            if (state.SideArm != null)
+            {
+                this.SetSideArm(state.SideArm.gameObject);
+            }
         }
 
         public WeaponType GetMainWeaponType()
         {
-            return this.GetMainWeapon().GetComponent<Weapon>().WeaponType;
+            return this.HasMainWeapon() ? this.GetMainWeapon().GetComponent<Weapon>().WeaponType : WeaponType.None;
         }
 
         public WeaponType GetSideArmType()
         {
-            return this.GetSideArm().GetComponent<Weapon>().WeaponType;
+            return this.HasSideArm() ? this.GetSideArm().GetComponent<Weapon>().WeaponType : WeaponType.None;
         }
 
         private WeaponType GetWeaponType(SelectedWeapon selectedWeapon)
@@ -206,21 +230,14 @@ namespace Assets.Scripts
                 case SelectedWeapon.None:
                     return WeaponType.None;
                 case SelectedWeapon.Main:
-                    return this.GetMainWeapon().GetComponent<Weapon>().WeaponType;
+                    return this.HasMainWeapon() ? this.GetMainWeapon().GetComponent<Weapon>().WeaponType : WeaponType.None;
                 case SelectedWeapon.Sidearm:
-                    return this.GetSideArm().GetComponent<Weapon>().WeaponType;
+                    return this.HasSideArm() ? this.GetSideArm().GetComponent<Weapon>().WeaponType : WeaponType.None;
                 case SelectedWeapon.Pack:
                     break;
             }
 
             return WeaponType.None;
-        }
-
-        private void ConfigureRigidBodyOnDrop(GameObject weapon)
-        {
-            weapon.GetComponent<Weapon>().SetDropped();
-            var rb = weapon.GetComponent<Rigidbody>();
-            rb.detectCollisions = true;
         }
 
         public GameObject GetMainWeapon()
@@ -238,7 +255,6 @@ namespace Assets.Scripts
             if (m_sideArm == null)
             {
                 m_sideArm = sideArm;
-                this.ConfigureRigidBodyOnPickup(sideArm);
             }
         }
 
@@ -251,9 +267,13 @@ namespace Assets.Scripts
         {
             if (m_mainWeapon != null)
             {
-                this.ConfigureRigidBodyOnDrop(m_mainWeapon);
+                var wpn = m_mainWeapon.GetComponent<Weapon>();
+
+                NotificationService.Instance.Info(wpn.Name);
 
                 m_mainWeapon = null;
+
+                this.OnMainWeaponCleared?.Invoke(this, new OnPickupEventArgs(wpn));
 
                 if (m_selectedWeapon == SelectedWeapon.Main)
                 {
@@ -266,9 +286,12 @@ namespace Assets.Scripts
         {
             if (m_sideArm != null)
             {
-                this.ConfigureRigidBodyOnDrop(m_sideArm);
+                var wpn = m_sideArm.GetComponent<Weapon>();
 
+                NotificationService.Instance.Info(wpn.Name);
                 m_sideArm = null;
+
+                this.OnSidearmCleared?.Invoke(this, new OnPickupEventArgs(wpn));
 
                 if (m_selectedWeapon == SelectedWeapon.Sidearm)
                 {
@@ -279,6 +302,12 @@ namespace Assets.Scripts
 
         public void SelectWeapon(SelectedWeapon selection)
         {
+            if (m_selectedWeapon == selection)
+            {
+                return;
+            }
+
+            NotificationService.Instance.Info(selection.ToString());
             m_selectedWeapon = SelectedWeapon.None;
 
             switch (selection)

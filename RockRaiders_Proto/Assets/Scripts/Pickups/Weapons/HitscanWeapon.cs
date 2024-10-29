@@ -36,7 +36,7 @@ namespace Assets.Scripts.Pickups.Weapons
         private ParticleSystem m_particleSystem;
 
         // Start is called before the first frame update
-        public override void Start()
+        protected override void Start()
         {
             m_muzzle = gameObject.FindChild("Projectile_Exit");
             m_trailPool = new ObjectPool<TrailRenderer>(CreateTrail);
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Pickups.Weapons
         }
 
         // Update is called once per frame
-        public override void Update()
+        protected override void Update()
         {
             base.Update();
         }
