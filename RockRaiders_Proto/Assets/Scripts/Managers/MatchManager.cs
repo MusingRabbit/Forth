@@ -21,7 +21,7 @@ public class TeamData
     
 }
 
-public class MatchManager : NetworkBehaviour
+public class MatchManager : MonoBehaviour
 {
     [SerializeField]
     private MatchType m_matchType;
@@ -38,6 +38,14 @@ public class MatchManager : NetworkBehaviour
         }
     }
 
+    public Dictionary<Team, TeamData> Teams
+    {
+        get
+        {
+            return m_teamDictionary;
+        }
+    }
+
     private Dictionary<Team, TeamData> m_teamDictionary;
     private Dictionary<ulong, PlayerData> m_teamBluePlayers;
     private Dictionary<ulong, PlayerData> m_teamRedPlayers;
@@ -50,19 +58,12 @@ public class MatchManager : NetworkBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        if (this.IsServer)
-        {
-            this.InitialiseTeamDictionary();
-        }
+        this.InitialiseTeamDictionary();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (this.IsServer)
-        {
-
-        }
     }
 
     private void SubscribeToNotifications()
@@ -72,11 +73,8 @@ public class MatchManager : NetworkBehaviour
 
     private void Notification_OnPlayerKilled(object sender, Assets.Scripts.Events.OnNotificationEventArgs e)
     {
-        if (this.IsServer)
-        {
-            var data = e.Data.GetData<PlayerKilledData>();
-            this.AddPlayerScore(data.Killer, 1);
-        }
+        var data = e.Data.GetData<PlayerKilledData>();
+        this.AddPlayerScore(data.Killer, 1);
     }
 
     private void InitialiseTeamDictionary()
@@ -118,20 +116,21 @@ public class MatchManager : NetworkBehaviour
 
     private void AddPlayerToTeam(ulong clientId, GameObject player, Team team)
     {
+        if (clientId != player.GetComponent<ActorNetwork>().OwnerClientId)
+        {
+            throw new System.Exception("Client Id mismatch");
+        }
+
         if (m_teamDictionary[team].Players.ContainsKey(clientId))
         {
-            NotificationService.Instance.Info($" Client Id : {clientId}, player is already in team '{team}'. Updating player");
+            NotificationService.Instance.Info($"Client {clientId}, player is already in team '{team}'. Updating player");
             var existing = m_teamDictionary[team].Players[clientId];
             existing.Player = player;
         }
         else
         {
+            NotificationService.Instance.Info($"Client {clientId} is being added to team : '{team}'.");
             m_teamDictionary[team].Players.Add(clientId, new PlayerData { Player = player, Score = 0 });
-        }
-
-        if (clientId != player.GetComponent<ActorNetwork>().OwnerClientId)
-        {
-
         }
 
         var state = player.GetComponent<ActorState>();
