@@ -9,10 +9,17 @@ using UnityEngine;
 
 namespace Assets.Scripts.Managers
 {
-    public class PlayerDataNet : INetworkSerializable
+    public class PlayerDataNet : INetworkSerializable, IEquatable<PlayerDataNet>
     {
         public ulong PlayerNetworkObjectId;
         public int Score;
+
+        public bool Equals(PlayerDataNet other)
+        {
+            return 
+                this.PlayerNetworkObjectId == other.PlayerNetworkObjectId &&
+                this.Score == other.Score;
+        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -21,7 +28,7 @@ namespace Assets.Scripts.Managers
         }
     }
 
-    public class TeamData : INetworkSerializable
+    public class TeamData : INetworkSerializable, IEquatable<TeamData>
     {
         public Team Team;
         public int TeamScore;
@@ -37,6 +44,15 @@ namespace Assets.Scripts.Managers
             {
                 this.PlayersJson = JsonConvert.SerializeObject(value);
             }
+        }
+
+        public bool Equals(TeamData other)
+        {
+            var result = this.Team == other.Team;
+            result = result && this.TeamScore == other.TeamScore;
+            result = result && this.PlayersJson == other.PlayersJson;
+
+            return result;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
