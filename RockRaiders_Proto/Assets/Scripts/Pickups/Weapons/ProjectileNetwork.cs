@@ -1,10 +1,13 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
+using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 
 namespace Assets.Scripts.Pickups.Weapons
@@ -23,7 +26,14 @@ namespace Assets.Scripts.Pickups.Weapons
             }
             set
             {
-                m_wpnNetworkObjectId.Value = value;
+                if (this.IsServer)
+                {
+                    m_wpnNetworkObjectId.Value = value;
+                }
+                else
+                {
+                    this.SetHitWeaponNetworkObjectIdServerRpc(value);
+                }
             }
         }
 
@@ -35,17 +45,25 @@ namespace Assets.Scripts.Pickups.Weapons
             }
             set
             {
-                m_hitNetworkObjectId.Value = value;
+                var strClient = this.IsServer ? "Server" : "Client";
+                NotificationService.Instance.Info($"{strClient}|"+value.ToString());
+
+                if (this.IsServer)
+                {
+                    m_hitNetworkObjectId.Value = value;
+                    this.SetHitNetworkObjectIdClientRpc(value);
+                }
+                else
+                {
+                    this.SetHitNetworkObjectIdServerRpc(value);
+                }
             }
         }
 
         public ProjectileNetwork()
         {
             m_hitNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
-            m_hitNetworkObjectId.OnValueChanged += OnHitNetworkObjectChanged;
-
             m_wpnNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
-            m_wpnNetworkObjectId.OnValueChanged += OnNetworkObjectValueChanged;
         }
 
         private void Awake()
@@ -60,41 +78,73 @@ namespace Assets.Scripts.Pickups.Weapons
 
         private void Update()
         {
-            
+
         }
 
         private void OnHitNetworkObjectChanged(ulong previousValue, ulong newValue)
         {
             if (newValue != 0)
             {
+                NotificationService.Instance.Info($"WeaponNetworkObjectId : {m_wpnNetworkObjectId.Value} | HitNetworkObjectId : {newValue}");
+
                 var gameObj = this.NetworkManager.SpawnManager.SpawnedObjects[newValue];
                 var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[m_wpnNetworkObjectId.Value];
+
+                NotificationService.Instance.Info($"{gameObj} | {weaponObj}");
 
                 var actorState = gameObj.GetComponent<ActorState>();
 
                 if (actorState != null)
                 {
+                    NotificationService.Instance.Info($"{gameObj} last hit by {actorState.LastHitBy}");
                     actorState.LastHitBy = weaponObj.gameObject;
                 }
+            }
+            else
+            {
+                Debugger.Break();
             }
         }
 
         private void OnNetworkObjectValueChanged(ulong oldVal, ulong value)
         {
-            var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[value];
-            m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
+            NotificationService.Instance.Info($"WeaponNetworkObjectId : {value}");
+            this.SetWeaponNetworkObjectId(value);
         }
 
         public void SetWeaponNetworkObjectId(ulong weaponObjId)
         {
-            m_wpnNetworkObjectId.Value = weaponObjId;
+            if (this.IsServer)
+            {
+                m_wpnNetworkObjectId.Value = weaponObjId;
+            }
+            
             var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[weaponObjId];
             m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
         }
 
+        [Rpc(SendTo.Server)]
+        private void SetHitNetworkObjectIdServerRpc(ulong value)
+        {
+            m_hitNetworkObjectId.Value = value;
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void SetHitNetworkObjectIdClientRpc(ulong value)
+        {
+            this.OnHitNetworkObjectChanged(m_hitNetworkObjectId.Value, value);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void SetHitWeaponNetworkObjectIdServerRpc(ulong value)
+        {
+            m_wpnNetworkObjectId.Value = value;
+        }
+
         public override void OnNetworkSpawn()
         {
-            //
+            m_hitNetworkObjectId.OnValueChanged += OnHitNetworkObjectChanged;
+            m_wpnNetworkObjectId.OnValueChanged += OnNetworkObjectValueChanged;
         }
     }
 }

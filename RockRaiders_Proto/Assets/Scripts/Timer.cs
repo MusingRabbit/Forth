@@ -82,8 +82,6 @@ namespace Assets.Scripts
                 {
                     this.ResetTimer();
                 }
-
-                m_startTimer = false;
             }
         }
 

@@ -56,7 +56,7 @@ namespace Assets.Scripts.Managers
         {
             get
             {
-                return _instance = _instance ?? new GameManager();
+                return _instance;
             }
         }
 

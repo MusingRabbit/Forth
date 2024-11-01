@@ -88,10 +88,16 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             {
                 //Destroy(this.gameObject);
                 m_projNetwork.DespawnProjectile(gameObject);
+                m_isDespawning = true;
             }
         }
 
         private void OnCollisionEnter(Collision collision)
+        {
+            m_lifeSpan = TimeSpan.FromSeconds((Time.time - m_startTime) + 0.2f);
+        }
+
+        internal void Despawn(Collision collision)
         {
             if (!m_isDespawning)
             {

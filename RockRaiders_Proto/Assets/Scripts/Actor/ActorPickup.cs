@@ -107,7 +107,7 @@ namespace Assets.Scripts.Actor
             m_canPickup = false;
 
             var rb = weapon.GetComponent<Rigidbody>();
-
+            
             rb.AddForce(weapon.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
             rb.AddTorque(new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)), ForceMode.Impulse);
             weapon.Owner = null;
@@ -141,9 +141,6 @@ namespace Assets.Scripts.Actor
                         break;
                 }
 
-                var wpnRb = weapon.gameObject.GetComponent<Rigidbody>();
-                //wpnRb.detectCollisions = false;
-                wpnRb.angularVelocity = Vector3.zero;
                 weapon.Crosshair = m_crosshair;
                 weapon.Owner = this.gameObject;
                 weapon.SetPickedUp();

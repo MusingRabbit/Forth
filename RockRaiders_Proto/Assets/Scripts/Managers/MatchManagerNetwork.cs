@@ -81,16 +81,21 @@ namespace Assets.Scripts.Managers
             m_matchManager = this.GetComponent<MatchManager>();
         }
 
-        private void Update()
+        private void HandleNetData()
         {
-            if (this.IsServer && this.IsOwner)
+            if (this.IsServer)
             {
-                //Send match state
+                // Update match state
             }
             else
             {
-                // Update match State
+                // Retreive match State
             }
+        }
+
+        private void Update()
+        {
+
         }
     }
 }

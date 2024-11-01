@@ -7,6 +7,7 @@ using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
+using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -357,6 +358,7 @@ public class ActorController : RRMonoBehaviour
             if (gameObj.IsProjectile())
             {
                 var projectile = gameObj.GetComponent<Projectile>();
+                var projectileNet = gameObj.GetComponent<ProjectileNetwork>();
                 var projCollider = gameObj.GetComponent<CapsuleCollider>();
 
                 if (m_headBoxCollider.bounds.Intersects(projCollider.bounds)) // Check if it's a headshot.
@@ -367,6 +369,12 @@ public class ActorController : RRMonoBehaviour
                 {
                     m_health.RegisterProjectileHit(gameObj, 1.0f);
                 }
+
+                NotificationService.Instance.Info("Projectile hit " + this.State.PlayerName);
+
+                projectileNet.HitNetworkObjectId = this.GetComponent<NetworkObject>().NetworkObjectId;
+
+                projectile.Despawn(collision);
             }
         }
     }

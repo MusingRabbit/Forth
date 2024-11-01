@@ -18,7 +18,6 @@ public struct ActorStateData : INetworkSerializable
     public int SelectedWeapon;
     public int Hitpoints;
 
-
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) 
         where T : IReaderWriter
     {
@@ -92,7 +91,7 @@ public class ActorNetwork : NetworkBehaviour
     private ActorSpawnManager m_actorManager;
     private ActorCrosshair m_crosshair;
 
-    private Timer m_updateStateTimer;
+    private Timer m_updateHealthTimer;
 
     [SerializeField]
     private bool m_serverAuth;
@@ -111,8 +110,8 @@ public class ActorNetwork : NetworkBehaviour
 
     public ActorNetwork()
     {
-        m_updateStateTimer = new Timer(TimeSpan.FromSeconds(0.125f));
-        m_updateStateTimer.AutoReset = false;
+        m_updateHealthTimer = new Timer(TimeSpan.FromSeconds(0.125f));
+        m_updateHealthTimer.AutoReset = false;
     }
 
     private void Awake()
@@ -137,12 +136,12 @@ public class ActorNetwork : NetworkBehaviour
             m_controller = this.GetComponent<PlayerInput>();
         }
 
-        m_updateStateTimer.Start();
+        m_updateHealthTimer.Start();
     }
 
     private void Update()
     {
-        m_updateStateTimer.Tick();
+        m_updateHealthTimer.Tick();
 
         if (this.IsOwner)
         {
@@ -175,11 +174,14 @@ public class ActorNetwork : NetworkBehaviour
     private void UpdateActorState()
     {
         var state = m_actorState.Value;
-
-        m_health.Hitpoints.SetHitPoints(state.Hitpoints);
-
         m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
         m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
+    }
+
+    private void UpdateActorHealth()
+    {
+        var state = m_actorState.Value;
+        m_health.Hitpoints.SetHitPoints(state.Hitpoints);
     }
 
     private void UpdateActor()
@@ -193,13 +195,12 @@ public class ActorNetwork : NetworkBehaviour
             this.UpdateActorTransform();
             this.UpdateActorState();
             this.UpdateActorControl();
-            
 
-            //if (m_updateStateTimer.Elapsed)
-            //{
-            //    m_updateStateTimer.ResetTimer();
-            //    this.UpdateActorState();
-            //}
+            if (m_updateHealthTimer.Elapsed)
+            {
+                m_updateHealthTimer.ResetTimer();
+                this.UpdateActorHealth();
+            }
         }
     }
 
@@ -307,7 +308,6 @@ public class ActorNetwork : NetworkBehaviour
             m_actorTransform.Value = transform;
             m_actorControl.Value = control;
             m_playerData.Value = playerNetData;
-
             m_actorController.State.PlayerName = playerNetData.PlayerName.ToString();
         }
         else

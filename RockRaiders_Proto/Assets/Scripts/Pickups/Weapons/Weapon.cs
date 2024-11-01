@@ -259,20 +259,24 @@ namespace Assets.Scripts.Pickups.Weapons
             m_ammoCount = m_maxAmmo;
         }
 
-        public void SetPickedUp()
-        {
-            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
-            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
-        }
-
         private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
             m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
             m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
         }
 
+        public void SetPickedUp()
+        {
+            m_rigidBody.velocity = Vector3.zero;
+            m_rigidBody.angularVelocity = Vector3.zero;
+            m_rigidBody.detectCollisions = false;
+            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
+        }
+
         public void SetDropped()
         {
+            m_rigidBody.detectCollisions = true;
             m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
             m_rigidBody.includeLayers = LayerMask.GetMask("Level");
             m_dropTimer.ResetTimer();

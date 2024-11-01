@@ -47,7 +47,8 @@ namespace Assets.Scripts.Pickups.Weapons
         public void DespawnProjectile(GameObject projectile, Collision collision)
         {
             var networkObject = projectile.GetComponent<NetworkObject>();
-            var hitObject = collision.collider.gameObject.GetComponent<NetworkObject>();
+            var contact = collision.GetContact(0);
+            var hitObject = contact.thisCollider.GetComponent<NetworkObject>();
 
             if (networkObject == null)
             {
@@ -90,26 +91,31 @@ namespace Assets.Scripts.Pickups.Weapons
         [ServerRpc]
         private void DespawnProjectileServerRpc(ulong networkObjId, ulong contactNetworkObjId)
         {
+            NotificationService.Instance.Info($"{networkObjId}|{contactNetworkObjId}");
+
             if (this.NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
             {
                 var networkObject = this.GetNetworkObject(networkObjId);
 
-                var projectileNet = networkObject.GetComponent<ProjectileNetwork>();
-
-                projectileNet.HitNetworkObjectId = contactNetworkObjId;
-
                 if (networkObject == null)
                 {
-                    throw new NullReferenceException($"No network object could be found for id : {NetworkObjectId}");
+                    NotificationService.Instance.Warning($"No network object could be found for id : {NetworkObjectId}");
                 }
+                else
+                {
+                    var projectileNet = networkObject.GetComponent<ProjectileNetwork>();
+                    projectileNet.HitNetworkObjectId = contactNetworkObjId;
 
-                networkObject.Despawn(true);
+                    networkObject.Despawn(true);
+                }
             }
         }
 
         [ServerRpc]
         private void DespawnProjectileServerRpc(ulong networkObjId)
         {
+            NotificationService.Instance.Info(networkObjId);
+
             if (this.NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
             {
                 var networkObject = this.GetNetworkObject(networkObjId);

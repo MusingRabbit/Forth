@@ -93,6 +93,11 @@ namespace Assets.Scripts.Services
             return $"{DateTime.Now.ToShortTimeString()}|{className}|{memberName} : ";
         }
 
+        public void Info(object message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        {
+            this.Info(message.ToString(), callerFilePath, callerMemberName);
+        }
+
         public void Info(string message = "", [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             var prefix = this.GetMessagePrefix(callerFilePath, callerMemberName);
@@ -101,12 +106,22 @@ namespace Assets.Scripts.Services
             this.Notify(MessageType.Info, fullMessage, (object)null);
         }
 
+        public void Warning(object message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        {
+            this.Warning(message.ToString(), callerFilePath, callerMemberName);
+        }
+
         public void Warning(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             var prefix = this.GetMessagePrefix(callerFilePath, callerMemberName);
             var fullMessage = prefix + message;
             Debug.LogWarning(fullMessage);
             this.Notify(MessageType.Warning, fullMessage, (object)null);
+        }
+
+        public void Error(object message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        {
+            this.Error(message.ToString(), callerFilePath, callerMemberName);
         }
 
         public void Error(Exception ex, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
