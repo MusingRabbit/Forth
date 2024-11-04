@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.HealthSystem;
+using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;
 using System;
@@ -7,9 +8,8 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Assets.Scripts.Pickups.Weapons
+namespace Assets.Scripts.Network
 {
-
     public class ProjectileSpawnManager : NetworkBehaviour
     {
         [SerializeField]
@@ -34,10 +34,10 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public bool SpawnProjectile(GameObject weaponObj, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
-            if (this.IsOwner)
+            if (IsOwner)
             {
                 var wpnnetObjId = weaponObj.GetComponent<NetworkObject>().NetworkObjectId;
-                this.SpawnProjectileServerRpc(wpnnetObjId, position, rotation, velocityOffset, muzzleVelocity);
+                SpawnProjectileServerRpc(wpnnetObjId, position, rotation, velocityOffset, muzzleVelocity);
                 return true;
             }
 
@@ -55,18 +55,18 @@ namespace Assets.Scripts.Pickups.Weapons
                 throw new InvalidOperationException("Projectile does not have a NetworkComponent.");
             }
 
-            if (!this.IsOwner)
+            if (!IsOwner)
             {
                 return;
             }
 
             if (hitObject == null)
             {
-                this.DespawnProjectileServerRpc(networkObject.NetworkObjectId);
+                DespawnProjectileServerRpc(networkObject.NetworkObjectId);
             }
             else
             {
-                this.DespawnProjectileServerRpc(networkObject.NetworkObjectId, hitObject.NetworkObjectId);
+                DespawnProjectileServerRpc(networkObject.NetworkObjectId, hitObject.NetworkObjectId);
             }
         }
 
@@ -79,12 +79,12 @@ namespace Assets.Scripts.Pickups.Weapons
                 throw new InvalidOperationException("Projectile does not have a NetworkComponent.");
             }
 
-            if (!this.IsOwner)
+            if (!IsOwner)
             {
                 return;
             }
 
-            this.DespawnProjectileServerRpc(networkObject.NetworkObjectId);
+            DespawnProjectileServerRpc(networkObject.NetworkObjectId);
 
         }
 
@@ -93,9 +93,9 @@ namespace Assets.Scripts.Pickups.Weapons
         {
             NotificationService.Instance.Info($"{networkObjId}|{contactNetworkObjId}");
 
-            if (this.NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
+            if (NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
             {
-                var networkObject = this.GetNetworkObject(networkObjId);
+                var networkObject = GetNetworkObject(networkObjId);
 
                 if (networkObject == null)
                 {
@@ -116,9 +116,9 @@ namespace Assets.Scripts.Pickups.Weapons
         {
             NotificationService.Instance.Info(networkObjId);
 
-            if (this.NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
+            if (NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjId))
             {
-                var networkObject = this.GetNetworkObject(networkObjId);
+                var networkObject = GetNetworkObject(networkObjId);
 
                 if (networkObject == null)
                 {
@@ -131,7 +131,7 @@ namespace Assets.Scripts.Pickups.Weapons
 
         private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
         {
-            var instance = Instantiate(m_projectilePrefab);
+            var instance = GameObject.Instantiate(m_projectilePrefab);
 
             var rigidBody = instance.GetComponent<Rigidbody>();
             var projectile = instance.GetComponent<Projectile>();
@@ -152,12 +152,12 @@ namespace Assets.Scripts.Pickups.Weapons
         [ServerRpc]
         private void SpawnProjectileServerRpc(ulong wpnNetObjId, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
-            var wpnObj = this.GetNetworkObject(wpnNetObjId);
+            var wpnObj = GetNetworkObject(wpnNetObjId);
             var weapon = wpnObj.gameObject.GetComponent<Weapon>();
 
-            NotificationService.Instance.Info("Weapon Name : "  + wpnObj.name);
+            NotificationService.Instance.Info("Weapon Name : " + wpnObj.name);
 
-            var projectile = this.CreateProjectile(weapon, position, rotation, velocityOffset, muzzleVelocity);
+            var projectile = CreateProjectile(weapon, position, rotation, velocityOffset, muzzleVelocity);
             var damage = projectile.GetComponent<Damage>();
             damage.Base = weapon.Damage;
 

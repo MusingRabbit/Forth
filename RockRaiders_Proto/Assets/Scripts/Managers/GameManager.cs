@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Input;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Network;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI.Models;
 using System;
@@ -10,7 +12,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Assets.Scripts.Managers
+namespace Assets.Scripts.Network
 {
     public struct SetStateResponse
     {
@@ -18,10 +20,8 @@ namespace Assets.Scripts.Managers
         public string Message { get; set; }
     }
 
-    public class GameManager : MonoBehaviour
+    public class GameManager : NetworkBehaviour, IGameManager
     {
-        public event EventHandler<EventArgs> OnRespawnTriggered;
-
         private bool m_playerPaused;
         private bool m_localPlayerAwaitingRespawn;
 
@@ -51,6 +51,12 @@ namespace Assets.Scripts.Managers
         [SerializeField]
         private InputManager m_inputManager;
 
+        [SerializeField]
+        private ActorSpawnManager m_spawnManager;
+
+        [SerializeField]
+        private MatchManager m_matchManager;
+
         private static GameManager _instance;
         public static GameManager Instance
         {
@@ -62,10 +68,18 @@ namespace Assets.Scripts.Managers
 
         private GameState m_state;
         private SettingsModel m_settings;
-        
+
         private UnityTransport m_unityTransport;
 
         private Dictionary<ulong, NetworkPrefab> m_clientPrefabs;
+
+        public bool InGame
+        {
+            get
+            {
+                return m_state == GameState.InGame;
+            }
+        }
 
         public SettingsModel Settings
         {
@@ -100,12 +114,12 @@ namespace Assets.Scripts.Managers
         private void Start()
         {
             m_unityTransport = m_netManager.GetComponent<UnityTransport>();
-            m_netManager.OnConnectionEvent += NetManager_OnConnectionEvent;
-        }
+            m_netManager.OnConnectionEvent += this.NetManager_OnConnectionEvent;
 
-        private void NetManager_OnConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
-        {
-            NotificationService.Instance.Info("Client Id : " + arg2.ClientId + "| Event type : " + arg2.EventType);
+            m_spawnManager.OnActorSpawn += this.SpawnManager_OnActorSpawned;
+            m_spawnManager.OnActorDespawn += this.SpawnManager_OnActorDespawned;
+
+            m_matchManager.Initialise(this);
         }
 
         private void Update()
@@ -124,10 +138,15 @@ namespace Assets.Scripts.Managers
                 {
                     if (m_inputManager.Controller.GetActionState(Input.ControllerActions.Trigger) == ActionState.Active)
                     {
-                        this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
+                        m_spawnManager.RespawnLocalPlayer();
                         m_localPlayerAwaitingRespawn = false;
                     }
                 }
+            }
+
+            if (m_matchManager.IsReady)
+            {
+                this.AddAllPlayersToMatch();
             }
         }
 
@@ -148,12 +167,13 @@ namespace Assets.Scripts.Managers
 
         private void ConnectToRemoteHost()
         {
-            if (!IPAddress.TryParse(m_settings.MatchSettings.ServerIP, out var ipAddress))
+            if (!IPAddress.TryParse(m_settings.Session.ServerIP, out var ipAddress))
             {
-                throw new InvalidOperationException($"Invalid IP Address : Could not parse '{m_settings.MatchSettings.ServerIP}' ");
+                throw new InvalidOperationException($"Invalid IP Address : Could not parse '{m_settings.Session.ServerIP}' ");
             }
 
-            m_unityTransport.SetConnectionData(m_settings.MatchSettings.ServerIP, m_settings.MatchSettings.Port);
+            NotificationService.Instance.Info($"{m_settings.Session.ServerIP}:{m_settings.Session.Port}");
+            m_unityTransport.SetConnectionData(m_settings.Session.ServerIP, m_settings.Session.Port);
 
             if (!m_netManager.StartClient())
             {
@@ -163,13 +183,14 @@ namespace Assets.Scripts.Managers
 
         private void StartSessionAsHost()
         {
-            m_unityTransport.ConnectionData.Port = m_settings.MatchSettings.Port;
+            m_unityTransport.ConnectionData.Port = m_settings.Session.Port;
 
-            var scene = m_settings.MatchSettings.GetSceneName();
+            var scene = m_settings.Session.GetSceneName();
 
             //m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
-            //m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
-            
+            m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
+            m_netManager.OnClientDisconnectCallback += this.NetManager_OnClientDisconnectCallback;
+
             if (m_netManager.StartHost())
             {
                 //m_netManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
@@ -193,15 +214,21 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        private void NetManager_OnClientDisconnectCallback(ulong clientId)
+        {
+            this.DeregisterPlayer(clientId);
+        }
+
         public void LaunchGame()
         {
             m_state = GameState.Loading;
 
             try
             {
-                if (m_settings.MatchSettings.IsHost)
+                if (m_settings.Session.IsHost)
                 {
                     this.StartSessionAsHost();
+                    m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings);
                 }
                 else
                 {
@@ -211,8 +238,9 @@ namespace Assets.Scripts.Managers
                 this.LockMouse();
                 m_state = GameState.InGame;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                NotificationService.Instance.Error(ex);
                 this.LoadSplashScreen();
             }
         }
@@ -234,16 +262,36 @@ namespace Assets.Scripts.Managers
             this.UnlockMouse();
             m_state = GameState.MainMenu;
             SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
-            
+
         }
 
-        internal void RespawnPlayer()
+        public void RespawnPlayer()
         {
             this.NotifyPauseMenuClosed();
-            this.OnRespawnTriggered?.Invoke(this, EventArgs.Empty);
+            m_spawnManager.RespawnLocalPlayer();
         }
 
-        internal void DeregisterPlayer(ulong clientId)
+
+
+        private void NetManager_OnConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
+        {
+            if (this.IsServer)
+            {
+                NotificationService.Instance.Info("Client Id : " + arg2.ClientId + "| Event type : " + arg2.EventType);
+
+                switch (arg2.EventType)
+                {
+                    case ConnectionEvent.ClientConnected:
+                        m_spawnManager.SpawnPlayer(arg2.ClientId);
+                        break;
+                    case ConnectionEvent.ClientDisconnected:
+                        m_spawnManager.DespawnPlayer(arg2.ClientId);
+                        break;
+                }
+            }
+        }
+
+        public void DetatchPlayerActor(ulong clientId)
         {
             if (m_players.ContainsKey(clientId))
             {
@@ -254,13 +302,30 @@ namespace Assets.Scripts.Managers
 
                 playerState.OnStateChanged -= this.PlayerState_OnStateChanged;
 
-                m_players.Remove(clientId);
+                m_players[clientId] = null;
 
                 NotificationService.Instance.Info("Deregistered: Client Id: " + clientId);
             }
         }
 
-        internal void RegisterPlayer(ulong clientId, GameObject playerActor)
+        internal void DeregisterPlayer(ulong clientId)
+        {
+            if (m_players.ContainsKey(clientId))
+            {
+                this.DetatchPlayerActor(clientId);
+                m_players.Remove(clientId);
+                m_matchManager.RemovePlayer(clientId);
+
+                NotificationService.Instance.Info("Deregistered: Client Id: " + clientId);
+            }
+        }
+
+        public bool IsPlayerRegistered(ulong clientId)
+        {
+            return m_players.ContainsKey(clientId);
+        }
+
+        public void RegisterPlayer(ulong clientId, GameObject playerActor)
         {
             var actorNetwork = playerActor.GetComponent<ActorNetwork>();
             var playerState = playerActor.GetComponent<ActorState>();
@@ -274,12 +339,26 @@ namespace Assets.Scripts.Managers
 
             m_players[clientId] = playerActor;
 
-            NotificationService.Instance.Info("Registered : Client Id : " + clientId );
+            NotificationService.Instance.Info("Registered : Client Id : " + clientId);
 
         }
 
+        private void AddAllPlayersToMatch()
+        {
+            foreach (var kvp in m_players)
+            {
+                var player = kvp.Value;
+                var clientId = kvp.Key;
+
+                if (!m_matchManager.PlayerExists(clientId))
+                {
+                    m_matchManager.AddPlayer(clientId, player);
+                }
+            }
+        }
+
         private void PlayerState_OnStateChanged(object sender, Events.OnStateChangedEventArgs e)
-         {
+        {
             if (e.State.IsDying)
             {
                 this.HandleActorDeath(e.Actor);
@@ -316,24 +395,33 @@ namespace Assets.Scripts.Managers
         //    }
         //}
 
-        //private void SpawnPlayer(ulong clientId)
-        //{
-        //    if (m_clientPrefabs.TryGetValue(clientId, out var clientPrefab))
-        //    {
-        //        var playerObj = GameObject.Instantiate(clientPrefab.Prefab);
-        //        playerObj.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-        //    }
-        //}
+        private void SpawnManager_OnActorSpawned(object sender, Events.OnActorSpawnedArgs e)
+        {
+            var netObj = e.Actor.GetComponent<NetworkObject>();
+            this.RegisterPlayer(netObj.OwnerClientId, e.Actor);
+        }
 
-        //private void Netmanager_OnClientConnectedCallback(ulong clientId)
-        //{
-        //    Debug.Log("Netmanager_OnClientConnectedCallback clientId : " + clientId);
+        private void SpawnManager_OnActorDespawned(object sender, Events.OnActorDespawnedArgs e)
+        {
+            this.DetatchPlayerActor(e.ClientId);
+        }
 
-        //    if (clientId != NetworkManager.ServerClientId)
-        //    {
-        //        this.SpawnPlayer(clientId);
-        //    }
-        //}
+        private void Netmanager_OnClientConnectedCallback(ulong clientId)
+        {
+            if (this.IsServer)
+            {
+                NotificationService.Instance.Info("ClientId: " + clientId);
+
+                if (clientId != NetworkManager.ServerClientId)
+                {
+                    var matchManNet = m_matchManager.GetComponent<MatchManagerNetwork>();
+                    matchManNet.SendMatchDataToClient(clientId);
+
+                    // this.SpawnPlayer(clientId);
+                }
+            }
+
+        }
 
         //private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
         //{

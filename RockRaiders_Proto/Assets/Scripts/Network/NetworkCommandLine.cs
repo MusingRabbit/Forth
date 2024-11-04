@@ -2,64 +2,67 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetworkCommandLine : MonoBehaviour
+namespace Assets.Scripts.Network
 {
-    private NetworkManager m_netManager;
-
-    // Start is called before the first frame update
-    void Start()
+    public class NetworkCommandLine : MonoBehaviour
     {
-        m_netManager = this.GetComponentInParent<NetworkManager>();
+        private NetworkManager m_netManager;
 
-        if (Application.isEditor)
+        // Start is called before the first frame update
+        void Start()
         {
-            return;
-        }
+            m_netManager = GetComponentInParent<NetworkManager>();
 
-        var args = this.GetCommandLineArgs();
-
-        if (args.TryGetValue("-mode", out var mode))
-        {
-            switch(mode)
+            if (Application.isEditor)
             {
-                case "server":
-                    m_netManager.StartServer();
-                    break;
-                case "host":
-                    m_netManager.StartHost();
-                    break;
-                case "client":
-                    m_netManager.StartClient();
-                    break;
+                return;
             }
-        }
-    }
 
-    private Dictionary<string,string> GetCommandLineArgs()
-    {
-        var result = new Dictionary<string, string>();
+            var args = GetCommandLineArgs();
 
-        var args = System.Environment.GetCommandLineArgs();
-
-        for(int i = 0; i < args.Length; i++)
-        {
-            var arg = args[i].ToLower();
-
-            if (arg.StartsWith('-'))
+            if (args.TryGetValue("-mode", out var mode))
             {
-                var value = i < args.Length - 1 ? args[i + 1].ToLower() : null;
-                value = value?.StartsWith('-') ?? false ? null : value;
-
-                result.Add(arg, value);
+                switch (mode)
+                {
+                    case "server":
+                        m_netManager.StartServer();
+                        break;
+                    case "host":
+                        m_netManager.StartHost();
+                        break;
+                    case "client":
+                        m_netManager.StartClient();
+                        break;
+                }
             }
         }
 
-        return result;
-    }
+        private Dictionary<string, string> GetCommandLineArgs()
+        {
+            var result = new Dictionary<string, string>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            var args = System.Environment.GetCommandLineArgs();
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                var arg = args[i].ToLower();
+
+                if (arg.StartsWith('-'))
+                {
+                    var value = i < args.Length - 1 ? args[i + 1].ToLower() : null;
+                    value = value?.StartsWith('-') ?? false ? null : value;
+
+                    result.Add(arg, value);
+                }
+            }
+
+            return result;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }

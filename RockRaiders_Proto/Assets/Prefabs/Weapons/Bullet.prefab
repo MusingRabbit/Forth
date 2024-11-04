@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1643425809
+  GlobalObjectIdHash: 4142044985
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7048868486205371406}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 423bb8e50c8c1ab44999c9b678630e2f, type: 3}
+  m_Script: {fileID: 11500000, guid: 981f2b2bc190aa74888fdc9ec3fcaba7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_projectilePrefab: {fileID: 7048868486205371406}

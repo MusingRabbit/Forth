@@ -1,8 +1,13 @@
 using Assets.Scripts.Actor;
-using Assets.Scripts.Managers;
+using Assets.Scripts.Match;
+using Assets.Scripts.Network;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
+using Assets.Scripts.Util;
+using System;
+using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +16,9 @@ namespace Assets.Scripts.UI
 {
     public class UIGameOverlay : MonoBehaviour
     {
-        [SerializeField]
+
         private GameManager m_gameManager;
+        private MatchManager m_matchManager;
 
         [SerializeField]
         private GameObject m_hud;
@@ -21,24 +27,39 @@ namespace Assets.Scripts.UI
         private GameObject m_ded;
 
         [SerializeField]
+        private GameObject m_pending;
+
+        [SerializeField]
         private GameObject m_pauseMenu;
+
+        [SerializeField]
+        private GameObject m_deathmatchScore;
+
+        [SerializeField]
+        private GameObject m_teamScore;
+
+        [SerializeField]
+        private GameObject m_matchOverDm;
+
+        [SerializeField]
+        private GameObject m_matchOverTeam;
 
         [SerializeField]
         private ActorController m_actor;
 
-        [SerializeField]
+
         private Text m_txtGravBootsEnabled;
-
-        [SerializeField]
         private Text m_txtHitpointsValue;
-
-        [SerializeField]
+        private Text m_txtRedScore;
+        private Text m_txtBlueScore;
+        private Text m_txtTeamScoreLimit;
+        private Text m_txtScoreLimit;
+        private Text m_txtScoreValue;
         private Text m_txtAmmoCountValue;
-
-        [SerializeField]
         private TMP_Text m_txtNotificationText;
 
         private ActorState m_actorState;
+        private IReadonlyMatchData m_matchData;
 
         public ActorController Actor
         {
@@ -61,36 +82,199 @@ namespace Assets.Scripts.UI
                 m_gameManager = GameManager.Instance;
             }
 
+            if (m_matchManager == null)
+            {
+                m_matchManager = MatchManager.Instance;
+                m_matchManager.OnMatchStateChanged += this.MatchManager_OnMatchStateChanged;
+            }
+
             NotificationService.Instance.OnPlayerKilled += this.NotificationService_OnPlayerKilled;
 
+            m_txtAmmoCountValue = m_hud.FindChild("Ammo.AmmoValue").GetComponent<Text>();
+            m_txtGravBootsEnabled = m_hud.FindChild("GravBoots.GravbootsValue").GetComponent<Text>();
+            m_txtHitpointsValue = m_hud.FindChild("HitPoints.HitpointsValue").GetComponent<Text>();
+
+
+            m_txtRedScore = m_teamScore.FindChild("RedScoreValue").GetComponent<Text>();
+            m_txtBlueScore = m_teamScore.FindChild("BlueScoreValue").GetComponent<Text>();
+            m_txtScoreValue = m_deathmatchScore.FindChild("ScoreValue").GetComponent<Text>();
+            m_txtTeamScoreLimit = m_teamScore.FindChild("ScoreLimitValue").GetComponent<Text>();
+            m_txtScoreLimit = m_deathmatchScore.FindChild("ScoreLimitValue").GetComponent<Text>();
+
+            m_txtNotificationText = m_hud.FindChild("NotificationText").GetComponent<TMP_Text>();
             m_txtNotificationText.text = string.Empty;
         }
 
+        private void MatchManager_OnMatchStateChanged(object sender, System.EventArgs e)
+        {
+
+        }
+
+        public void DisplayMatchOverDM(IReadonlyMatchData matchData)
+        {
+            m_matchOverDm.SetActive(true);
+
+            var txtPlayerName = m_matchOverDm.FindChild("PlayerNameText");
+            var txt = txtPlayerName.GetComponent<TMP_Text>();
+
+            if (matchData.Teams.ContainsKey(Team.None))
+            {
+                var winner = matchData.GetTopPlayerByTeam(Team.None);
+                var wState = winner.Player.GetComponent<ActorState>();
+
+                txt.text = wState.PlayerName;
+            }
+            else
+            {
+                txt.text = "Nobody";
+            }
+
+        }
+
+        public void DisplayMatchOverTeam(IReadonlyMatchData matchData)
+        {
+            m_matchOverTeam.SetActive(true);
+
+            var winner = matchData.Teams
+                .Where(x => x.Value.Team != Team.None)
+                .OrderByDescending(x => x.Value.TeamScore)
+                .First();
+
+            var txtTeamName = m_matchOverDm.FindChild("TeamNameText");
+            var txt = txtTeamName.GetComponent<TMP_Text>();
+            txt.text = winner.Value.Team.ToString();
+            txt.color = winner.Value.Team == Team.Blue ? Color.blue : Color.red;
+        }
+
+        private void DisplayOverlay()
+        {
+            if (m_matchData == null || !m_matchManager.IsReady)
+            {
+                return;
+            }
+
+            switch (m_matchData.MatchState)
+            {
+                case MatchState.PendingStart:
+                    m_hud.SetActive(!m_gameManager.PlayerPaused);
+                    m_pending.SetActive(!m_gameManager.PlayerPaused);
+                    m_pauseMenu.SetActive(m_gameManager.PlayerPaused);
+                    break;
+                case MatchState.Running:
+                    this.UpdateGravBootsStatus();
+                    this.UpdateHealthStatus();
+                    this.UpdateAmmoStatus();
+
+                    if (m_gameManager.PlayerPaused)
+                    {
+                        m_hud.SetActive(false);
+                        m_pending.SetActive(false);
+                        m_pauseMenu.SetActive(true);
+                    }
+                    else if (m_gameManager.LocalPlayerAwaitingRespawn)
+                    {
+                        m_ded.SetActive(true);
+                        m_hud.SetActive(false);
+                    }
+                    else
+                    {
+                        m_hud.SetActive(true);
+                        m_ded.SetActive(false);
+                        m_pending.SetActive(false);
+                        m_pauseMenu.SetActive(false);
+                    }
+
+                    switch (m_matchData.MatchType)
+                    {
+                        case MatchType.Deathmatch:
+                            m_deathmatchScore.SetActive(true);
+                            m_teamScore.SetActive(false);
+                            this.UpdatePlayerScore();
+                            break;
+                        case MatchType.TeamDeathmatch:
+                        case MatchType.CaptureTheFlag:
+                            m_deathmatchScore.SetActive(false);
+                            m_teamScore.SetActive(true);
+                            this.UpdateTeamScore();
+                            break;
+                    }
+
+                    break;
+                case MatchState.Ended:
+                    m_ded.SetActive(false);
+                    m_hud.SetActive(false);
+                    m_pauseMenu.SetActive(m_gameManager.PlayerPaused);
+
+                    switch (m_matchData.MatchType)
+                    {
+                        case MatchType.Deathmatch:
+                            this.DisplayMatchOverDM(m_matchData);
+                            break;
+                        case MatchType.TeamDeathmatch:
+                        case MatchType.CaptureTheFlag:
+                            this.DisplayMatchOverTeam(m_matchData);
+                            break;
+                    }
+                    break;
+            }
+        }
 
 
         // Update is called once per frame
         void Update()
         {
-            this.UpdateGravBootsStatus();
-            this.UpdateHealthStatus();
-            this.UpdateAmmoStatus();
+            if (m_matchManager.IsReady)
+            {
+                m_matchData = m_matchManager.GetMatchData();
+            }
+        }
 
-            if (m_gameManager.PlayerPaused)
+        private void OnGUI()
+        {
+            this.DisplayOverlay();
+        }
+
+        private void UpdateTeamScore()
+        {
+            if (m_matchData == null)
             {
-                m_hud.SetActive(false);
-                m_pauseMenu.SetActive(true);
+                return;
             }
-            else if (m_gameManager.LocalPlayerAwaitingRespawn)
+
+            var blueTeamScore = m_matchData.Teams[Team.Blue].TeamScore;
+            var redTeamScore = m_matchData.Teams[Team.Red].TeamScore;
+            var scoreLimit = m_matchData.ScoreLimit;
+
+            m_txtRedScore.text = redTeamScore.ToString();
+            m_txtBlueScore.text = blueTeamScore.ToString();
+            m_txtTeamScoreLimit.text = scoreLimit.ToString();
+        }
+
+        private void UpdatePlayerScore()
+        {
+            if (m_matchData == null)
             {
-                m_ded.SetActive(true);
-                m_hud.SetActive(false);
+                return;
             }
-            else
+
+            var currClientId = NetworkManager.Singleton.LocalClientId;
+
+            var players = m_matchData.Teams[Team.None].Players;
+
+            m_txtScoreLimit.text = m_matchData.ScoreLimit.ToString();
+
+            if (!players.ContainsKey(currClientId))
             {
-                m_hud.SetActive(true);
-                m_ded.SetActive(false);
-                m_pauseMenu.SetActive(false);
+                m_txtScoreValue.text = "UNKNOWN";
+                NotificationService.Instance.Warning($"No player with client id {currClientId} could be found");
+                return;
             }
+
+            var currPlayer = m_matchData.Teams[Team.None].Players[currClientId];
+            var score = currPlayer.Score;
+
+            m_txtScoreValue.text = score.ToString();
+            
         }
 
         private void UpdateGravBootsStatus()
@@ -153,5 +337,6 @@ namespace Assets.Scripts.UI
         {
             m_txtNotificationText.text = e.Data.Message + "\n" + m_txtNotificationText.text;
         }
+
     }
 }

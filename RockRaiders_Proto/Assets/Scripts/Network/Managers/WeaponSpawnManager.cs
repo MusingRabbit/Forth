@@ -6,7 +6,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Assets.Scripts.Managers
+namespace Assets.Scripts.Network
 {
     internal class WeaponSpawnPointData
     {
@@ -179,7 +179,7 @@ namespace Assets.Scripts.Managers
             {
                 if (spawn.Weapon == null)
                 {
-                    NotificationService.Instance.Warning("No weapon has been assigned to spawn point");
+                    //NotificationService.Instance.Warning("No weapon has been assigned to spawn point");
                     continue;
                 }
 

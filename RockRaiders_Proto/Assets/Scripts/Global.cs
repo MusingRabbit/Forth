@@ -27,6 +27,13 @@
         CaptureTheFlag
     }
 
+    public enum MatchState
+    {
+        PendingStart,
+        Running,
+        Ended
+    }
+
     public enum GameState
     {
         MainMenu = 0,

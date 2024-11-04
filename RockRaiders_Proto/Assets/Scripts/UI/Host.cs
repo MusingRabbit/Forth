@@ -36,7 +36,7 @@ namespace Assets.Scripts.UI
 
         public void LaunchGame()
         {
-            Model.MatchSettings.IsHost = true;
+            Model.Session.IsHost = true;
             this.GameManager.LaunchGame();
         }
 
@@ -76,13 +76,13 @@ namespace Assets.Scripts.UI
             m_levelDropDown.value = 0;
         }
 
-        protected override void UpdateControls(SettingsModel model)
+        protected override void UpdateControls(SettingsModel settings)
         {
             // TODO : Refactor into its own method / extension
             for (int i = 0; i < m_matchTypeDropDown.options.Count; i++)
             {
                 var opts = m_matchTypeDropDown.options[i];
-                if (opts.text == model.MatchSettings.MatchType.ToString())
+                if (opts.text == settings.Session.MatchSettings.ToString())
                 {
                     m_matchTypeDropDown.value = i;
                     break;
@@ -92,15 +92,15 @@ namespace Assets.Scripts.UI
             for (int i = 0; i < m_levelDropDown.options.Count; i++)
             {
                 var opts = m_levelDropDown.options[i];
-                if (opts.text == model.MatchSettings.Level)
+                if (opts.text == settings.Session.Level)
                 {
                     m_matchTypeDropDown.value = i;
                     break;
                 }
             }
 
-            m_serverNameInputField.text = Model.MatchSettings.ServerName;
-            m_serverPortInputField.text = Model.MatchSettings.Port.ToString();
+            m_serverNameInputField.text = Model.Session.ServerName;
+            m_serverPortInputField.text = Model.Session.Port.ToString();
         }
 
         protected override void UpdateGameSettingsModel()
@@ -110,10 +110,12 @@ namespace Assets.Scripts.UI
                 var selectedMatchOption = m_matchTypeDropDown.options[m_matchTypeDropDown.value];
                 var matchType = Enum.Parse<MatchType>(selectedMatchOption.text);
 
-                Model.MatchSettings.ServerName = m_serverNameInputField.text;
-                Model.MatchSettings.Port = ushort.Parse(m_serverPortInputField.text);
-                Model.MatchSettings.MatchType = matchType;
-                Model.MatchSettings.Level = m_levelDropDown.options[m_levelDropDown.value].text;
+                Model.Session.ServerName = m_serverNameInputField.text;
+                Model.Session.Port = ushort.Parse(m_serverPortInputField.text);
+
+
+                Model.Session.MatchSettings = new MatchSettings { MatchType = matchType, ScoreLimit = 15, TimeLimit = TimeSpan.Zero };
+                Model.Session.Level = m_levelDropDown.options[m_levelDropDown.value].text;
             }
         }
     }

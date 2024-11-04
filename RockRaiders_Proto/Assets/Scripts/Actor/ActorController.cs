@@ -2,6 +2,7 @@ using Assets.Scripts;
 using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
 using Assets.Scripts.Input;
+using Assets.Scripts.Network;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;

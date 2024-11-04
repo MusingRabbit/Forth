@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 
-namespace Assets.Scripts.Pickups.Weapons
+namespace Assets.Scripts.Network
 {
     internal class ProjectileNetwork : NetworkBehaviour
     {
@@ -26,13 +27,13 @@ namespace Assets.Scripts.Pickups.Weapons
             }
             set
             {
-                if (this.IsServer)
+                if (IsServer)
                 {
                     m_wpnNetworkObjectId.Value = value;
                 }
                 else
                 {
-                    this.SetHitWeaponNetworkObjectIdServerRpc(value);
+                    SetHitWeaponNetworkObjectIdServerRpc(value);
                 }
             }
         }
@@ -45,17 +46,17 @@ namespace Assets.Scripts.Pickups.Weapons
             }
             set
             {
-                var strClient = this.IsServer ? "Server" : "Client";
-                NotificationService.Instance.Info($"{strClient}|"+value.ToString());
+                var strClient = IsServer ? "Server" : "Client";
+                NotificationService.Instance.Info($"{strClient}|" + value.ToString());
 
-                if (this.IsServer)
+                if (IsServer)
                 {
                     m_hitNetworkObjectId.Value = value;
-                    this.SetHitNetworkObjectIdClientRpc(value);
+                    SetHitNetworkObjectIdClientRpc(value);
                 }
                 else
                 {
-                    this.SetHitNetworkObjectIdServerRpc(value);
+                    SetHitNetworkObjectIdServerRpc(value);
                 }
             }
         }
@@ -68,12 +69,12 @@ namespace Assets.Scripts.Pickups.Weapons
 
         private void Awake()
         {
-            m_projectile = this.GetComponent<Projectile>();
+            m_projectile = GetComponent<Projectile>();
         }
 
         private void Start()
         {
-            m_projectile = this.GetComponent<Projectile>();
+            m_projectile = GetComponent<Projectile>();
         }
 
         private void Update()
@@ -87,8 +88,8 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 NotificationService.Instance.Info($"WeaponNetworkObjectId : {m_wpnNetworkObjectId.Value} | HitNetworkObjectId : {newValue}");
 
-                var gameObj = this.NetworkManager.SpawnManager.SpawnedObjects[newValue];
-                var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[m_wpnNetworkObjectId.Value];
+                var gameObj = NetworkManager.SpawnManager.SpawnedObjects[newValue];
+                var weaponObj = NetworkManager.SpawnManager.SpawnedObjects[m_wpnNetworkObjectId.Value];
 
                 NotificationService.Instance.Info($"{gameObj} | {weaponObj}");
 
@@ -109,17 +110,17 @@ namespace Assets.Scripts.Pickups.Weapons
         private void OnNetworkObjectValueChanged(ulong oldVal, ulong value)
         {
             NotificationService.Instance.Info($"WeaponNetworkObjectId : {value}");
-            this.SetWeaponNetworkObjectId(value);
+            SetWeaponNetworkObjectId(value);
         }
 
         public void SetWeaponNetworkObjectId(ulong weaponObjId)
         {
-            if (this.IsServer)
+            if (IsServer)
             {
                 m_wpnNetworkObjectId.Value = weaponObjId;
             }
-            
-            var weaponObj = this.NetworkManager.SpawnManager.SpawnedObjects[weaponObjId];
+
+            var weaponObj = NetworkManager.SpawnManager.SpawnedObjects[weaponObjId];
             m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
         }
 
@@ -132,7 +133,7 @@ namespace Assets.Scripts.Pickups.Weapons
         [Rpc(SendTo.ClientsAndHost)]
         private void SetHitNetworkObjectIdClientRpc(ulong value)
         {
-            this.OnHitNetworkObjectChanged(m_hitNetworkObjectId.Value, value);
+            OnHitNetworkObjectChanged(m_hitNetworkObjectId.Value, value);
         }
 
         [Rpc(SendTo.Server)]

@@ -1,8 +1,13 @@
+using Assets.Scripts.Services;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    private static CameraManager _instance;
+
+
     [SerializeField]
     private List<Camera> m_cameras; 
 
@@ -15,6 +20,19 @@ public class CameraManager : MonoBehaviour
     {
         m_currCamera = null;
         m_cameras = new List<Camera>();
+    }
+
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            GameObject.DontDestroyOnLoad(base.gameObject);
+        }
+        else
+        {
+            GameObject.Destroy(base.gameObject);
+        }
     }
 
     // Start is called before the first frame update
@@ -48,7 +66,14 @@ public class CameraManager : MonoBehaviour
 
         for (int i = 0; i < indices.Count; i++)
         {
-            m_cameras.RemoveAt(indices[i]);
+            try
+            {
+                m_cameras.RemoveAt(indices[i]);
+            }
+            catch(Exception ex)
+            {
+                NotificationService.Instance.Warning(ex.Message);
+            }
         }
     }
 

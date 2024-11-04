@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Singleton : MonoBehaviour
 {
-    private static uint _counter;
     private static Dictionary<uint, Singleton> _instances = new Dictionary<uint, Singleton>();
 
     [SerializeField]
@@ -21,7 +20,6 @@ public class Singleton : MonoBehaviour
 
     public Singleton()
     {
-        m_key = _counter++;
     }
 
     private void Awake()

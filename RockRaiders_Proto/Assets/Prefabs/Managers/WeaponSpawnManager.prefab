@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1014977789
+  GlobalObjectIdHash: 2140763548
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -63,15 +63,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6379868402919182930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45a98c412f629294293737966ed72364, type: 3}
+  m_Script: {fileID: 11500000, guid: f3e4c52fb5df5014a8d7b3f0c71b981d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_availableWeaponPrefabs:
-  - Type: 1
-    Prefab: {fileID: 6454855206075445079, guid: 1b6d2364449dff64e96a09693ecf4764, type: 3}
-  - Type: 0
-    Prefab: {fileID: 3132132636237027123, guid: 21c57e6ec51133c438f9f8017da960e0, type: 3}
-  - Type: 3
-    Prefab: {fileID: 6454855206075445079, guid: 1ac8ed6be2e374a428c2645925faa6ce, type: 3}
+  m_availableWeaponPrefabs: []
   m_respawnTimeout: 60
   m_spawnPoints: []

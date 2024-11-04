@@ -23,7 +23,7 @@ namespace Assets.Scripts.UI
             PopulateScreenResolutionsDropDown();
             base.Start();
 
-            if (Model.GameSettings.Resolution == string.Empty)
+            if (Model.Game.Resolution == string.Empty)
             {
                 m_screenResDropdown.value = -1;
                 m_screenResDropdown.value = 0;
@@ -33,21 +33,21 @@ namespace Assets.Scripts.UI
         // Update is called once per frame
         protected override void Update()
         {
-            var oldResolution = Model.GameSettings.Resolution;
-            var oldFullScreenMode = Model.GameSettings.FullScreen;
+            var oldResolution = Model.Game.Resolution;
+            var oldFullScreenMode = Model.Game.FullScreen;
 
             base.Update();
 
-            if (oldResolution != Model.GameSettings.Resolution)
+            if (oldResolution != Model.Game.Resolution)
             {
-                SelectScreenResolution(Model.GameSettings.Resolution);
+                SelectScreenResolution(Model.Game.Resolution);
             }
         }
 
         public void FullScreenToggle()
         {
-            Model.GameSettings.FullScreen = !Model.GameSettings.FullScreen;
-            SetScreenResolution(Model.GameSettings.Resolution, Model.GameSettings.FullScreen);
+            Model.Game.FullScreen = !Model.Game.FullScreen;
+            SetScreenResolution(Model.Game.Resolution, Model.Game.FullScreen);
         }
 
         private void PopulateScreenResolutionsDropDown()
@@ -90,7 +90,7 @@ namespace Assets.Scripts.UI
             if (val != -1)
             {
                 m_screenResDropdown.value = val;
-                SetScreenResolution(resolution, Model.GameSettings.FullScreen);
+                SetScreenResolution(resolution, Model.Game.FullScreen);
             }
             else
             {
@@ -103,16 +103,16 @@ namespace Assets.Scripts.UI
 
         protected override void UpdateControls(SettingsModel model)
         {
-            SelectScreenResolution(model.GameSettings.Resolution);
-            m_fullScreenToggle.isOn = model.GameSettings.FullScreen;
-            m_playerNameInput.text = model.GameSettings.PlayerName;
+            SelectScreenResolution(model.Game.Resolution);
+            m_fullScreenToggle.isOn = model.Game.FullScreen;
+            m_playerNameInput.text = model.Game.PlayerName;
         }
 
         protected override void UpdateGameSettingsModel()
         {
-            Model.GameSettings.FullScreen = m_fullScreenToggle.isOn;
-            Model.GameSettings.Resolution = m_screenResDropdown.options[m_screenResDropdown.value].text;
-            Model.GameSettings.PlayerName = m_playerNameInput.text;
+            Model.Game.FullScreen = m_fullScreenToggle.isOn;
+            Model.Game.Resolution = m_screenResDropdown.options[m_screenResDropdown.value].text;
+            Model.Game.PlayerName = m_playerNameInput.text;
         }
     }
 }

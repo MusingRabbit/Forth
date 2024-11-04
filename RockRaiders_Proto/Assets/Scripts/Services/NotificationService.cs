@@ -70,6 +70,8 @@ namespace Assets.Scripts.Services
         public event EventHandler<OnNotificationEventArgs> OnInfo;
         public event EventHandler<OnNotificationEventArgs> OnWarning;
         public event EventHandler<OnNotificationEventArgs> OnError;
+
+
         public event EventHandler<OnNotificationEventArgs> OnPlayerKilled;
 
 

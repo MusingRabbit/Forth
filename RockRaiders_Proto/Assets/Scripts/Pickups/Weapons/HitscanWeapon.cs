@@ -1,3 +1,4 @@
+using Assets.Scripts.Actor;
 using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Pickups.Weapons.ScriptableObjects;
 using Assets.Scripts.Util;
@@ -73,11 +74,17 @@ namespace Assets.Scripts.Pickups.Weapons
                     StartCoroutine(PlayTrail(shootPos, hit.point, hit));
 
                     var healthSys = hit.collider.gameObject.GetComponent<Health>();
+                    var actorState = hit.collider.gameObject.GetComponent<ActorState>();
                     var damage = this.GetComponent<Damage>();
 
                     if (healthSys != null)
                     {
                         healthSys.RegisterDamage(damage);
+                    }
+
+                    if (actorState != null)
+                    {
+                        actorState.LastHitBy = this.gameObject;
                     }
 
                 }

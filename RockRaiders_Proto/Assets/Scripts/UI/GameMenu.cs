@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Managers;
+﻿using Assets.Scripts.Network;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI.Models;
 using System;
@@ -38,7 +38,7 @@ namespace Assets.Scripts.UI
         {
             if (m_gameManager == null)
             {
-                m_gameManager = Assets.Scripts.Managers.GameManager.Instance;
+                m_gameManager = Assets.Scripts.Network.GameManager.Instance;
             }
 
             this.Model = m_gameManager.Settings;

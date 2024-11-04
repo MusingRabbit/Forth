@@ -4,6 +4,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.Services;
 using Unity.VisualScripting;
 using Assets.Scripts.HealthSystem;
+using Assets.Scripts.Network;
 
 namespace Assets.Scripts.Actor
 {
