@@ -178,6 +178,16 @@ namespace Assets.Scripts
         private void Notification_OnPlayerKilled(object sender, OnNotificationEventArgs e)
         {
             var data = e.Data.GetData<PlayerKilledData>();
+            var state = data.Killer.GetComponent<ActorState>();
+
+            switch (m_matchData.MatchType)
+            {
+                case MatchType.TeamDeathmatch:
+                    this.AddTeamScore(state.Team, 1);
+                    break;
+            }
+
+
             this.AddPlayerScore(data.Killer, 1);
         }
 

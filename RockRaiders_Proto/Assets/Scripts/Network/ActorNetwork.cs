@@ -190,7 +190,10 @@ namespace Assets.Scripts.Network
         {
             var playerData = m_playerData.Value;
 
-            m_actorController.State.PlayerName = playerData.PlayerName.ToString();
+            if (playerData.PlayerName != string.Empty)
+            {
+                m_actorController.State.PlayerName = playerData.PlayerName.ToString();
+            }
 
             if (m_actorState.Value.IsReady)
             {

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Input;
+using Assets.Scripts.Util;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,6 +46,8 @@ namespace Assets.Scripts.Actor
 
         [SerializeField]
         private GameObject m_body;
+
+        private BoxCollider m_groundCollider;
 
         [SerializeField]
         private ActorCamera m_actorCamera;
@@ -256,8 +259,19 @@ namespace Assets.Scripts.Actor
             m_crouch = true;
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            m_state.FeetOnGround = true;
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            m_state.FeetOnGround = false;
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
+
             m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
 
             var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock");
