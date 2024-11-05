@@ -19,6 +19,7 @@ namespace Assets.Scripts.Network
         public NetActorInventory Inventory;
         public int SelectedWeapon;
         public int Hitpoints;
+        public Color Colour;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer)
             where T : IReaderWriter
@@ -27,6 +28,7 @@ namespace Assets.Scripts.Network
             serializer.SerializeValue(ref this.Inventory);
             serializer.SerializeValue(ref this.SelectedWeapon);
             serializer.SerializeValue(ref this.Hitpoints);
+            serializer.SerializeValue(ref this.Colour);
         }
     }
 
@@ -91,6 +93,7 @@ namespace Assets.Scripts.Network
         private ActorGrounded m_actorGrounded;
         private ActorHealth m_health;
         private ActorSpawnManager m_actorManager;
+        private ActorPainter m_paint;
         private ActorCrosshair m_crosshair;
 
         private Timer m_updateHealthTimer;
@@ -128,6 +131,7 @@ namespace Assets.Scripts.Network
 
         private void Start()
         {
+            m_paint = this.GetComponent<ActorPainter>();
             m_crosshair = this.GetComponent<ActorCrosshair>();
             m_actorController = this.GetComponent<ActorController>();
             m_health = this.GetComponent<ActorHealth>();
@@ -178,6 +182,14 @@ namespace Assets.Scripts.Network
             var state = m_actorState.Value;
             m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
             m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
+
+            var color = m_paint.GetPaint();
+
+            if (color != state.Colour)
+            {
+                m_paint.Paint(state.Colour);
+            }
+
         }
 
         private void UpdateActorHealth()
@@ -230,6 +242,7 @@ namespace Assets.Scripts.Network
                 SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
                 Hitpoints = m_health.Hitpoints.Current,
                 Inventory = m_actorController.State.Inventory.GetNetActorInventory(),
+                Colour = m_paint.GetPaint()
             };
         }
 
@@ -442,6 +455,11 @@ namespace Assets.Scripts.Network
                 inValid = true;
             }
 
+            if (clientState.Colour != serverState.Colour)
+            {
+                inValid = true;
+            }
+
             if (inValid)
             {
                 this.SendCorrectedActorStateToClientRpc(serverState);
@@ -481,6 +499,11 @@ namespace Assets.Scripts.Network
                 var currState = m_actorController.State.Inventory.GetActorInventoryState();
                 m_actorController.State.Inventory.SetInventoryFromActorInventoryState(serverState);
                 m_actorController.State.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
+            }
+
+            if (m_paint != null)
+            {
+                m_paint.Paint(actorState.Colour);
             }
         }
 

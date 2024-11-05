@@ -50,7 +50,7 @@ namespace Assets.Scripts
         }
 
         public Timer(TimeSpan timeSpan)
-            :this()
+            : this()
         {
             this.SetTimeSpan(timeSpan);
         }

@@ -197,14 +197,14 @@ namespace Assets.Scripts
             this.OnInitialisation?.Invoke(this, EventArgs.Empty);
         }
 
-        public void InitialiseMatch(MatchSettings settings)
+        public void InitialiseMatch(MatchSettings settings, MatchState matchState = MatchState.PendingStart)
         {
             m_matchData = new MatchData();
             m_matchData.MatchType = settings.MatchType;
             m_matchData.ScoreLimit = settings.ScoreLimit;
             m_matchData.TimeLimit = settings.TimeLimit;
 
-            m_matchData.MatchState = MatchState.PendingStart;
+            m_matchData.MatchState = matchState;
 
             NotificationService.Instance.Info($"MatchType:{m_matchData.MatchType}|MatchState:{m_matchData.MatchState}|ScoreLimit:{m_matchData.ScoreLimit}|TimeLimit:{m_matchData.TimeLimit}");
 

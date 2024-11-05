@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts.Util
@@ -39,6 +41,35 @@ namespace Assets.Scripts.Util
             }
 
             return null;
+        }
+
+        public static List<GameObject> GetAllChildren(this GameObject gameObject, string[] exl)
+        {
+            return GetAllChildObjects(gameObject, exl);
+        }
+
+        public static List<GameObject> GetAllChildObjects(GameObject gameObject, string[] exl)
+        {
+            var result = new List<GameObject>();
+
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                var child = gameObject.transform.GetChild(i);
+
+                if (exl.Contains(child.name))
+                {
+                    continue;
+                }
+
+                result.Add(child.gameObject);
+
+                if (child.transform.childCount > 0)
+                {
+                    result.AddRange(GetAllChildObjects(child.gameObject, exl));
+                }
+            }
+
+            return result;
         }
 
 

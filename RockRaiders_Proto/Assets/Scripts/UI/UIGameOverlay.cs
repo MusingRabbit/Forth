@@ -57,6 +57,7 @@ namespace Assets.Scripts.UI
         private Text m_txtScoreValue;
         private Text m_txtAmmoCountValue;
         private TMP_Text m_txtNotificationText;
+        private Timer m_notificationTextBumpTimer;
 
         private ActorState m_actorState;
         private IReadonlyMatchData m_matchData;
@@ -72,6 +73,12 @@ namespace Assets.Scripts.UI
                 m_actor = value;
                 m_actorState = m_actor.GetComponent<ActorState>();
             }
+        }
+
+        public UIGameOverlay()
+        {
+            m_notificationTextBumpTimer = new Timer(TimeSpan.FromSeconds(5));
+            m_notificationTextBumpTimer.OnTimerElapsed += NotificationTextBumpTimer_OnTimerElapsed;
         }
 
         // Start is called before the first frame update
@@ -103,6 +110,8 @@ namespace Assets.Scripts.UI
 
             m_txtNotificationText = m_hud.FindChild("NotificationText").GetComponent<TMP_Text>();
             m_txtNotificationText.text = string.Empty;
+
+            m_notificationTextBumpTimer.Start();
         }
 
         private void MatchManager_OnMatchStateChanged(object sender, System.EventArgs e)
@@ -227,6 +236,8 @@ namespace Assets.Scripts.UI
             {
                 m_matchData = m_matchManager.GetMatchData();
             }
+
+            m_notificationTextBumpTimer.Tick();
         }
 
         private void OnGUI()
@@ -336,6 +347,11 @@ namespace Assets.Scripts.UI
         private void NotificationService_OnPlayerKilled(object sender, Events.OnNotificationEventArgs e)
         {
             m_txtNotificationText.text = e.Data.Message + "\n" + m_txtNotificationText.text;
+        }
+
+        private void NotificationTextBumpTimer_OnTimerElapsed(object sender, Events.TimerElapsedEventArgs e)
+        {
+            m_txtNotificationText.text = "\n" + m_txtNotificationText.text;
         }
 
     }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -120,7 +121,11 @@ namespace Assets.Scripts.Network
             m_spawnManager.OnActorDespawn += this.SpawnManager_OnActorDespawned;
 
             m_matchManager.Initialise(this);
+
+            m_matchManager.OnMatchStateChanged += MatchManager_OnMatchStateChanged;
         }
+
+
 
         private void Update()
         {
@@ -350,12 +355,16 @@ namespace Assets.Scripts.Network
                 var player = kvp.Value;
                 var clientId = kvp.Key;
 
-                if (!m_matchManager.PlayerExists(clientId))
+                if (player != null)
                 {
-                    m_matchManager.AddPlayer(clientId, player);
+                    if (!m_matchManager.PlayerExists(clientId))
+                    {
+                        m_matchManager.AddPlayer(clientId, player);
+                    }
                 }
             }
         }
+
 
         private void PlayerState_OnStateChanged(object sender, Events.OnStateChangedEventArgs e)
         {
@@ -421,6 +430,12 @@ namespace Assets.Scripts.Network
                 }
             }
 
+        }
+
+        private void MatchManager_OnMatchStateChanged(object sender, EventArgs e)
+        {
+            m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.Running);
+            m_spawnManager.RespawnAllClients();
         }
 
         //private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
