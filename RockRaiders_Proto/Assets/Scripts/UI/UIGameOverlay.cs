@@ -232,7 +232,7 @@ namespace Assets.Scripts.UI
         // Update is called once per frame
         void Update()
         {
-            if (m_matchManager.IsReady)
+            if (m_matchManager?.IsReady ?? false)
             {
                 m_matchData = m_matchManager.GetMatchData();
             }

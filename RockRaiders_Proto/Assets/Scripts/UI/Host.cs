@@ -22,7 +22,7 @@ namespace Assets.Scripts.UI
         private TMP_Dropdown m_levelDropDown;
 
 
-        private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01" };
+        private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01", "SS_Miner" };
 
         // Start is called before the first frame update
         protected override void Start()

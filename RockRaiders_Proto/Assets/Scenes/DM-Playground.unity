@@ -1397,7 +1397,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1570543147}
     m_Modifications:
     - target: {fileID: 1985134519073871743, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
       propertyPath: m_team
@@ -1463,6 +1463,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e589183929f2beb4ebbd08989bc1e96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1087388790 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5628861664255299714, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
+  m_PrefabInstance: {fileID: 1087388788}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1171361704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1479,9 +1484,25 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 1011820294
       objectReference: {fileID: 0}
+    - target: {fileID: 2384970004526068839, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3625261537937453933, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
       propertyPath: m_Name
       value: Bounds
+      objectReference: {fileID: 0}
+    - target: {fileID: 4473160942271219245, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6738510373877200460, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6942375483394666578, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8235808576489979587, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
       propertyPath: m_LocalScale.x
@@ -1533,6 +1554,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8235808576489979587, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8366824237361504384, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8734515270659380217, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8891733222421249811, guid: 676e196f58c91dc4e97755b463c80009, type: 3}
@@ -2011,6 +2040,9 @@ Transform:
   - {fileID: 93711425}
   - {fileID: 979536180}
   - {fileID: 1997746287}
+  - {fileID: 2058464189}
+  - {fileID: 1828487308}
+  - {fileID: 1087388790}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1570543148
@@ -2283,7 +2315,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1570543147}
     m_Modifications:
     - target: {fileID: 1985134519073871743, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
       propertyPath: m_team
@@ -2349,6 +2381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e589183929f2beb4ebbd08989bc1e96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1828487308 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5628861664255299714, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
+  m_PrefabInstance: {fileID: 1828487306}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1899001559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2505,7 +2542,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1570543147}
     m_Modifications:
     - target: {fileID: 1985134519073871743, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
       propertyPath: m_team
@@ -2571,6 +2608,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e589183929f2beb4ebbd08989bc1e96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &2058464189 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5628861664255299714, guid: c9110f5421672c149a3d7de948bc667c, type: 3}
+  m_PrefabInstance: {fileID: 2058464187}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2114471938
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2880,9 +2922,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1570543147}
-  - {fileID: 2058464187}
-  - {fileID: 1828487306}
-  - {fileID: 1087388788}
   - {fileID: 1171361704}
   - {fileID: 861143244}
   - {fileID: 743102290}
