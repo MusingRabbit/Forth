@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/DM-VolcanicPlanet01.unity
     guid: a486d5e651d47f4498f8cf4efc6403c0
   - enabled: 1
-    path: Assets/Scenes/DM-Playground.unity
+    path: Assets/Scenes/TDM-Playground.unity
     guid: c660e2a4fbae02648a530bb117caa55b
   - enabled: 0
     path: Assets/Scenes/VolcanicPlanet01.unity
@@ -26,4 +26,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DM-SS_Miner.unity
     guid: 91faf7be0a24bf447be1c64220a5d983
+  - enabled: 1
+    path: Assets/Scenes/TDM-SS_Miner.unity
+    guid: 19a7ef389ddd3254182c428322919743
+  - enabled: 1
+    path: Assets/Scenes/DM-Playground.unity
+    guid: 8754331b2a22ca14998d8d73544da5fd
   m_configObjects: {}

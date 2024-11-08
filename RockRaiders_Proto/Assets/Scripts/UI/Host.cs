@@ -53,7 +53,7 @@ namespace Assets.Scripts.UI
             var values = Enum.GetValues(typeof(MatchType));
 
             IList matchTypes = values;
-            for (int i = 0; i < 1/*matchTypes.Count*/; i++) //Only support Deathmatch at the minute
+            for (int i = 0; i < matchTypes.Count; i++) //Only support Deathmatch at the minute
             {
                 object val = matchTypes[i];
                 m_matchTypeDropDown.options.Add(new TMP_Dropdown.OptionData(val.ToString()));

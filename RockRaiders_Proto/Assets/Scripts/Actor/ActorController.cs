@@ -35,14 +35,11 @@ public class ActorController : RRMonoBehaviour
 
     private BoxCollider m_headBoxCollider;
 
-    [SerializeField]
-    private Team m_team;
-
     public Team Team
     {
         get
         {
-            return m_team;
+            return m_state.Team;
         }
     }
 
@@ -111,8 +108,6 @@ public class ActorController : RRMonoBehaviour
         }
 
         //m_dropTimer.Tick();
-
-        m_state.Team = m_team;
 
         if (m_controller != null)
         {

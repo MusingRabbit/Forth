@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Events;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Events;
 using Assets.Scripts.Match;
 using Assets.Scripts.Util;
 using Newtonsoft.Json;
@@ -18,11 +19,13 @@ namespace Assets.Scripts.Network
         public ulong ClientId;
         public ulong PlayerNetworkObjectId;
         public int Score;
+        public Team Team;
         
         public bool Equals(PayerMatchDataNet other)
         {
             return this.PlayerNetworkObjectId == other.PlayerNetworkObjectId
                 && this.Score == other.Score
+                && this.Team == other.Team
                 && this.ClientId == other.ClientId;
         }
 
@@ -31,6 +34,7 @@ namespace Assets.Scripts.Network
             serializer.SerializeValue(ref PlayerNetworkObjectId);
             serializer.SerializeValue(ref Score);
             serializer.SerializeValue(ref ClientId);
+            serializer.SerializeValue(ref Team);
         }
     }
 
@@ -131,7 +135,6 @@ namespace Assets.Scripts.Network
 
         private void MatchManager_OnPlayerTeamSwitch(object sender, OnPlayerSwitchTeamsArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void MatchManager_OnPlayerAdded(object sender, OnPlayerAddedArgs e)

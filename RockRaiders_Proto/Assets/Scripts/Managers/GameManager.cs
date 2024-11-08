@@ -7,6 +7,7 @@ using Assets.Scripts.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Xml;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.VisualScripting;
@@ -123,9 +124,8 @@ namespace Assets.Scripts.Network
             m_matchManager.Initialise(this);
 
             m_matchManager.OnMatchStateChanged += MatchManager_OnMatchStateChanged;
+            m_matchManager.OnPlayerTeamSwitch += MatchManager_OnPlayerTeamSwitch;
         }
-
-
 
         private void Update()
         {
@@ -151,7 +151,7 @@ namespace Assets.Scripts.Network
 
             if (m_matchManager.IsReady)
             {
-                this.AddAllPlayersToMatch();
+                //this.AddAllPlayersToMatch();
             }
         }
 
@@ -408,7 +408,41 @@ namespace Assets.Scripts.Network
         {
             var netObj = e.Actor.GetComponent<NetworkObject>();
             this.RegisterPlayer(netObj.OwnerClientId, e.Actor);
+
+            if (this.IsServer)
+            {
+                var matchData = m_matchManager.GetPlayerMatchData(netObj.OwnerClientId);
+
+                if (matchData != null)
+                {
+                    var actorState = e.Actor.GetComponent<ActorState>();
+                    actorState.Team = matchData.Team;
+                }
+                else
+                {
+                    matchData = m_matchManager.AddPlayer(netObj.OwnerClientId, e.Actor);
+
+                    var actorState = e.Actor.GetComponent<ActorState>();
+                    actorState.Team = matchData.Team;
+                }
+            }
         }
+
+        private void MatchManager_OnPlayerTeamSwitch(object sender, Events.OnPlayerSwitchTeamsArgs e)
+        {
+            if (this.IsServer)
+            {
+                NotificationService.Instance.Info($"Moving client ({e.PlayerData.ClientId}) to spawn.");
+
+                var gameObj = e.PlayerData.Player;
+
+                if (gameObj != null)
+                {
+                    m_spawnManager.MoveActorToSpawnPoint(e.PlayerData.Player);
+                }
+            }
+        }
+
 
         private void SpawnManager_OnActorDespawned(object sender, Events.OnActorDespawnedArgs e)
         {

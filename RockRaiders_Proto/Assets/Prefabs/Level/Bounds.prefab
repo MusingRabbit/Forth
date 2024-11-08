@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 693071838613250197}
   - component: {fileID: 2432763755164417581}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,7 +63,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8235808576489979587}
   - component: {fileID: 396541881335846477}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 767530779
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -122,7 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2957286130887975013}
   - component: {fileID: 8220807256918460389}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,7 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7190046989995264053}
   - component: {fileID: 7074137741203841882}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2329830119954051426}
   - component: {fileID: 5479205659606690167}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_U
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,7 +281,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6897051535825886651}
   - component: {fileID: 8470093644496069850}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_F
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,7 +334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7211070378911117993}
   - component: {fileID: 142879358447036569}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Wall_D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

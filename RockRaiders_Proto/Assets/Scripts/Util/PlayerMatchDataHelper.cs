@@ -39,6 +39,7 @@ namespace Assets.Scripts.Util
             
             result.Score = playerDataNet.Score;
             result.ClientId = playerDataNet.ClientId;
+            result.Team = playerDataNet.Team;
 
             return result;
         }

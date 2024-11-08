@@ -81,9 +81,6 @@ namespace Assets.Scripts.Network
             var actorNetwork = player.GetComponent<ActorNetwork>();
             actorNetwork.ActorSpawnManager = m_spawnManager;
 
-            var spawnPoint = m_spawnManager.GetSpawnPoint(player);
-            player.transform.position = spawnPoint.transform.position;
-
             var playerNet = player.GetComponent<NetworkObject>();
 
             playerNet.SpawnAsPlayerObject(clientId, true);

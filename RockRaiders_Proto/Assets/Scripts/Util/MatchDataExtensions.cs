@@ -25,9 +25,16 @@ namespace Assets.Scripts.Util
             {
                 var data = team.ToTeamData();
 
-                if (!result.Teams.TryAdd(team.Team, data))
+                if (!result.Teams.ContainsKey(team.Team))
                 {
                     result.Teams.Add(team.Team, data);
+                }
+                else
+                {
+                    var currTeam = result.Teams[team.Team];
+                    currTeam.Players = data.Players;
+                    currTeam.Team = data.Team;
+                    currTeam.TeamScore = data.TeamScore;
                 }
             }
 

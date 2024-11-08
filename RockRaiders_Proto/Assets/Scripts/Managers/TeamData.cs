@@ -15,6 +15,12 @@ public class TeamData
         this.Players = new Dictionary<ulong, PlayerMatchData>();
     }
 
+    public TeamData(Team team)
+    {
+        this.Team = team;
+        this.Players = new Dictionary<ulong, PlayerMatchData>();
+    }
+
     public ReadonlyTeamData ToReadonlyTeamData()
     {
         return new ReadonlyTeamData(this);
@@ -23,9 +29,9 @@ public class TeamData
 
 public class ReadonlyTeamData : IReadonlyTeamData
 {
-    public Team Team { get; }
-    public int TeamScore { get; }
-    public Dictionary<ulong, IReadonlyPayerMatchData> Players { get; }
+    public Team Team { get; private set; }
+    public int TeamScore { get; private set; }
+    public Dictionary<ulong, IReadonlyPayerMatchData> Players { get; private set; }
 
     public ReadonlyTeamData(TeamData teamData)
     {

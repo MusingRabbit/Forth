@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -19,6 +20,7 @@ namespace Assets.Scripts.Network
         public NetActorInventory Inventory;
         public int SelectedWeapon;
         public int Hitpoints;
+        public Team Team;
         public Color Colour;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer)
@@ -28,6 +30,7 @@ namespace Assets.Scripts.Network
             serializer.SerializeValue(ref this.Inventory);
             serializer.SerializeValue(ref this.SelectedWeapon);
             serializer.SerializeValue(ref this.Hitpoints);
+            serializer.SerializeValue(ref this.Team);
             serializer.SerializeValue(ref this.Colour);
         }
     }
@@ -93,6 +96,7 @@ namespace Assets.Scripts.Network
         private ActorGrounded m_actorGrounded;
         private ActorHealth m_health;
         private ActorSpawnManager m_actorManager;
+        private ActorState m_state;
         private ActorPainter m_paint;
         private ActorCrosshair m_crosshair;
 
@@ -131,6 +135,7 @@ namespace Assets.Scripts.Network
 
         private void Start()
         {
+            m_state = this.GetComponent<ActorState>();
             m_paint = this.GetComponent<ActorPainter>();
             m_crosshair = this.GetComponent<ActorCrosshair>();
             m_actorController = this.GetComponent<ActorController>();
@@ -180,6 +185,7 @@ namespace Assets.Scripts.Network
         private void UpdateActorState()
         {
             var state = m_actorState.Value;
+
             m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
             m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
 
@@ -187,9 +193,17 @@ namespace Assets.Scripts.Network
 
             if (color != state.Colour)
             {
+                NotificationService.Instance.Info($"Updating player color : {state.Colour}");
                 m_paint.Paint(state.Colour);
             }
 
+            var team = m_state.Team;
+
+            if (team != state.Team)
+            {
+                NotificationService.Instance.Info($"Updating player team : {state.Team}");
+                m_state.Team = state.Team;
+            }
         }
 
         private void UpdateActorHealth()
@@ -242,7 +256,8 @@ namespace Assets.Scripts.Network
                 SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
                 Hitpoints = m_health.Hitpoints.Current,
                 Inventory = m_actorController.State.Inventory.GetNetActorInventory(),
-                Colour = m_paint.GetPaint()
+                Colour = m_paint.GetPaint(),
+                Team = m_state.Team,
             };
         }
 
@@ -457,11 +472,20 @@ namespace Assets.Scripts.Network
 
             if (clientState.Colour != serverState.Colour)
             {
+                NotificationService.Instance.Info($"Colour mismatch : Sending corrected colour to client");
+                inValid = true;
+            }
+
+            if (clientState.Team != serverState.Team)
+            {
+                NotificationService.Instance.Info($"Team mismatch : Sending corrected team to client");
+                clientState.Team = serverState.Team;
                 inValid = true;
             }
 
             if (inValid)
             {
+                NotificationService.Instance.Info($"Invalid actor state : Sending correct state to client {clientId}");
                 this.SendCorrectedActorStateToClientRpc(serverState);
             }
 
@@ -495,10 +519,14 @@ namespace Assets.Scripts.Network
 
             if (m_actorController != null)
             {
-                var serverState = actorState.Inventory.ToActorInventoryState();
-                var currState = m_actorController.State.Inventory.GetActorInventoryState();
-                m_actorController.State.Inventory.SetInventoryFromActorInventoryState(serverState);
+                var serverInvState = actorState.Inventory.ToActorInventoryState();
+                m_actorController.State.Inventory.SetInventoryFromActorInventoryState(serverInvState);
                 m_actorController.State.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
+            }
+
+            if (m_state != null)
+            {
+                m_state.Team = actorState.Team;
             }
 
             if (m_paint != null)
@@ -538,6 +566,8 @@ namespace Assets.Scripts.Network
                 NotificationService.Instance.Info("Preparing remote player actor");
                 m_actorManager.PrepareRemotePlayerActor(this.gameObject);
             }
+
+
 
             base.OnNetworkSpawn();
         }

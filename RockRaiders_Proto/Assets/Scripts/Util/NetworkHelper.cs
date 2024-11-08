@@ -22,9 +22,9 @@ namespace Assets.Scripts.Util
             }
             else
             {
-                //return null;
-                Debugger.Break();
-                throw new Exception("No GameObject could be found for provided 'PlayerNetworkObjectId'");
+                return null;
+                //Debugger.Break();
+                //throw new Exception("No GameObject could be found for provided 'PlayerNetworkObjectId'");
             }
 
             return result;

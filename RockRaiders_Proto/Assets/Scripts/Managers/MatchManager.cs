@@ -31,8 +31,8 @@ namespace Assets.Scripts
 
         private MatchData m_matchData;
         private Dictionary<ulong, PlayerMatchData> m_players;
-        private Dictionary<ulong, PlayerMatchData> m_teamBluePlayers;
-        private Dictionary<ulong, PlayerMatchData> m_teamRedPlayers;
+        private Dictionary<ulong, PlayerMatchData> TeamBluePlayers => m_matchData.Teams[Team.Blue].Players;
+        private Dictionary<ulong, PlayerMatchData> TeamRedPlayers => m_matchData.Teams[Team.Red].Players;
 
         public bool IsReady
         {
@@ -63,8 +63,6 @@ namespace Assets.Scripts
             m_matchData = new MatchData();
             
             m_players = new Dictionary<ulong, PlayerMatchData>();
-            m_teamBluePlayers = new Dictionary<ulong, PlayerMatchData>();
-            m_teamRedPlayers = new Dictionary<ulong, PlayerMatchData>();
 
             m_matchData.MatchState = MatchState.Ended;
             this.OnMatchStateChanged += this.MatchManager_OnMatchStateChanged;
@@ -128,10 +126,7 @@ namespace Assets.Scripts
                     break;
                 case MatchType.TeamDeathmatch:
                 case MatchType.CaptureTheFlag:
-                    var blueHasPlayers = m_matchData.Teams[Team.Blue].Players.Count > 1;
-                    var redHasPlayers = m_matchData.Teams[Team.Red].Players.Count > 1;
-
-                    if (blueHasPlayers && redHasPlayers)
+                    if (this.TeamBluePlayers.Any() && this.TeamRedPlayers.Any())
                     {
                         m_matchData.MatchState = MatchState.Running;
                         this.OnMatchStateChanged?.Invoke(this, EventArgs.Empty);
@@ -177,18 +172,22 @@ namespace Assets.Scripts
 
         private void Notification_OnPlayerKilled(object sender, OnNotificationEventArgs e)
         {
-            var data = e.Data.GetData<PlayerKilledData>();
-            var state = data.Killer.GetComponent<ActorState>();
+            var killedData = e.Data.GetData<PlayerKilledData>();
+
+            var killerState = killedData.Killer.GetComponent<ActorState>();
+            var killedState = killedData.Killed.GetComponent<ActorState>();
 
             switch (m_matchData.MatchType)
             {
                 case MatchType.TeamDeathmatch:
-                    this.AddTeamScore(state.Team, 1);
+                    var score = killedState.Team != killerState.Team ? 1 : -1;
+
+                    this.AddTeamScore(killerState.Team, score);
                     break;
             }
 
 
-            this.AddPlayerScore(data.Killer, 1);
+            this.AddPlayerScore(killedData.Killer, 1);
         }
 
         public void Initialise(IGameManager gameManager)
@@ -227,7 +226,7 @@ namespace Assets.Scripts
             switch (m_matchData.MatchType)
             {
                 case MatchType.Deathmatch:
-                    m_matchData.Teams.Add(Team.None, new TeamData());
+                    m_matchData.Teams.Add(Team.None, new TeamData(Team.None));
 
                     if (data.Teams.ContainsKey(Team.None))
                     {
@@ -238,19 +237,17 @@ namespace Assets.Scripts
                     break;
                 case MatchType.TeamDeathmatch:
                 case MatchType.CaptureTheFlag:
-                    m_matchData.Teams.Add(Team.Red, new TeamData());
-                    m_matchData.Teams.Add(Team.Blue, new TeamData());
+                    m_matchData.Teams.Add(Team.Red, new TeamData(Team.Red));
+                    m_matchData.Teams.Add(Team.Blue, new TeamData(Team.Blue));
 
                     if (data.Teams.ContainsKey(Team.Blue))
                     {
-                        m_teamBluePlayers = data.Teams[Team.Blue].Players;
-                        players.AddRange(m_teamBluePlayers);
+                        players.AddRange(TeamBluePlayers);
                     }
 
                     if (data.Teams.ContainsKey(Team.Red))
                     {
-                        m_teamRedPlayers = data.Teams[Team.Red].Players;
-                        players.AddRange(m_teamRedPlayers);
+                        players.AddRange(TeamRedPlayers);
                     }
 
                     break;
@@ -273,26 +270,32 @@ namespace Assets.Scripts
             return m_players.ContainsKey(clientId);
         }
 
-        public void AddPlayer(ulong clientId, GameObject playerActor)
+        public PlayerMatchData AddPlayer(ulong clientId, GameObject playerActor)
         {
             var state = playerActor.GetComponent<ActorState>();
-            PlayerMatchData playerData;
+            PlayerMatchData result;
+
+            if (m_players.ContainsKey(clientId))
+            {
+                return m_players[clientId];
+            }
 
             switch (m_matchData.MatchType)
             {
                 case MatchType.Deathmatch:
-                    playerData = this.AddPlayerToTeam(clientId, playerActor, Team.None);
+                    result = this.AddPlayerToTeam(clientId, playerActor, Team.None);
                     break;
                 case MatchType.TeamDeathmatch:
                 case MatchType.CaptureTheFlag:
-                    var autoJoinBlue = m_teamBluePlayers.Count < m_teamRedPlayers.Count;
-                    playerData = this.AddPlayerToTeam(clientId, playerActor, autoJoinBlue ? Team.Blue : Team.Red);
+                    var autoJoinBlue = TeamBluePlayers.Count < TeamRedPlayers.Count;
+                    result = this.AddPlayerToTeam(clientId, playerActor, autoJoinBlue ? Team.Blue : Team.Red);
                     break;
                 default:
                     throw new InvalidOperationException("Invalid match type.");
             }
 
-            m_players[clientId] = playerData;
+            m_players[clientId] = result;
+            return result;
         }
 
         public void RemovePlayer(ulong clientId)
@@ -358,6 +361,16 @@ namespace Assets.Scripts
         public List<PlayerMatchData> GetPayerMatchDataByTeam(Team team)
         {
             return m_matchData.Teams[team].Players.Values.ToList();
+        }
+
+        public PlayerMatchData GetPlayerMatchData(ulong clientId)
+        {
+            if (!m_players.ContainsKey(clientId))
+            {
+                return null;
+            }
+
+            return m_players[clientId];
         }
 
         public void AddTeamScore(Team team, int amount)

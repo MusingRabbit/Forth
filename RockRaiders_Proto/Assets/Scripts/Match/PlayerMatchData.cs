@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Network;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Network;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -15,9 +16,9 @@ namespace Assets.Scripts.Match
 
     public class ReadonlyPlayerMatchData : IReadonlyPayerMatchData
     {
-        public GameObject Player { get; }
-        public int Score { get; }
-        public ulong ClientId { get; }
+        public GameObject Player { get; protected set; }
+        public int Score { get; protected set; }
+        public ulong ClientId { get; protected set; }
 
         public ReadonlyPlayerMatchData(PlayerMatchData value)
         {
@@ -36,6 +37,7 @@ namespace Assets.Scripts.Match
             if (this.Player != null)
             {
                 result.PlayerNetworkObjectId = this.Player.GetComponent<NetworkObject>().NetworkObjectId;
+                result.Team = this.Player.GetComponent<ActorState>().Team;
             }
 
             return result;

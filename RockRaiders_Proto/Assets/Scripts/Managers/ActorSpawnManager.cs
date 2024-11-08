@@ -209,8 +209,8 @@ namespace Assets.Scripts.Managers
             var actorNetwork = player.GetComponent<ActorNetwork>();
             actorNetwork.ActorSpawnManager = this;
 
-            var spawnPoint = this.GetSpawnPoint(player);
-            player.transform.position = spawnPoint.transform.position;
+            //var spawnPoint = this.GetSpawnPoint(player);
+            //player.transform.position = spawnPoint.transform.position;
 
             var playerNet = player.GetComponent<NetworkObject>();
 
@@ -252,7 +252,9 @@ namespace Assets.Scripts.Managers
         {
             if (this.IsServer)
             {
-                foreach (var clientId in m_clients.Keys)
+                var clientIds = m_clients.Keys.ToArray();
+
+                foreach (var clientId in clientIds)
                 {
                     this.DespawnClient(clientId);
                     this.SpawnClient(clientId);
@@ -431,10 +433,16 @@ namespace Assets.Scripts.Managers
 
         public GameObject GetSpawnPoint(GameObject actor)
         {
-            var controller = actor.GetComponent<ActorController>();
-            var spawmPoints = m_sceneSettings.SpawnPoints.Where(x => x.Team == controller.Team).ToList();
+            var state = actor.GetComponent<ActorState>();
+            var spawmPoints = m_sceneSettings.SpawnPoints.Where(x => x.Team == state.Team).ToList();
             var rndIdx = Random.Range(0, spawmPoints.Count - 1);
-            return spawmPoints[rndIdx].gameObject;
+
+            if (spawmPoints.Count > rndIdx && spawmPoints[rndIdx] != null)
+            {
+                return spawmPoints[rndIdx].gameObject;
+            }
+
+            return null;
         }
 
         public void PrepareLocalPlayerActor(GameObject actor)
@@ -444,8 +452,10 @@ namespace Assets.Scripts.Managers
             this.CreateActorCamera(actor, true);
             this.SetupUIOverlay(actor);
 
-
+            this.MoveActorToSpawnPoint(actor);
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
+
+            
 
             //this.SetupPlayerName(netObj);
 
@@ -472,7 +482,7 @@ namespace Assets.Scripts.Managers
         {
             this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
-
+            this.MoveActorToSpawnPoint(actor);
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
 
             //var netObj = actor.GetComponent<ActorNetwork>();
@@ -483,6 +493,16 @@ namespace Assets.Scripts.Managers
             //}
 
             //m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
+        }
+
+        public void MoveActorToSpawnPoint(GameObject actor)
+        {
+            var spawnPoint = this.GetSpawnPoint(actor);
+
+            if (spawnPoint != null)
+            {
+                actor.transform.position = spawnPoint.transform.position;
+            }
         }
 
         //private void GameManager_OnRespawnTriggered(object sender, EventArgs e)
