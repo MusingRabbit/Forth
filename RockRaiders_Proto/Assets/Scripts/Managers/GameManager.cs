@@ -3,8 +3,10 @@ using Assets.Scripts.Input;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Network;
 using Assets.Scripts.Services;
+using Assets.Scripts.UI;
 using Assets.Scripts.UI.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Xml;
@@ -26,6 +28,7 @@ namespace Assets.Scripts.Network
     {
         private bool m_playerPaused;
         private bool m_localPlayerAwaitingRespawn;
+        private bool m_clientConnecting;
 
         private Dictionary<ulong, GameObject> m_players;
         private GameObject m_localPlayer;
@@ -180,10 +183,14 @@ namespace Assets.Scripts.Network
             NotificationService.Instance.Info($"{m_settings.Session.ServerIP}:{m_settings.Session.Port}");
             m_unityTransport.SetConnectionData(m_settings.Session.ServerIP, m_settings.Session.Port);
 
+            //m_netManager.ConnectionApprovalCallback += this.Netmanager_ConnectionCheck;
+
             if (!m_netManager.StartClient())
             {
                 this.LoadSplashScreen();
             };
+
+            m_clientConnecting = true;
         }
 
         private void StartSessionAsHost()
@@ -192,7 +199,7 @@ namespace Assets.Scripts.Network
 
             var scene = m_settings.Session.GetSceneName();
 
-            //m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
+            m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
             m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
             m_netManager.OnClientDisconnectCallback += this.NetManager_OnClientDisconnectCallback;
 
@@ -246,6 +253,7 @@ namespace Assets.Scripts.Network
             catch (Exception ex)
             {
                 NotificationService.Instance.Error(ex);
+                MessageBox.Instance.Show(ex);
                 this.LoadSplashScreen();
             }
         }
@@ -288,9 +296,39 @@ namespace Assets.Scripts.Network
                 {
                     case ConnectionEvent.ClientConnected:
                         m_spawnManager.SpawnPlayer(arg2.ClientId);
+                        m_clientConnecting = false;
                         break;
                     case ConnectionEvent.ClientDisconnected:
                         m_spawnManager.DespawnPlayer(arg2.ClientId);
+                        break;
+                }
+            }
+
+            if (m_clientConnecting)
+            {
+                switch (arg2.EventType)
+                {
+                    case ConnectionEvent.ClientConnected:
+                        break;
+                    case ConnectionEvent.PeerConnected:
+                        break;
+                    case ConnectionEvent.ClientDisconnected:
+                        this.LoadSplashScreen();
+
+                        if (m_clientConnecting)
+                        {
+                            MessageBox.Instance.Show("Connection failed. ");
+                        }
+
+                        if (!string.IsNullOrEmpty(arg1.DisconnectReason))
+                        {
+                            MessageBox.Instance.Show("Disconnect reason: " + arg1.DisconnectReason);
+                        }
+
+                        break;
+                    case ConnectionEvent.PeerDisconnected:
+                        break;
+                    default:
                         break;
                 }
             }
@@ -384,25 +422,47 @@ namespace Assets.Scripts.Network
             NotificationService.Instance.NotifyPlayerKilled(actor);
         }
 
+        private void Netmanager_ConnectionCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+        {
+            response.Approved = false;
+            response.Pending = true;
 
-        //private void Netmanager_OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
-        //{
-        //    var globalObjHash = BitConverter.ToInt32(request.Payload, 0);
+            this.StartCoroutine(AwaitTimeout(response));
+        }
 
-        //    Debug.Log($"Netmanager_OnConnectionApproval ClientId {request.ClientNetworkId} globalObjHash {globalObjHash} ");
+        IEnumerator AwaitTimeout(NetworkManager.ConnectionApprovalResponse response)
+        {
+            yield return new WaitForSeconds(5.0f);
+            response.Approved = true;
+            response.Pending = false;
+        }
 
-        //    foreach(var prefab in m_netManager.NetworkConfig.Prefabs.Prefabs)
-        //    {
-        //        Debug.Log("Prefab: " + prefab.SourcePrefabGlobalObjectIdHash);
+        private void Netmanager_OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+        {
 
-        //        if (globalObjHash == prefab.SourcePrefabGlobalObjectIdHash)
-        //        {
-        //            m_clientPrefabs.Add(request.ClientNetworkId, prefab);
-        //            response.Approved = true;
-        //            break;
-        //        }
-        //    }
-        //}
+            if (m_netManager.ConnectedClients.Count >= 8)
+            {
+                response.Reason = "Max player count reached : 8";
+                response.Approved = false;
+                return;
+            }
+
+            var globalObjHash = BitConverter.ToInt32(request.Payload, 0);
+
+            Debug.Log($"Netmanager_OnConnectionApproval ClientId {request.ClientNetworkId} globalObjHash {globalObjHash} ");
+
+            foreach (var prefab in m_netManager.NetworkConfig.Prefabs.Prefabs)
+            {
+                Debug.Log("Prefab: " + prefab.SourcePrefabGlobalObjectIdHash);
+
+                if (globalObjHash == prefab.SourcePrefabGlobalObjectIdHash)
+                {
+                    m_clientPrefabs.Add(request.ClientNetworkId, prefab);
+                    response.Approved = true;
+                    break;
+                }
+            }
+        }
 
         private void SpawnManager_OnActorSpawned(object sender, Events.OnActorSpawnedArgs e)
         {

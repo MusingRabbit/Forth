@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Input;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 namespace Assets.Scripts.Actor
 {
@@ -103,17 +104,33 @@ namespace Assets.Scripts.Actor
             var moveInput = new Vector3(m_controller.MoveAxis.x, 0, m_controller.MoveAxis.y).normalized;
             var isMoving = moveInput.magnitude > 0;
 
-            m_tgtRotation = m_actorCamera.Rotation;
+            //m_tgtRotation = m_actorCamera.Rotation;
+
+            this.UpdateRotation();
 
             if (isMoving && m_rigidBody.velocity.magnitude <= m_maxSpeed)
             {
-                var moveDir = m_actorCamera.Rotation * moveInput;
+                var moveDir = this.transform.rotation * moveInput;
                 m_rigidBody.AddForce(moveDir * (m_moveForce * Time.deltaTime), ForceMode.Impulse);
             }
 
             m_rigidBody.AddForce(-m_rigidBody.velocity * (m_moveForce * 0.3f * Time.deltaTime), ForceMode.Impulse);
 
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
+            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
+
+            
+        }
+
+        private void UpdateRotation()
+        {
+            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
+
+            var tgtRot = ((Quaternion.FromToRotation(this.transform.up, Vector3.up) * this.transform.rotation)); //* m_camera.PlanarRotaion);
+
+            var rotation = tgtRot * m_actorCamera.Rotation;
+
+
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
         }
 
         public void ThrustUp()

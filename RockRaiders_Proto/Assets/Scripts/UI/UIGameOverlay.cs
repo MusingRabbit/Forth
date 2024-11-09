@@ -89,12 +89,17 @@ namespace Assets.Scripts.UI
                 m_gameManager = GameManager.Instance;
             }
 
-            if (m_matchManager == null)
+            if (m_matchManager == null && MatchManager.Instance != null)
             {
                 m_matchManager = MatchManager.Instance;
-                m_matchManager.OnMatchStateChanged += this.MatchManager_OnMatchStateChanged;
             }
 
+            if (m_matchManager == null)
+            {
+                throw new NullReferenceException(nameof(m_matchManager));
+            }
+
+            m_matchManager.OnMatchStateChanged += this.MatchManager_OnMatchStateChanged;
             NotificationService.Instance.OnPlayerKilled += this.NotificationService_OnPlayerKilled;
 
             m_txtAmmoCountValue = m_hud.FindChild("Ammo.AmmoValue").GetComponent<Text>();
