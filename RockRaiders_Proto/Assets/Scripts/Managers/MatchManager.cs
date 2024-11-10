@@ -1,6 +1,7 @@
 using Assets.Scripts;
 using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.Level;
 using Assets.Scripts.Match;
 using Assets.Scripts.Network;
 using Assets.Scripts.Services;
@@ -10,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
@@ -33,6 +35,8 @@ namespace Assets.Scripts
         private Dictionary<ulong, PlayerMatchData> m_players;
         private Dictionary<ulong, PlayerMatchData> TeamBluePlayers => m_matchData.Teams[Team.Blue].Players;
         private Dictionary<ulong, PlayerMatchData> TeamRedPlayers => m_matchData.Teams[Team.Red].Players;
+
+        private List<FlagBase> m_flagBases;
 
         public bool IsReady
         {
@@ -159,7 +163,7 @@ namespace Assets.Scripts
                     var redTeamScore = m_matchData.Teams[Team.Red].TeamScore;
                     var blueTeamScore = m_matchData.Teams[Team.Blue].TeamScore;
                     var maxScore = Math.Max(redTeamScore, blueTeamScore);
-                    scoreLimitReached = maxScore > m_matchData.ScoreLimit;
+                    scoreLimitReached = maxScore >= m_matchData.ScoreLimit;
                     break;
             }
 
@@ -250,12 +254,43 @@ namespace Assets.Scripts
                         players.AddRange(TeamRedPlayers);
                     }
 
+                    if (m_matchData.MatchType == MatchType.CaptureTheFlag)
+                    {
+                        m_flagBases = this.GetAllFlagBasesInScene(SceneManager.GetActiveScene());
+
+                        foreach (var fbase in m_flagBases)
+                        {
+                            fbase.FlagCaptured += FlagBase_FlagCaptured;
+                        }
+                    }
+
                     break;
             }
 
 
             m_players = players;
             m_matchReady = true;
+        }
+
+        private void FlagBase_FlagCaptured(object sender, EventArgs e)
+        {
+            var fbase = (FlagBase)sender;
+            var team = fbase.Team == Team.Blue ? Team.Red : fbase.Team == Team.Red ? Team.Blue : Team.None;
+            this.AddTeamScore(team, 1);
+        }
+
+        private List<FlagBase> GetAllFlagBasesInScene(Scene scene)
+        {
+            var result = new List<FlagBase>();
+            var rootObjs = scene.GetRootGameObjects();
+
+            foreach(var obj in rootObjs)
+            {
+                var flagBases = obj.GetComponentsInChildren<FlagBase>();
+                result.AddRange(flagBases);
+            }
+
+            return result;
         }
 
 

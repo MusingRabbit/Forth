@@ -32,4 +32,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DM-Playground.unity
     guid: 8754331b2a22ca14998d8d73544da5fd
+  - enabled: 1
+    path: Assets/Scenes/CTF-Playground.unity
+    guid: 7c4a25b4ef93808458da61c92f5e0b97
   m_configObjects: {}

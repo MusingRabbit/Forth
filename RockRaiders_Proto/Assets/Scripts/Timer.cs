@@ -85,10 +85,14 @@ namespace Assets.Scripts
             }
         }
 
-        public void SetTimeSpan(TimeSpan timeSpan)
+        public void SetTimeSpan(TimeSpan timeSpan, bool reset = true)
         {
             m_timerSpan = timeSpan;
-            this.ResetTimer();
+
+            if (reset)
+            {
+                this.ResetTimer();
+            }
         }
 
         public void ResetTimer()

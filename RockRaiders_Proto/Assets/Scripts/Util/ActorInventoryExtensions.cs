@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Pickups.Weapons;
+﻿using Assets.Scripts.Pickups;
+using Assets.Scripts.Pickups.Weapons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +15,23 @@ namespace Assets.Scripts.Util
         {
             NetworkObject mainWeapon = null;
             NetworkObject sidearm = null;
+            NetworkObject pack = null;
+
+            var spawnedObjs = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
 
             if (netActInv.MainWeaponType != WeaponType.None && netActInv.MainWeaponNetworkObjectId > 0)
             {
-                mainWeapon = NetworkManager.Singleton.SpawnManager.SpawnedObjects[netActInv.MainWeaponNetworkObjectId];
+                mainWeapon = spawnedObjs[netActInv.MainWeaponNetworkObjectId];
             }
 
             if (netActInv.SideArmType != WeaponType.None && netActInv.SidearmNetworkObjectId > 0)
             {
-                sidearm = NetworkManager.Singleton.SpawnManager.SpawnedObjects[netActInv.SidearmNetworkObjectId];
+                sidearm = spawnedObjs[netActInv.SidearmNetworkObjectId];
+            }
+
+            if (netActInv.PackType != PackType.None && netActInv.PackNetworkObjectId > 0)
+            {
+                pack = spawnedObjs[netActInv.PackNetworkObjectId];
             }
 
             return new ActorInventoryState
@@ -30,7 +39,9 @@ namespace Assets.Scripts.Util
                 MainWeaponType = netActInv.MainWeaponType,
                 MainWeapon = mainWeapon?.gameObject.GetComponent<Weapon>(),
                 SideArmType = netActInv.SideArmType,
-                SideArm = sidearm?.gameObject.GetComponent<Weapon>()
+                SideArm = sidearm?.gameObject.GetComponent<Weapon>(),
+                PackType = netActInv.PackType,
+                Pack = pack?.gameObject.GetComponent<PickupItem>()
             };
         }
 
@@ -40,10 +51,11 @@ namespace Assets.Scripts.Util
             {
                 MainWeaponType = state.MainWeaponType,
                 SideArmType = state.SideArmType,
-                Pack = state.PackType,
+                PackType = state.PackType,
 
-                MainWeaponNetworkObjectId = state.MainWeapon?.GetComponent<NetworkObject>().NetworkObjectId ?? ulong.MaxValue,
-                SidearmNetworkObjectId = state.SideArm?.GetComponent<NetworkObject>().NetworkObjectId ?? ulong.MaxValue
+                MainWeaponNetworkObjectId = state.MainWeapon?.GetComponent<NetworkObject>().NetworkObjectId ?? 0,
+                SidearmNetworkObjectId = state.SideArm?.GetComponent<NetworkObject>().NetworkObjectId ?? 0,
+                PackNetworkObjectId = state.Pack?.GetComponent<NetworkObject>().NetworkObjectId ?? 0
             };
         }
     }

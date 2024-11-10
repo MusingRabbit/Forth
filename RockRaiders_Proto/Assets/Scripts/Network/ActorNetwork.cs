@@ -460,6 +460,7 @@ namespace Assets.Scripts.Network
             {
                 NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to server");
                 serverState.Inventory = clientState.Inventory;
+
                 inValid = true;
             }
 

@@ -17,8 +17,7 @@ namespace Assets.Scripts.Managers
     [Serializable]
     public class SceneSpawnSettings
     {
-        [SerializeField]
-        private List<SpawnPoint> m_spawnPoints;
+        
 
         [SerializeField]
         private UIGameOverlay m_uiOverlay;
@@ -31,17 +30,9 @@ namespace Assets.Scripts.Managers
             }
         }
 
-        public List<SpawnPoint> SpawnPoints
-        {
-            get
-            {
-                return m_spawnPoints;
-            }
-        }
 
         public SceneSpawnSettings()
         {
-            m_spawnPoints = new List<SpawnPoint>();
         }
     }
 
@@ -49,11 +40,7 @@ namespace Assets.Scripts.Managers
     {
         private bool m_isReady;
         private static ActorSpawnManager _instance;
-
-        //private ActorSpawnManagerNetwork m_network;
-
-        //public event EventHandler<EventArgs> OnServerSpawnPlayerCalled;
-        //public event EventHandler<EventArgs> OnServerDespawnPlayerCalled;
+        private List<SpawnPoint> m_spawnPoints;
 
         public static ActorSpawnManager Instance
         {
@@ -97,6 +84,7 @@ namespace Assets.Scripts.Managers
 
         public ActorSpawnManager()
         {
+            m_spawnPoints = new List<SpawnPoint>();
             m_sceneSettings = new SceneSpawnSettings();
             //m_clients = new Dictionary<ulong, NetworkObject>();
             m_pendingSpawn = new HashSet<ulong>();
@@ -107,11 +95,6 @@ namespace Assets.Scripts.Managers
 
         private void Start()
         {
-            //if (m_gameManager == null)
-            //{
-            //    m_gameManager = GameManager.Instance;
-            //    m_gameManager.OnRespawnTriggered += GameManager_OnRespawnTriggered;
-            //}
 
         }
 
@@ -126,10 +109,31 @@ namespace Assets.Scripts.Managers
             {
                 // Eh.... Will think of a better way to handle this.
                 _instance.m_sceneSettings = m_sceneSettings;
+                _instance.Initialise();
                 Destroy(base.gameObject);
             }
 
             
+        }
+
+        public void Initialise()
+        {
+            m_spawnPoints.Clear();
+            m_spawnPoints = this.GetAllSpawnPointsForScene(SceneManager.GetActiveScene());
+        }
+
+        private List<SpawnPoint> GetAllSpawnPointsForScene(Scene scene)
+        {
+            var result = new List<SpawnPoint>();
+            var rootObjs = scene.GetRootGameObjects();
+
+            foreach (var obj in rootObjs)
+            {
+                var spawnPoints = obj.GetComponentsInChildren<SpawnPoint>();
+                result.AddRange(spawnPoints);
+            }
+
+            return result;
         }
 
         private void Update()
@@ -292,90 +296,6 @@ namespace Assets.Scripts.Managers
             //m_spawnManager.DespawnPlayer(senderClientId);
         }
 
-        //[ServerRpc(RequireOwnership = false)]
-        //private void SpawnPlayerServerRpc(ServerRpcParams rpcParams = default)
-        //{
-        //    ulong senderClientId = rpcParams.Receive.SenderClientId;
-        //    SpawnPlayer(senderClientId);
-        //}
-
-        //[ServerRpc(RequireOwnership = false)]
-        //private void DespawnPlayerServerRpc(ServerRpcParams rpcParams = default)
-        //{
-        //    ulong senderClientId = rpcParams.Receive.SenderClientId;
-        //    DespawnPlayer(senderClientId);
-        //}
-
-        //[Rpc(SendTo.Server)]
-        //private void SetPlayerNameServerRpc(ulong clientId, string playerName)
-        //{
-        //    if (playerNameDictionary.ContainsKey(clientId))
-        //    {
-        //        playerNameDictionary[clientId] = playerName;
-        //    }
-
-        //    else
-        //    {
-        //        playerNameDictionary.Add(clientId, playerName);
-        //    }
-
-        //    this.SendUpdatedPlayerNamesClientRpc(JsonConvert.SerializeObject(playerNameDictionary));
-        //}
-
-        //[Rpc(SendTo.ClientsAndHost)]
-        //private void SendUpdatedPlayerNamesClientRpc(string dictJson)
-        //{
-        //    var dict = JsonConvert.DeserializeObject<Dictionary<ulong, string>>(dictJson);
-        //    playerNameDictionary = dict;
-        //}
-
-
-        //public void SpawnPlayer(ulong clientId)
-        //{
-        //    if (!m_isReady)
-        //    {
-        //        m_spawnQueue.Enqueue(clientId);
-        //        return;
-        //    }
-
-        //    NotificationService.Instance.Info($"ClientId: {clientId}");
-
-        //    // Instantiate player object
-        //    GameObject player = GameObject.Instantiate(m_playerPrefab);
-
-        //    this.InitialiseBehaviours(player);
-
-        //    var actorNetwork = player.GetComponent<ActorNetwork>();
-        //    actorNetwork.ActorSpawnManager = this;
-
-        //    var spawnPoint = this.GetSpawnPoint(player);
-        //    player.transform.position = spawnPoint.transform.position;
-
-        //    // Get the NetworkObject component
-        //    var playerNetworkObject = player.GetComponent<NetworkObject>();
-
-        //    // Spawn the player object on all clients
-        //    playerNetworkObject.SpawnAsPlayerObject(clientId);
-
-        //    m_clients[clientId] = playerNetworkObject;
-
-        //}
-
-        //public void DespawnPlayer(ulong clientId)
-        //{
-
-        //}
-
-        //private void InitialiseBehaviours(GameObject actor)
-        //{
-        //    var behaviours = actor.GetComponents<RRMonoBehaviour>();
-
-        //    foreach (var behaviour in behaviours)
-        //    {
-        //        behaviour.Initialise();
-        //    }
-        //}
-
         public void SetupActorNetworkComponent(GameObject actor)
         {
             if (actor == null)
@@ -434,7 +354,7 @@ namespace Assets.Scripts.Managers
         public GameObject GetSpawnPoint(GameObject actor)
         {
             var state = actor.GetComponent<ActorState>();
-            var spawmPoints = m_sceneSettings.SpawnPoints.Where(x => x.Team == state.Team).ToList();
+            var spawmPoints = m_spawnPoints.Where(x => x.Team == state.Team).ToList();
             var rndIdx = Random.Range(0, spawmPoints.Count - 1);
 
             if (spawmPoints.Count > rndIdx && spawmPoints[rndIdx] != null)
@@ -454,29 +374,7 @@ namespace Assets.Scripts.Managers
 
             this.MoveActorToSpawnPoint(actor);
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
-
-            
-
-            //this.SetupPlayerName(netObj);
-
-            //m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
-
-        //private void SetupPlayerName(ActorNetwork netObj)
-        //{
-        //    var playerName = m_gameManager.Settings.GameSettings.PlayerName;
-
-        //    if (this.IsServer)
-        //    {
-        //        playerNameDictionary[netObj.OwnerClientId] = playerName;
-        //    }
-        //    else
-        //    {
-        //        this.SetPlayerNameServerRpc(netObj.OwnerClientId, playerName);
-        //    }
-
-        //    netObj.PlayerName = playerName;
-        //}
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
@@ -484,15 +382,6 @@ namespace Assets.Scripts.Managers
             this.CreateActorCamera(actor, false);
             this.MoveActorToSpawnPoint(actor);
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
-
-            //var netObj = actor.GetComponent<ActorNetwork>();
-
-            //if (playerNameDictionary.ContainsKey(netObj.OwnerClientId))
-            //{
-            //    netObj.PlayerName = playerNameDictionary[netObj.OwnerClientId];
-            //}
-
-            //m_gameManager.RegisterPlayer(netObj.OwnerClientId, actor);
         }
 
         public void MoveActorToSpawnPoint(GameObject actor)
@@ -504,11 +393,5 @@ namespace Assets.Scripts.Managers
                 actor.transform.position = spawnPoint.transform.position;
             }
         }
-
-        //private void GameManager_OnRespawnTriggered(object sender, EventArgs e)
-        //{
-        //    this.DespawnPlayer();
-        //    this.SpawnPlayer();
-        //}
     }
 }

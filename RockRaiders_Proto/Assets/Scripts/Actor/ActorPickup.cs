@@ -3,6 +3,7 @@ using Assets.Scripts.Pickups;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI;
+using Assets.Scripts.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,7 @@ namespace Assets.Scripts.Actor
 
             m_inventory.OnMainWeaponCleared += Inventory_OnMainWeaponCleared;
             m_inventory.OnSidearmCleared += Inventory_OnSidearmCleared;
+            m_inventory.OnPackCleared += Inventory_OnPackCleared;
 
             if (m_canPickup)
             {
@@ -61,6 +63,22 @@ namespace Assets.Scripts.Actor
         private void Update()
         {
             m_dropTimer.Tick();
+        }
+
+        public bool DropCurrentPack()
+        {
+            var packObj = m_inventory.GetPackItem();
+
+            if (packObj != null)
+            {
+                m_inventory.ClearPackItem();
+
+                this.DropPickupItem(packObj.GetComponent<PickupItem>());
+
+                return true;
+            }
+
+            return false;
         }
 
         public bool DropSelectedWeapon()
@@ -80,13 +98,14 @@ namespace Assets.Scripts.Actor
                         m_inventory.ClearSideArm();
                         break;
                     case SelectedWeapon.Pack:
+                        m_inventory.ClearPackItem();
                         break;
                 }
 
                 m_inventory.SelectWeapon(SelectedWeapon.None);
 
 
-                this.DropWeapon(weaponObj.GetComponent<Weapon>());
+                this.DropPickupItem(weaponObj.GetComponent<Weapon>());
 
                 NotificationService.Instance.Info(weaponObj.ToString());
 
@@ -98,30 +117,51 @@ namespace Assets.Scripts.Actor
             return false;
         }
 
-        private void DropWeapon(Weapon weapon)
+        private void DropPickupItem(PickupItem pickupItem)
         {
-            NotificationService.Instance.Info(weapon.Name);
+            NotificationService.Instance.Info(pickupItem.Name);
 
             m_dropTimer.ResetTimer();
             m_dropTimer.Start();
             m_canPickup = false;
 
-            var rb = weapon.GetComponent<Rigidbody>();
-            
-            rb.AddForce(weapon.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
-            rb.AddTorque(new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)), ForceMode.Impulse);
-            weapon.Owner = null;
-            weapon.Crosshair = null;
-            weapon.SetDropped();
+            var rb = pickupItem.GetComponent<Rigidbody>();
 
-            this.OnItemDropped?.Invoke(this, new OnPickupEventArgs(weapon));
+            rb.AddForce(pickupItem.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
+            rb.AddTorque(new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)), ForceMode.Impulse);
+            pickupItem.Owner = null;
+            pickupItem.SetDropped();
+
+            var wpn = pickupItem is Weapon ? pickupItem as Weapon : null;
+
+            if (wpn != null)
+            {
+                wpn.Crosshair = null;
+            }
+
+            this.OnItemDropped?.Invoke(this, new OnPickupEventArgs(pickupItem));
+        }
+
+        public bool PickupPack(PickupItem item)
+        {
+            if (m_canPickup)
+            {
+                NotificationService.Instance.Info(item.Name);
+                m_inventory.SetPackItem(item.gameObject);
+
+                item.Owner = this.gameObject;
+                item.SetPickedUp();
+                return true;
+            }
+
+            return false;
         }
 
         public bool PickupWeapon(Weapon weapon)
         {
             if (m_canPickup)
             {
-                NotificationService.Instance.Info(weapon.Name.ToString());
+                NotificationService.Instance.Info(weapon.Name);
 
                 switch (weapon.WeaponSlot)
                 {
@@ -164,14 +204,19 @@ namespace Assets.Scripts.Actor
             m_canPickup = true;
         }
 
+        private void Inventory_OnPackCleared(object sender, OnPickupEventArgs e)
+        {
+            this.DropPickupItem(e.Item);
+        }
+
         private void Inventory_OnSidearmCleared(object sender, OnPickupEventArgs e)
         {
-            this.DropWeapon((Weapon)e.Item);
+            this.DropPickupItem(e.Item);
         }
 
         private void Inventory_OnMainWeaponCleared(object sender, OnPickupEventArgs e)
         {
-            this.DropWeapon((Weapon)e.Item);
+            this.DropPickupItem(e.Item);
         }
 
     }

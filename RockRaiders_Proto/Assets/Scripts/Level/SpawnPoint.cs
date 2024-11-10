@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Util;
+﻿using Assets.Scripts.Network;
+using Assets.Scripts.Util;
 using UnityEngine;
 
 namespace Assets.Scripts

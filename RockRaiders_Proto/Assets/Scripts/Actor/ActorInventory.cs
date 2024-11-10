@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Events;
+using Assets.Scripts.Pickups;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
 using Assets.Scripts.Util;
@@ -14,7 +15,8 @@ namespace Assets.Scripts
         public ulong MainWeaponNetworkObjectId;
         public WeaponType SideArmType;
         public ulong SidearmNetworkObjectId;
-        public WeaponType Pack;
+        public PackType PackType;
+        public ulong PackNetworkObjectId;
 
         public bool Equals(NetActorInventory other)
         {
@@ -23,7 +25,7 @@ namespace Assets.Scripts
                 this.SidearmNetworkObjectId == other.SidearmNetworkObjectId &&
                 this.MainWeaponType == other.MainWeaponType && 
                 this.SideArmType == other.SideArmType && 
-                this.Pack == other.Pack;
+                this.PackType == other.PackType;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -32,7 +34,8 @@ namespace Assets.Scripts
             serializer.SerializeValue(ref this.MainWeaponNetworkObjectId);
             serializer.SerializeValue(ref this.SideArmType);
             serializer.SerializeValue(ref this.SidearmNetworkObjectId);
-            serializer.SerializeValue(ref this.Pack);
+            serializer.SerializeValue(ref this.PackType);
+            serializer.SerializeValue(ref this.PackNetworkObjectId);
         }
     }
 
@@ -42,14 +45,17 @@ namespace Assets.Scripts
         public Weapon MainWeapon { get; set; }
         public WeaponType SideArmType { get; set; }
         public Weapon SideArm { get; set; }
-        public WeaponType PackType { get; set; }
+        public PackType PackType { get; set; }
+        public PickupItem Pack { get; set; }
 
         public bool Equals(ActorInventoryState other)
         {
-            return this.MainWeaponType == other.MainWeaponType && 
-                this.SideArmType == other.SideArmType && 
-                this.MainWeapon == other.MainWeapon && 
-                this.SideArm == other.SideArm;
+            return this.MainWeaponType == other.MainWeaponType &&
+                this.SideArmType == other.SideArmType &&
+                this.MainWeapon == other.MainWeapon &&
+                this.SideArm == other.SideArm &&
+                this.PackType == other.PackType && 
+                this.Pack == other.Pack;
         }
     }
 
@@ -57,6 +63,7 @@ namespace Assets.Scripts
     {
         public event EventHandler<OnPickupEventArgs> OnMainWeaponCleared;
         public event EventHandler<OnPickupEventArgs> OnSidearmCleared;
+        public event EventHandler<OnPickupEventArgs> OnPackCleared;
 
         [SerializeField]
         private GameObject m_mainWeapon;
@@ -142,11 +149,37 @@ namespace Assets.Scripts
                 }
             }
 
+            if (this.HasPackItem())
+            {
+                var packObj = this.GetPackItem();
+                packObj.transform.position = m_packHolster.transform.position;
+                packObj.transform.rotation = m_packHolster.transform.rotation;
+            }
+
+        }
+
+        public GameObject GetPackItem()
+        {
+            return m_pack;
+        }
+
+        private bool HasPackItem()
+        {
+            return m_pack != null;
         }
 
         public bool HasMainWeapon()
         {
             return m_mainWeapon != null;
+        }
+
+        public void SetPackItem(GameObject item)
+        {
+            if (m_pack == null)
+            {
+                NotificationService.Instance.Info();
+                m_pack = item;
+            }
         }
 
         public void SetMainWeapon(GameObject mainWeapon)
@@ -165,8 +198,8 @@ namespace Assets.Scripts
 
         public NetActorInventory GetNetActorInventory()
         {
-            ulong mwNetworkObjId, saNetworkObjId;
-            mwNetworkObjId = saNetworkObjId = 0;
+            ulong mwNetworkObjId, saNetworkObjId, packNetObjId;
+            mwNetworkObjId = saNetworkObjId = packNetObjId = 0;
 
             if (this.HasMainWeapon())
             {
@@ -180,13 +213,20 @@ namespace Assets.Scripts
                 saNetworkObjId = sidearmObj.GetComponent<NetworkObject>().NetworkObjectId;
             }
 
+            if (this.HasPackItem())
+            {
+                var packObj = this.GetPackItem();
+                packNetObjId = packObj.GetComponent<NetworkObject>().NetworkObjectId;
+            }
 
             return new NetActorInventory
             {
                 MainWeaponType = this.GetWeaponType(SelectedWeapon.Main),
                 MainWeaponNetworkObjectId = mwNetworkObjId,
                 SideArmType = this.GetWeaponType(SelectedWeapon.Sidearm),
-                SidearmNetworkObjectId = saNetworkObjId
+                SidearmNetworkObjectId = saNetworkObjId,
+                PackType = this.GetPackType(),
+                PackNetworkObjectId = packNetObjId
             };
         }
 
@@ -211,11 +251,26 @@ namespace Assets.Scripts
             {
                 this.SetSideArm(state.SideArm.gameObject);
             }
+
+            if (state.PackType != this.GetPackType())
+            {
+                this.ClearPackItem();
+            }
+
+            if (state.Pack != null)
+            {
+                this.SetPackItem(state.Pack.gameObject);
+            }
         }
 
         public WeaponType GetMainWeaponType()
         {
             return this.HasMainWeapon() ? this.GetMainWeapon().GetComponent<Weapon>().WeaponType : WeaponType.None;
+        }
+
+        public PackType GetPackType()
+        {
+            return this.HasPackItem() ? this.GetPackItem().GetComponent<PickupItem>().PackType : PackType.None;
         }
 
         public WeaponType GetSideArmType()
@@ -279,6 +334,17 @@ namespace Assets.Scripts
                 {
                     this.SelectWeapon(SelectedWeapon.None);
                 }
+            }
+        }
+
+        public void ClearPackItem()
+        {
+            if (m_pack != null)
+            {
+                var pck = m_pack.GetComponent<PickupItem>();
+                NotificationService.Instance.Info(pck.Name);
+                m_pack = null;
+                this.OnPackCleared?.Invoke(this, new OnPickupEventArgs(pck));
             }
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Network
 {
@@ -36,12 +37,7 @@ namespace Assets.Scripts.Network
 
         [SerializeField]
         private float m_respawnTimeout;
-
-        [SerializeField]
         private List<WeaponSpawnPoint> m_spawnPoints;
-
-
-
         private TimeSpan m_respawnTimeSpan;
 
 
@@ -59,10 +55,12 @@ namespace Assets.Scripts.Network
         {
             if (this.IsServer)
             {
+                m_spawnPoints.Clear();
+                m_spawnPoints = this.GetAllWeaponSpawnPointsInScene(SceneManager.GetActiveScene());
+
                 this.InitialiseSpawnDataDictionary();
                 this.InitialiseAndSpawnAllWeapons();
             }
-            
         }
 
 
@@ -73,6 +71,25 @@ namespace Assets.Scripts.Network
                 this.CheckWeaponOwnershipState();
                 this.CheckSpawnTimers();
             }
+        }
+
+        private List<WeaponSpawnPoint> GetAllWeaponSpawnPointsInScene(Scene scene)
+        {
+            var result = new List<WeaponSpawnPoint>();
+            var rootObjs = scene.GetRootGameObjects();
+
+            foreach (var obj in rootObjs)
+            {
+                if (obj == this)
+                {
+                    continue;
+                }
+
+                var spawnPoints = obj.GetComponentsInChildren<WeaponSpawnPoint>();
+                result.AddRange(spawnPoints);
+            }
+
+            return result;
         }
 
         private void InitialiseSpawnDataDictionary()

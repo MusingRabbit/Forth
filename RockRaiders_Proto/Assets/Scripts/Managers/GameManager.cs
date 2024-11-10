@@ -128,6 +128,10 @@ namespace Assets.Scripts.Network
 
             m_matchManager.OnMatchStateChanged += MatchManager_OnMatchStateChanged;
             m_matchManager.OnPlayerTeamSwitch += MatchManager_OnPlayerTeamSwitch;
+
+            m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
+            m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
+            m_netManager.OnClientDisconnectCallback += this.NetManager_OnClientDisconnectCallback;
         }
 
         private void Update()
@@ -198,10 +202,6 @@ namespace Assets.Scripts.Network
             m_unityTransport.ConnectionData.Port = m_settings.Session.Port;
 
             var scene = m_settings.Session.GetSceneName();
-
-            m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
-            m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
-            m_netManager.OnClientDisconnectCallback += this.NetManager_OnClientDisconnectCallback;
 
             if (m_netManager.StartHost())
             {
@@ -528,8 +528,23 @@ namespace Assets.Scripts.Network
 
         private void MatchManager_OnMatchStateChanged(object sender, EventArgs e)
         {
-            m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.Running);
-            m_spawnManager.RespawnAllClients();
+            var data = m_matchManager.GetMatchData();
+
+            switch (data.MatchState)
+            {
+                case MatchState.PendingStart:
+                    m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.PendingStart);
+                    m_spawnManager.RespawnAllClients();
+                    break;
+                case MatchState.Running:
+                    m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.Running);
+                    m_spawnManager.RespawnAllClients();
+                    break;
+                case MatchState.Ended:
+                    break;
+            }
+
+
         }
 
         //private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)

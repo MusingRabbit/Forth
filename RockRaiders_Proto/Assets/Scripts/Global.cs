@@ -60,6 +60,12 @@
         RocketLauncher,
     }
 
+    public enum PackType
+    {
+        None = 0,
+        Flag,
+    }
+
     public enum MessageType
     {
         Info,

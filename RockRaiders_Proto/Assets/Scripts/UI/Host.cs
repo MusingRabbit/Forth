@@ -16,10 +16,15 @@ namespace Assets.Scripts.UI
         private TMP_InputField m_serverPortInputField;
 
         [SerializeField]
+        private TMP_InputField m_scoreLimitField;
+
+        [SerializeField]
         private TMP_Dropdown m_matchTypeDropDown;
 
         [SerializeField]
         private TMP_Dropdown m_levelDropDown;
+
+        private MatchType m_oldMatchType;
 
 
         private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01", "SS_Miner" };
@@ -34,16 +39,35 @@ namespace Assets.Scripts.UI
             base.Start();
         }
 
+        protected override void Update()
+        {
+            m_oldMatchType = Model.Session.MatchSettings.MatchType;
+
+            base.Update();
+
+            if (m_oldMatchType != Model.Session.MatchSettings.MatchType)
+            {
+                switch (Model.Session.MatchSettings.MatchType)
+                {
+                    case MatchType.Deathmatch:
+                        m_scoreLimitField.text = "15";
+                        break;
+                    case MatchType.TeamDeathmatch:
+                        m_scoreLimitField.text = "30";
+                        break;
+                    case MatchType.CaptureTheFlag:
+                        m_scoreLimitField.text = "3";
+                        break;
+                }
+
+                this.UpdateGameSettingsModel();
+            }
+        }
+
         public void LaunchGame()
         {
             Model.Session.IsHost = true;
             this.GameManager.LaunchGame();
-        }
-
-        // Update is called once per frame
-        protected override void Update()
-        {
-            base.Update();
         }
 
         private void PopulateMatchTypeDropDown()
@@ -109,12 +133,12 @@ namespace Assets.Scripts.UI
             {
                 var selectedMatchOption = m_matchTypeDropDown.options[m_matchTypeDropDown.value];
                 var matchType = Enum.Parse<MatchType>(selectedMatchOption.text);
+                var scoreLimit = int.Parse(m_scoreLimitField.text);
 
                 Model.Session.ServerName = m_serverNameInputField.text;
                 Model.Session.Port = ushort.Parse(m_serverPortInputField.text);
 
-
-                Model.Session.MatchSettings = new MatchSettings { MatchType = matchType, ScoreLimit = 15, TimeLimit = TimeSpan.Zero };
+                Model.Session.MatchSettings = new MatchSettings { MatchType = matchType, ScoreLimit = scoreLimit, TimeLimit = TimeSpan.Zero };
                 Model.Session.Level = m_levelDropDown.options[m_levelDropDown.value].text;
             }
         }

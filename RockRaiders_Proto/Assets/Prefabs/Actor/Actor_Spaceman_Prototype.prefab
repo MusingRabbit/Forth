@@ -1538,6 +1538,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 719500828894898734}
+  - {fileID: 6873365295359309704}
   m_Father: {fileID: 3567866041614218800}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3567866041260649595
@@ -2686,7 +2687,7 @@ MonoBehaviour:
   m_sideArm: {fileID: 0}
   m_sideArmHolster: {fileID: 7819250581761659795}
   m_pack: {fileID: 0}
-  m_packHolster: {fileID: 0}
+  m_packHolster: {fileID: 3883793107647890175}
   m_selectedWeapon: 0
 --- !u!114 &3529719683746674209
 MonoBehaviour:
@@ -2807,6 +2808,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_serverAuth: 0
+--- !u!1 &3883793107647890175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6873365295359309704}
+  m_Layer: 0
+  m_Name: PackHolster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6873365295359309704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3883793107647890175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.7, y: 0.35, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3567866041260649596}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4868829826838478126
 GameObject:
   m_ObjectHideFlags: 0

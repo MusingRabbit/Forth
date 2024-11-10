@@ -154,7 +154,7 @@ namespace Assets.Scripts.UI
                 .OrderByDescending(x => x.Value.TeamScore)
                 .First();
 
-            var txtTeamName = m_matchOverDm.FindChild("TeamNameText");
+            var txtTeamName = m_matchOverTeam.FindChild("TeamNameText");
             var txt = txtTeamName.GetComponent<TMP_Text>();
             txt.text = winner.Value.Team.ToString();
             txt.color = winner.Value.Team == Team.Blue ? Color.blue : Color.red;
@@ -170,7 +170,8 @@ namespace Assets.Scripts.UI
             switch (m_matchData.MatchState)
             {
                 case MatchState.PendingStart:
-                    m_hud.SetActive(!m_gameManager.PlayerPaused);
+                    m_hud.SetActive(false);
+                    m_matchOverTeam.SetActive(false);
                     m_pending.SetActive(!m_gameManager.PlayerPaused);
                     m_pauseMenu.SetActive(m_gameManager.PlayerPaused);
                     break;
@@ -178,6 +179,8 @@ namespace Assets.Scripts.UI
                     this.UpdateGravBootsStatus();
                     this.UpdateHealthStatus();
                     this.UpdateAmmoStatus();
+
+                    m_matchOverTeam.SetActive(false);
 
                     if (m_gameManager.PlayerPaused)
                     {

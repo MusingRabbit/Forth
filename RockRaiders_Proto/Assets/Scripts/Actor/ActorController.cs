@@ -3,6 +3,7 @@ using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
 using Assets.Scripts.Input;
 using Assets.Scripts.Network;
+using Assets.Scripts.Pickups;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;
@@ -345,10 +346,32 @@ public class ActorController : RRMonoBehaviour
         {
             var gameObj = contact.otherCollider.gameObject;
 
-            if (gameObj.IsWeapon())
+            if (gameObj.IsPickupItem())
             {
-                var weapon = gameObj.GetComponent<Weapon>();
-                m_pickup.PickupWeapon(weapon);
+                if (gameObj.IsWeapon())
+                {
+                    var weapon = gameObj.GetComponent<Weapon>();
+                    m_pickup.PickupWeapon(weapon);
+                }
+                else
+                {
+                    var flag = gameObj.GetComponent<Flag>();
+
+                    if (flag != null)
+                    {
+                        if (flag.Team == m_state.Team)
+                        {
+                            return;
+                        }
+
+                        m_pickup.PickupPack(flag);
+                    }
+                    else
+                    {
+                        m_pickup.PickupPack(gameObj.GetComponent<PickupItem>());
+                    }
+                    
+                }
             }
 
             if (gameObj.IsProjectile())
