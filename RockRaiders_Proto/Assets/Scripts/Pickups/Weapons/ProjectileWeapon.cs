@@ -24,12 +24,19 @@ namespace Assets.Scripts.Pickups.Weapons
         private float m_fireRate;
 
         [SerializeField]
+        private int m_shotsPerRound;
+
+        [SerializeField]
         private float m_spread = 0.1f;
 
         private float m_lastShotTime;
         private GameObject m_muzzle;
         private ProjectileSpawnManager m_projectileSpawner;
 
+        public ProjectileWeapon()
+        {
+            m_shotsPerRound = 1;
+        }
 
         // Start is called before the first frame update
         protected override void Start()
@@ -53,7 +60,7 @@ namespace Assets.Scripts.Pickups.Weapons
                 var canFire = this.CanFire && deltaTime > 1.0f / m_fireRate;
 
                 var spreadX = Random.Range(-m_spread, m_spread);
-                var spreadY = Random.Range(-m_spread, m_spread);
+                var spreadY = Random.Range(-m_spread * 2, m_spread * 2);
                 var spread = new Vector3(spreadX, spreadY, 0.0f);
                 var velOffset = OwnerRigidBody.velocity + spread;
 
@@ -62,14 +69,18 @@ namespace Assets.Scripts.Pickups.Weapons
 
                 if (canFire)
                 {
-                    m_lastShotTime = Time.time;
-                    if (m_projectileSpawner.SpawnProjectile(this.gameObject,
-                        m_muzzle.transform.position,
-                        rotation,
-                        velOffset,
-                        m_muzzleVelocity))
+
+                    for (int i = 0; i < m_shotsPerRound; i++)
                     {
-                        Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
+                        m_lastShotTime = Time.time;
+                        if (m_projectileSpawner.SpawnProjectile(this.gameObject,
+                            m_muzzle.transform.position,
+                            rotation,
+                            velOffset,
+                            m_muzzleVelocity))
+                        {
+                            Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
+                        }
                     }
                 }
             }

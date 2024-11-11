@@ -607,7 +607,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 398779354407273325, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_weaponType
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5538197767514993745, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_Name
@@ -1117,7 +1117,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 398779354407273325, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_weaponType
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5538197767514993745, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_Name
@@ -1377,7 +1377,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 398779354407273325, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_weaponType
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5538197767514993745, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_Name
@@ -1635,6 +1635,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6580245415457635064}
     m_Modifications:
+    - target: {fileID: 398779354407273325, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
+      propertyPath: m_weaponType
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5538197767514993745, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_Name
       value: WeaponSpawnPoint (20)
@@ -2944,6 +2948,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6580245415457635064}
     m_Modifications:
+    - target: {fileID: 398779354407273325, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
+      propertyPath: m_weaponType
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5538197767514993745, guid: 169b95db8b6bc6c42b212b7a80275b74, type: 3}
       propertyPath: m_Name
       value: WeaponSpawnPoint (1)

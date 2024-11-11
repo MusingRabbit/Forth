@@ -56,6 +56,7 @@
         AssaultRifle,
         LaserPistol,
         LaserRifle,
+        Shotgun,
         PlasmaRifle,
         RocketLauncher,
     }
