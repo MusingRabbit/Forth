@@ -1,5 +1,6 @@
 using Assets.Scripts.Network;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 
         [SerializeField]
         private float m_mass;
+
+        private List<Vector3> m_additionalForces;
 
 
         private float m_startTime;
@@ -62,6 +65,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         private Rigidbody m_rigidBody;
         private ProjectileSpawnManager m_projNetwork;
 
+        public Projectile()
+        {
+            m_additionalForces = new List<Vector3>();
+        }
+
         private void Awake()
         {
 
@@ -77,7 +85,17 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             m_startTime = Time.time;
             m_lifeSpan = TimeSpan.FromSeconds(5);
 
+            foreach(var force in m_additionalForces)
+            {
+                m_rigidBody.AddForce(force);
+            }
+
             m_projNetwork = this.GetComponent<ProjectileSpawnManager>();
+        }
+
+        public void AddAdditionalForce(Vector3 force)
+        {
+            m_additionalForces.Add(force);
         }
 
         // Update is called once per frame

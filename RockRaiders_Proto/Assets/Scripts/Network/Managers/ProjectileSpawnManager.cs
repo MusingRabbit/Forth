@@ -129,7 +129,7 @@ namespace Assets.Scripts.Network
             }
         }
 
-        private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
+        private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             var instance = GameObject.Instantiate(m_projectilePrefab);
 
@@ -142,7 +142,7 @@ namespace Assets.Scripts.Network
             projectile.MuzzleVelocity = muzzleVelocity;
             instance.transform.position = position;
             instance.transform.rotation = rotation;
-            rigidBody.velocity += currVelocity;
+            projectile.AddAdditionalForce(velocityOffset);
             instance.SetActive(true);
 
             return instance;
