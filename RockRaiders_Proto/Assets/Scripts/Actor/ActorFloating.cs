@@ -114,7 +114,7 @@ namespace Assets.Scripts.Actor
                 m_rigidBody.AddForce(moveDir * (m_moveForce * Time.deltaTime), ForceMode.Impulse);
             }
 
-            m_rigidBody.AddForce(-m_rigidBody.velocity * (m_moveForce * 0.3f * Time.deltaTime), ForceMode.Impulse);
+            m_rigidBody.AddForce(-m_rigidBody.velocity * (m_moveForce * 0.3f * Time.deltaTime), ForceMode.Acceleration);
 
             //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
 

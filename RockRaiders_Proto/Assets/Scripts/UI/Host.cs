@@ -27,7 +27,7 @@ namespace Assets.Scripts.UI
         private MatchType m_oldMatchType;
 
 
-        private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01", "SS_Miner" };
+        private static string[] availableScenes = new string[] { "Playground", "VolcanicPlanet01", "Morpheus", "SS_Miner" };
 
         // Start is called before the first frame update
         protected override void Start()

@@ -14,12 +14,14 @@ namespace Assets.Scripts.Network
         public Team Team;
         public ulong OwnerNetworkId;
         public bool Captured;
+        public bool Retreived;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref this.Team);
             serializer.SerializeValue(ref this.OwnerNetworkId);
             serializer.SerializeValue(ref this.Captured);
+            serializer.SerializeValue(ref this.Retreived);
         }
     }
 
@@ -85,6 +87,7 @@ namespace Assets.Scripts.Network
 
             m_flag.Team = state.Team;
             m_flag.Captured = state.Captured;
+            m_flag.Retreived = state.Retreived;
 
             if (owner != null)
             {

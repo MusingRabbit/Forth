@@ -103,6 +103,7 @@ public class ActorController : RRMonoBehaviour
         if (m_state.IsDead)
         {
             m_pickup.DropSelectedWeapon();
+            m_pickup.DropCurrentPack();
             m_animController.PlayAnimationForActorState(m_state);
             m_state.IsMoving = false;
             return;
@@ -359,8 +360,10 @@ public class ActorController : RRMonoBehaviour
 
                     if (flag != null)
                     {
-                        if (flag.Team == m_state.Team)
+                        if (flag.Team == m_state.Team && !flag.Retreived)
                         {
+                            NotificationService.Instance.Info($"{flag.Team} flag retreived");
+                            flag.Retreived = true;
                             return;
                         }
 

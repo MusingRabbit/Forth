@@ -50,6 +50,7 @@ namespace Assets.Scripts.Level
 
         private NetworkVariable<FlagBaseData> m_baseData;
 
+        private bool FlagAtBase => m_boxCol.bounds.Contains(m_flag.transform.position);
         public Team Team
         {
             get
@@ -103,13 +104,14 @@ namespace Assets.Scripts.Level
 
             if (m_flag != null)
             {
-                var flagAtBase = m_boxCol.bounds.Contains(m_flag.transform.position);
-                if (m_flag.Owner == null && !flagAtBase)
+                var fab = this.FlagAtBase;
+
+                if (m_flag.Owner == null && !fab)
                 {
                     m_resetTimer.Start();
                 }
 
-                if (flagAtBase && m_resetTimer.Elapsed)
+                if (fab && m_resetTimer.Elapsed)
                 {
                     m_resetTimer.SetTimeSpan(m_resetTimeSpan);
                     m_resetTimer.ResetTimer();
@@ -125,6 +127,14 @@ namespace Assets.Scripts.Level
                     m_flagRb.isKinematic = false;
                 }
 
+                if (!this.FlagAtBase && m_flag.Retreived)
+                {
+                    if (this.IsServer)
+                    {
+                        m_resetTimer.SetTimeSpan(TimeSpan.Zero);
+                    }
+                }
+
                 if (m_flag.Captured)
                 {
                     if (m_flag.Owner != null)
@@ -137,7 +147,6 @@ namespace Assets.Scripts.Level
                     {
                         this.FlagCaptured?.Invoke(this, EventArgs.Empty);
                         m_resetTimer.SetTimeSpan(TimeSpan.Zero);
-                        m_flag.Captured = false;
                     }
                 }
             }
@@ -178,7 +187,8 @@ namespace Assets.Scripts.Level
             var basePos = this.transform.position;
             obj.transform.position = new Vector3(basePos.x, basePos.y + obj.transform.localScale.y, basePos.z);
             obj.transform.rotation = this.transform.rotation;
-
+            m_flag.Captured = false;
+            m_flag.Retreived = false;
             m_flagStand.Flag = m_flag;
         }
 
@@ -189,7 +199,7 @@ namespace Assets.Scripts.Level
             var flag = other.gameObject.GetComponent<Flag>();
             var isFlag = flag != null;
 
-            if (isFlag)
+            if (this.FlagAtBase && isFlag)
             {
                 if (flag.Team != m_team)
                 {
@@ -206,9 +216,9 @@ namespace Assets.Scripts.Level
             if (this.IsServer)
             {
                 var netTrans = m_flagNetObj.GetComponent<NetworkTransform>();
-                netTrans.Interpolate = false;
+                //netTrans.Interpolate = false;
                 this.ResetFlag();
-                netTrans.Interpolate = true;
+                //netTrans.Interpolate = true;
             }
         }
     }

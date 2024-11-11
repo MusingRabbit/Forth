@@ -18,6 +18,7 @@ public class Flag : PickupItem
     private MeshRenderer m_fRendL;
     private MeshRenderer m_fRendR;
     private bool m_captured;
+    private bool m_returned;
 
     public Team Team
     {
@@ -40,6 +41,18 @@ public class Flag : PickupItem
         set
         {
             m_captured = value;
+        }
+    }
+
+    public bool Retreived
+    {
+        get
+        {
+            return m_returned;
+        }
+        set
+        {
+            m_returned = value;
         }
     }
 
