@@ -1,4 +1,5 @@
 using Assets.Scripts.Network;
+using Assets.Scripts.Pickups.Weapons.ScriptableObjects;
 using Assets.Scripts.Util;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -16,18 +17,11 @@ namespace Assets.Scripts.Pickups.Weapons
         private int m_totalCapacity;
 
         [SerializeField]
+        private ShootConfig m_shootConfig;
+
+        [SerializeField]
         [SerializeAs("MuzzleVecocity")]
         private float m_muzzleVelocity;
-
-        [SerializeField]
-        [SerializeAs("FireRate")]
-        private float m_fireRate;
-
-        [SerializeField]
-        private int m_shotsPerRound;
-
-        [SerializeField]
-        private float m_spread = 0.1f;
 
         private float m_lastShotTime;
         private GameObject m_muzzle;
@@ -35,7 +29,6 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public ProjectileWeapon()
         {
-            m_shotsPerRound = 1;
         }
 
         // Start is called before the first frame update
@@ -57,10 +50,10 @@ namespace Assets.Scripts.Pickups.Weapons
             if (OwnerRigidBody != null)
             {
                 var deltaTime = Time.time - m_lastShotTime;
-                var canFire = this.CanFire && deltaTime > 1.0f / m_fireRate;
+                var canFire = this.CanFire && deltaTime > 1.0f / m_shootConfig.FireRate;
 
-                var spreadX = Random.Range(-m_spread, m_spread);
-                var spreadY = Random.Range(-m_spread * 2, m_spread * 2);
+                var spreadX = Random.Range(-m_shootConfig.Spread.x, m_shootConfig.Spread.x);
+                var spreadY = Random.Range(-m_shootConfig.Spread.y, m_shootConfig.Spread.y);
                 var spread = new Vector3(spreadX, spreadY, 0.0f);
                 var velOffset = OwnerRigidBody.velocity + spread;
 
@@ -70,7 +63,7 @@ namespace Assets.Scripts.Pickups.Weapons
                 if (canFire)
                 {
 
-                    for (int i = 0; i < m_shotsPerRound; i++)
+                    for (int i = 0; i < m_shootConfig.ShotsPerRound; i++)
                     {
                         m_lastShotTime = Time.time;
                         if (m_projectileSpawner.SpawnProjectile(this.gameObject,

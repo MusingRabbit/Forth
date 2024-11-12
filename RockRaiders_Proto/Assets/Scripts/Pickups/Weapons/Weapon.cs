@@ -3,6 +3,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
+using System.Diagnostics;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -177,6 +178,11 @@ namespace Assets.Scripts.Pickups.Weapons
         public void ResetAmmo()
         {
             m_ammoCount = m_maxAmmo;
+        }
+
+        public void DisableRigidBody()
+        {
+            m_rigidBody.constraints = RigidbodyConstraints.FreezePosition;
         }
     }
 }

@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Pickups.Weapons.ScriptableObjects
 {
-    [CreateAssetMenu(fileName = "Trail Config", menuName = "Guns/Gun Trail Config", order = 4)]
-    public class TrailConfigScriptableObject : ScriptableObject
+    [Serializable]
+    public class TrailConfig 
     {
         [SerializeField]
         private Material m_material;
@@ -81,5 +82,13 @@ namespace Assets.Scripts.Pickups.Weapons.ScriptableObjects
                 return m_simulationSpeed;
             }
         }
+
+        public TrailConfig()
+        {
+            m_duration = 0.5f;
+            m_minVertexDistance = 0.1f;
+            m_missDistance = 100.0f;
+            m_simulationSpeed = 200.0f;
+        } 
     }
 }

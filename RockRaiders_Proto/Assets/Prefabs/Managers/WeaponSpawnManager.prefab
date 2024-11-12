@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1014977789
+  GlobalObjectIdHash: 2140763548
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -75,4 +75,6 @@ MonoBehaviour:
     Prefab: {fileID: 6454855206075445079, guid: 1ac8ed6be2e374a428c2645925faa6ce, type: 3}
   - Type: 5
     Prefab: {fileID: 6454855206075445079, guid: a367fac5a41096a469a1a88dcb7718bb, type: 3}
+  - Type: 7
+    Prefab: {fileID: 6454855206075445079, guid: 5c3a16d6fc203134fbd93ed5532dcf76, type: 3}
   m_respawnTimeout: 60

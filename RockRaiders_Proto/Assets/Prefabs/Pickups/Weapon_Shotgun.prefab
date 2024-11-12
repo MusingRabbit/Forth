@@ -698,7 +698,7 @@ MonoBehaviour:
   m_muzzleVelocity: 50
   m_fireRate: 1
   m_shotsPerRound: 5
-  m_spread: 30
+  m_spread: 3
 --- !u!114 &1591483823692987831
 MonoBehaviour:
   m_ObjectHideFlags: 0

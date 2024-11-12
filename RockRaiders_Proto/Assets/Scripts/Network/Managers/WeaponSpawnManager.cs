@@ -145,6 +145,12 @@ namespace Assets.Scripts.Network
 
                 data.IsAvailable = false;
                 data.Weapon = obj.GetComponent<Weapon>();
+
+                if (data.Weapon != null)
+                {
+                    var rb = obj.GetComponent<Rigidbody>();
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                }
             }
         }
 
@@ -185,6 +191,7 @@ namespace Assets.Scripts.Network
             if (spawn.Weapon != null)
             {
                 spawn.Weapon.Reset();
+                spawn.Weapon.DisableRigidBody();
                 spawn.Weapon.transform.position = spawn.SpawnPoint.transform.position;
                 spawn.Weapon.transform.rotation = spawn.SpawnPoint.transform.rotation;
             }

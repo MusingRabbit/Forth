@@ -192,6 +192,7 @@ MonoBehaviour:
   m_totalCapacity: 60
   m_muzzleVelocity: 50
   m_fireRate: 0.9
+  m_shotsPerRound: 1
   m_spread: 0.1
 --- !u!114 &6460757898358336564
 MonoBehaviour:
@@ -380,7 +381,7 @@ Transform:
   m_GameObject: {fileID: 7419946620367339405}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.012000005, y: -0.002000014, z: -0.011600001}
+  m_LocalPosition: {x: 0.012000005, y: -0.002000014, z: -0.0053}
   m_LocalScale: {x: 0.050000004, y: 0.10000001, z: 0.050000004}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -414,7 +415,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f48aa100ae14b7d4ab617bac1c9a08dd, type: 2}
+  - {fileID: 2100000, guid: f572e95c65773b54b90241265dd1e3fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

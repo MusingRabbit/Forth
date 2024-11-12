@@ -127,6 +127,7 @@ namespace Assets.Scripts.Actor
 
             var rb = pickupItem.GetComponent<Rigidbody>();
 
+            rb.constraints = RigidbodyConstraints.None;
             rb.AddForce(pickupItem.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
             rb.AddTorque(new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)), ForceMode.Impulse);
             pickupItem.Owner = null;

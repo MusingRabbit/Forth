@@ -20,16 +20,12 @@ namespace Assets.Scripts.Pickups.Weapons
         private int m_totalCapacity;
 
         [SerializeField]
-        [SerializeAs("FireRate")]
-        private float m_fireRate;
+        [SerializeAs("TrailConfig")]
+        private ShootConfig m_shootConfig;
 
         [SerializeField]
         [SerializeAs("TrailConfig")]
-        private TrailConfigScriptableObject m_trailConfig;
-
-        [SerializeField]
-        [SerializeAs("TrailConfig")]
-        private ShootConfigurationScriptableObject m_shootConfig;
+        private TrailConfig m_trailConfig;
 
         private float m_lastShotTime;
         private GameObject m_muzzle;
@@ -53,7 +49,7 @@ namespace Assets.Scripts.Pickups.Weapons
         public override void Fire()
         {
             var deltaTime = Time.time - m_lastShotTime;
-            var canFire = this.CanFire && (deltaTime > 1.0f / m_fireRate);
+            var canFire = this.CanFire && (deltaTime > 1.0f / m_shootConfig.FireRate);
 
             if (canFire)
             {
@@ -71,7 +67,7 @@ namespace Assets.Scripts.Pickups.Weapons
 
                 if (rayCastHit)
                 {
-                    StartCoroutine(PlayTrail(shootPos, hit.point, hit));
+                    StartCoroutine(this.PlayTrail(shootPos, hit.point, hit));
 
                     var healthSys = hit.collider.gameObject.GetComponent<Health>();
                     var actorState = hit.collider.gameObject.GetComponent<ActorState>();

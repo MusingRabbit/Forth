@@ -18,7 +18,7 @@ namespace Assets.Scripts.Pickups
 
         private Timer m_dropTimer;
 
-        private Rigidbody m_rigidBody;
+        protected Rigidbody m_rigidBody;
         private Rigidbody m_parentRigidBody;
         private ulong m_networkOwnerId;
 

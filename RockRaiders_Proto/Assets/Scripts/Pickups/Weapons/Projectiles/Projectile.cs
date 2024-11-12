@@ -1,4 +1,6 @@
+using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Network;
+using Assets.Scripts.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -9,11 +11,15 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 {
     public class Projectile : MonoBehaviour
     {
-        [SerializeField]
         private Weapon m_weapon;
 
         [SerializeField]
         private TimeSpan m_lifeSpan;
+
+        [SerializeField]
+        private float m_deactivationTime;
+
+        private Timer m_deleteTimer;
 
         [SerializeField]
         private float m_mass;
@@ -62,6 +68,15 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             }
         }
 
+        [SerializeField]
+        private GameObject m_renderables;
+
+        [SerializeField]
+        private ParticleSystem m_particleSystem;
+
+        private CapsuleCollider m_collider;
+        private Explosive m_explosive;
+        private Damage m_damage;
         private Rigidbody m_rigidBody;
         private ProjectileSpawnManager m_projNetwork;
 
@@ -79,18 +94,37 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         // Start is called before the first frame update
         public virtual void Start()
         {
+            m_collider = this.GetComponent<CapsuleCollider>();
+
+            m_explosive = this.GetComponent<Explosive>();
+            m_damage = this.GetComponent<Damage>();
+
+            if (m_explosive != null)
+            {
+                m_explosive.Damage = m_damage;
+            }
+
             m_rigidBody = this.GetComponent<Rigidbody>();
             m_rigidBody.AddForce(transform.forward * m_muzzleVelcity, ForceMode.Impulse);
             m_rigidBody.mass = m_mass;
             m_startTime = Time.time;
             m_lifeSpan = TimeSpan.FromSeconds(5);
 
-            foreach(var force in m_additionalForces)
+            foreach (var force in m_additionalForces)
             {
                 m_rigidBody.AddForce(force);
             }
 
             m_projNetwork = this.GetComponent<ProjectileSpawnManager>();
+
+            m_deleteTimer = new Timer(TimeSpan.FromSeconds(m_deactivationTime));
+            m_deleteTimer.OnTimerElapsed += DeleteTimer_OnTimerElapsed;
+        }
+
+        private void DeleteTimer_OnTimerElapsed(object sender, Events.TimerElapsedEventArgs e)
+        {
+            m_projNetwork.DespawnProjectile(gameObject);
+            m_isDespawning = true;
         }
 
         public void AddAdditionalForce(Vector3 force)
@@ -105,15 +139,31 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 
             if (m_lifeSpan < TimeSpan.FromSeconds(currSpan))
             {
-                //Destroy(this.gameObject);
-                m_projNetwork.DespawnProjectile(gameObject);
-                m_isDespawning = true;
+                m_deleteTimer.Start();
+                m_deleteTimer.Tick();
+
+                DisableProjectile();
+            }
+        }
+
+        private void DisableProjectile()
+        {
+            m_renderables.SetActive(false);
+            m_collider.enabled = false;
+
+            m_rigidBody.isKinematic = true;
+            m_rigidBody.velocity = Vector3.zero;
+
+            if (m_particleSystem != null)
+            {
+                var em = m_particleSystem.emission;
+                em.enabled = false;
             }
         }
 
         private void OnCollisionEnter(Collision collision)
         {
-            m_lifeSpan = TimeSpan.FromSeconds((Time.time - m_startTime) + 0.2f);
+            m_lifeSpan = TimeSpan.FromSeconds((Time.time - m_startTime));
         }
 
         internal void Despawn(Collision collision)
