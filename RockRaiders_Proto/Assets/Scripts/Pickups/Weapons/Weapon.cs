@@ -161,11 +161,10 @@ namespace Assets.Scripts.Pickups.Weapons
 
         protected void Invoke_OnShotFired(Vector3 velocity, float mass)
         {
-            this.DecreaseAmmoCount();
             this.OnShotFired?.Invoke(this, new OnShotFiredEventArgs(velocity, mass));
         }
 
-        private void DecreaseAmmoCount()
+        protected void DecreaseAmmoCount()
         {
             m_ammoCount--;
         }

@@ -52,19 +52,18 @@ namespace Assets.Scripts.Pickups.Weapons
                 var deltaTime = Time.time - m_lastShotTime;
                 var canFire = this.CanFire && deltaTime > 1.0f / m_shootConfig.FireRate;
 
-                var spreadX = Random.Range(-m_shootConfig.Spread.x, m_shootConfig.Spread.x);
-                var spreadY = Random.Range(-m_shootConfig.Spread.y, m_shootConfig.Spread.y);
-                var spread = new Vector3(spreadX, spreadY, 0.0f);
-                var velOffset = OwnerRigidBody.velocity + spread;
-
                 var deltaV = Crosshair.AimPoint - m_muzzle.transform.position;
                 var rotation = Quaternion.LookRotation(deltaV, transform.up);
 
                 if (canFire)
                 {
-
                     for (int i = 0; i < m_shootConfig.ShotsPerRound; i++)
                     {
+                        var spreadX = Random.Range(-m_shootConfig.Spread.x, m_shootConfig.Spread.x);
+                        var spreadY = Random.Range(-m_shootConfig.Spread.y, m_shootConfig.Spread.y);
+                        var spread = new Vector3(spreadX, spreadY, 0.0f);
+                        var velOffset = OwnerRigidBody.velocity + spread;
+
                         m_lastShotTime = Time.time;
                         if (m_projectileSpawner.SpawnProjectile(this.gameObject,
                             m_muzzle.transform.position,
@@ -75,6 +74,8 @@ namespace Assets.Scripts.Pickups.Weapons
                             Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
                         }
                     }
+
+                    this.DecreaseAmmoCount();
                 }
             }
         }

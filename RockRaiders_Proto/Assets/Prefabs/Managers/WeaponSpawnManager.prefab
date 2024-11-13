@@ -77,4 +77,6 @@ MonoBehaviour:
     Prefab: {fileID: 6454855206075445079, guid: a367fac5a41096a469a1a88dcb7718bb, type: 3}
   - Type: 7
     Prefab: {fileID: 6454855206075445079, guid: 5c3a16d6fc203134fbd93ed5532dcf76, type: 3}
+  - Type: 3
+    Prefab: {fileID: 6454855206075445079, guid: 014cce16edc47f341923b37e2fc97399, type: 3}
   m_respawnTimeout: 60

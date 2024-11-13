@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8361844888792221422}
   - component: {fileID: 766990879824484087}
   - component: {fileID: 1489903749616845020}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 2046513352711798596}
   - component: {fileID: 861327123017507712}
   - component: {fileID: 6869224484262087759}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Weapon_Pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,10 +190,15 @@ MonoBehaviour:
   m_crosshair: {fileID: 0}
   m_magazineSize: 8
   m_totalCapacity: 60
-  m_muzzleVelocity: 50
-  m_fireRate: 0.9
-  m_shotsPerRound: 1
-  m_spread: 0.1
+  m_shootConfig:
+    m_hitMask:
+      serializedVersion: 2
+      m_Bits: 0
+    m_spread: {x: 0.2, y: 0.2, z: 0}
+    m_fireRate: 1
+    m_range: 300
+    m_shotsPerRound: 1
+  m_muzzleVelocity: 0.5
 --- !u!114 &6460757898358336564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 320012238
+  GlobalObjectIdHash: 651860317
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -282,7 +287,7 @@ GameObject:
   - component: {fileID: 4540725516429810196}
   - component: {fileID: 2786050049530738916}
   - component: {fileID: 7543698400044279746}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: LaserPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +370,7 @@ GameObject:
   - component: {fileID: 2141313785798209027}
   - component: {fileID: 2481111409885223161}
   - component: {fileID: 3187936244002301613}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -446,7 +451,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4975424064425815834}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -535,6 +540,18 @@ PrefabInstance:
     - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_Name
       value: Muzzle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118788466391498070, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8095531082702513649, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

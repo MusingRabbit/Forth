@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7613845021427887278}
   - component: {fileID: 3656425423709010967}
   - component: {fileID: 8688099238468957977}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 2632649545262959334}
   - component: {fileID: 4032780297050376291}
   - component: {fileID: 3090212491714143587}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 2448433929826429921}
   - component: {fileID: 2422903591085208569}
   - component: {fileID: 7675358963295201949}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 4023752491479568041}
   - component: {fileID: 1455465740572006633}
   - component: {fileID: 4557089661667907439}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -368,7 +368,7 @@ GameObject:
   - component: {fileID: 4641318947251681679}
   - component: {fileID: 8754887033247270939}
   - component: {fileID: 1960326308548971788}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -472,7 +472,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7688312690897117401}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -516,7 +516,7 @@ GameObject:
   - component: {fileID: 8167175509171212158}
   - component: {fileID: 6344579845171155231}
   - component: {fileID: 6668318840119936055}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 330910926778944685}
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Weapon_Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -646,8 +646,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.1, y: 0.1, z: 0.4}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.05, y: 0.05, z: 0.4}
+  m_Center: {x: 0, y: 0.03, z: -0.01}
 --- !u!54 &2608546729855405266
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -695,10 +695,15 @@ MonoBehaviour:
   m_crosshair: {fileID: 0}
   m_magazineSize: 30
   m_totalCapacity: 60
-  m_muzzleVelocity: 50
-  m_fireRate: 1
-  m_shotsPerRound: 5
-  m_spread: 3
+  m_shootConfig:
+    m_hitMask:
+      serializedVersion: 2
+      m_Bits: 0
+    m_spread: {x: 1, y: 1, z: 0}
+    m_fireRate: 0.5
+    m_range: 125
+    m_shotsPerRound: 5
+  m_muzzleVelocity: 0.25
 --- !u!114 &1591483823692987831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -787,7 +792,7 @@ GameObject:
   - component: {fileID: 6166961458478442087}
   - component: {fileID: 7716060886997869859}
   - component: {fileID: 3798335372093538250}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -870,7 +875,7 @@ GameObject:
   - component: {fileID: 8142098939192001107}
   - component: {fileID: 6107572489840576346}
   - component: {fileID: 8989664059524016964}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -953,7 +958,7 @@ GameObject:
   - component: {fileID: 8041065080076700039}
   - component: {fileID: 5430657936455668739}
   - component: {fileID: 2021237572405840875}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1036,7 +1041,7 @@ GameObject:
   - component: {fileID: 577465388393348118}
   - component: {fileID: 4541932799619508434}
   - component: {fileID: 4584244566320623052}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1130,7 +1135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 250548869162969397, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.1903
+      value: 0.1973
       objectReference: {fileID: 0}
     - target: {fileID: 250548869162969397, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1138,7 +1143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 250548869162969397, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 250548869162969397, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1171,6 +1176,18 @@ PrefabInstance:
     - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_Name
       value: Muzzle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118788466391498070, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8095531082702513649, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Pickups.Weapons.Projectiles
@@ -25,7 +26,6 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         private float m_mass;
 
         private List<Vector3> m_additionalForces;
-
 
         private float m_startTime;
         private float m_muzzleVelcity;
@@ -105,8 +105,9 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             }
 
             m_rigidBody = this.GetComponent<Rigidbody>();
-            m_rigidBody.AddForce(transform.forward * m_muzzleVelcity, ForceMode.Impulse);
             m_rigidBody.mass = m_mass;
+            m_rigidBody.AddForce(transform.forward.normalized * m_muzzleVelcity, ForceMode.Impulse);
+            
             m_startTime = Time.time;
             m_lifeSpan = TimeSpan.FromSeconds(5);
 

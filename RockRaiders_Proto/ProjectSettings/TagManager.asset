@@ -15,9 +15,9 @@ TagManager:
   - Asteroid_Mesh_Rock
   - Bounds
   - Flag
-  - 
-  - 
-  - 
+  - GravityWell
+  - Projectile_Bullet
+  - PickupItem
   - 
   - 
   - 

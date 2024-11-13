@@ -2752,7 +2752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_armCount: 12
-  m_armLength: 6
+  m_armLength: 4
   m_armPoints: 4
   m_weightByDist: 0
   m_arcAngle: 270

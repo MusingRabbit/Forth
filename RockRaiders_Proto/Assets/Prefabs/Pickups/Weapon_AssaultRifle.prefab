@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7613845021427887278}
   - component: {fileID: 3656425423709010967}
   - component: {fileID: 8688099238468957977}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 2448433929826429921}
   - component: {fileID: 2422903591085208569}
   - component: {fileID: 7675358963295201949}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 4023752491479568041}
   - component: {fileID: 1455465740572006633}
   - component: {fileID: 4557089661667907439}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 5370549314026730268}
   - component: {fileID: 8339476653675447681}
   - component: {fileID: 598577247101738963}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Magazine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 6076052320272109432}
   - component: {fileID: 3230547978679004902}
   - component: {fileID: 8960590662235095879}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ForeGrip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +448,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7688312690897117401}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +491,7 @@ GameObject:
   - component: {fileID: 8167175509171212158}
   - component: {fileID: 6344579845171155231}
   - component: {fileID: 6668318840119936055}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -579,7 +579,7 @@ GameObject:
   - component: {fileID: 330910926778944685}
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Weapon_AssaultRifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -671,18 +671,15 @@ MonoBehaviour:
   m_crosshair: {fileID: 0}
   m_magazineSize: 30
   m_totalCapacity: 120
-  m_muzzleVelocity: 50
-  m_fireRate: 10
-  m_shotsPerRound: 1
-  m_spread: 1
   m_shootConfig:
     m_hitMask:
       serializedVersion: 2
       m_Bits: 0
-    m_spread: {x: 1, y: 1, z: 0}
+    m_spread: {x: 0.2, y: 0.2, z: 0}
     m_fireRate: 10
-    m_range: 500
+    m_range: 1500
     m_shotsPerRound: 1
+  m_muzzleVelocity: 0.5
 --- !u!114 &1591483823692987831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -695,7 +692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3628988434
+  GlobalObjectIdHash: 3933634123
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -771,7 +768,7 @@ GameObject:
   - component: {fileID: 6166961458478442087}
   - component: {fileID: 7716060886997869859}
   - component: {fileID: 3798335372093538250}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,7 +851,7 @@ GameObject:
   - component: {fileID: 8142098939192001107}
   - component: {fileID: 6107572489840576346}
   - component: {fileID: 8989664059524016964}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -937,7 +934,7 @@ GameObject:
   - component: {fileID: 8935442268502389097}
   - component: {fileID: 385835119865943058}
   - component: {fileID: 4108539579670317962}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1020,7 +1017,7 @@ GameObject:
   - component: {fileID: 577465388393348118}
   - component: {fileID: 4541932799619508434}
   - component: {fileID: 4584244566320623052}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1155,6 +1152,18 @@ PrefabInstance:
     - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_Name
       value: Muzzle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118788466391498070, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8095531082702513649, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

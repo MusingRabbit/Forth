@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7613845021427887278}
   - component: {fileID: 3656425423709010967}
   - component: {fileID: 8688099238468957977}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 2766099252922331485}
   - component: {fileID: 3366844316625073153}
   - component: {fileID: 7917918668018827179}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 6033128447162662309}
   - component: {fileID: 7702952447180199738}
   - component: {fileID: 5985732227209828973}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 5185887138836074673}
   - component: {fileID: 2561299625506785861}
   - component: {fileID: 2117974853276358445}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 2448433929826429921}
   - component: {fileID: 2422903591085208569}
   - component: {fileID: 7675358963295201949}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 3179759935465127696}
   - component: {fileID: 3097021985699133592}
   - component: {fileID: 9049881110084997174}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +509,7 @@ GameObject:
   - component: {fileID: 9084336872193283785}
   - component: {fileID: 443351736725402631}
   - component: {fileID: 6057208461281998166}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 6076052320272109432}
   - component: {fileID: 3230547978679004902}
   - component: {fileID: 8960590662235095879}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ForeGrip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -675,7 +675,7 @@ GameObject:
   - component: {fileID: 5393437167291933258}
   - component: {fileID: 569233946932973565}
   - component: {fileID: 4712317952342834977}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -765,7 +765,7 @@ GameObject:
   - component: {fileID: 4389467978364081424}
   - component: {fileID: 5119795479301819221}
   - component: {fileID: 4510127233842751094}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Weapon_LazerRifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -863,7 +863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 709368788
+  GlobalObjectIdHash: 3728714203
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -939,9 +939,9 @@ MonoBehaviour:
     m_hitMask:
       serializedVersion: 2
       m_Bits: 9
-    m_spread: {x: 0.1, y: 0, z: 0.1}
+    m_spread: {x: 0, y: 0, z: 0}
     m_fireRate: 5
-    m_range: 50
+    m_range: 1500
     m_shotsPerRound: 1
   m_trailConfig:
     m_material: {fileID: 2100000, guid: e3b5a1a1b99160543963aae0144069dc, type: 2}
@@ -5825,7 +5825,7 @@ GameObject:
   - component: {fileID: 6166961458478442087}
   - component: {fileID: 7716060886997869859}
   - component: {fileID: 3798335372093538250}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5908,7 +5908,7 @@ GameObject:
   - component: {fileID: 1212544915444814643}
   - component: {fileID: 2132208943772645715}
   - component: {fileID: 5061572961445171445}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sight2 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5991,7 +5991,7 @@ GameObject:
   - component: {fileID: 8578534912521527801}
   - component: {fileID: 2911211528622818772}
   - component: {fileID: 1884497059693465731}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6075,7 +6075,7 @@ GameObject:
   - component: {fileID: 3472193231234978659}
   - component: {fileID: 1848349158054965309}
   - component: {fileID: 7460992646703140625}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6181,7 +6181,7 @@ GameObject:
   - component: {fileID: 6738342087839658318}
   - component: {fileID: 2256746188772663044}
   - component: {fileID: 8391463019208510886}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Handle (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6264,7 +6264,7 @@ GameObject:
   - component: {fileID: 8962258711219007035}
   - component: {fileID: 3405155200080483192}
   - component: {fileID: 573940970342650038}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Barrel (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6427,6 +6427,18 @@ PrefabInstance:
     - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
       propertyPath: m_Name
       value: Muzzle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4583742489590973158, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118788466391498070, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8095531082702513649, guid: 7d842b9bea0e8c944aef7dc2b2be8555, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
