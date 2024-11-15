@@ -594,7 +594,7 @@ MonoBehaviour:
       m_Bits: 0
     m_spread: {x: 0, y: 0, z: 0}
     m_fireRate: 0.3
-    m_range: 1500
+    m_range: 5000
     m_shotsPerRound: 1
   m_muzzleVelocity: 1
 --- !u!114 &1591483823692987831
@@ -609,7 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1017112945
+  GlobalObjectIdHash: 1275449870
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1

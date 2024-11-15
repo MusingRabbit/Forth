@@ -5349,7 +5349,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 5193
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 512
@@ -5465,8 +5465,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_triggerForce: 0.1
-  m_explosionRadius: 10
-  m_explosionForce: 600
+  m_explosionRadius: 30
+  m_explosionForce: 1200
   m_particles: {fileID: 7102178839698046388, guid: 931a0fe8b49300c4f90c7006fc725093, type: 3}
 --- !u!114 &6769624834214156026
 MonoBehaviour:

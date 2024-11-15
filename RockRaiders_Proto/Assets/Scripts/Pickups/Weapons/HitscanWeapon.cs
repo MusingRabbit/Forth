@@ -1,6 +1,7 @@
 using Assets.Scripts.Actor;
 using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Pickups.Weapons.ScriptableObjects;
+using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System.Collections;
 using Unity.VisualScripting;
@@ -69,20 +70,26 @@ namespace Assets.Scripts.Pickups.Weapons
                 {
                     StartCoroutine(this.PlayTrail(shootPos, hit.point, hit));
 
-                    var healthSys = hit.collider.gameObject.GetComponent<Health>();
-                    var actorState = hit.collider.gameObject.GetComponent<ActorState>();
-                    var damage = this.GetComponent<Damage>();
+                    var victim = hit.collider.gameObject.QueryParents(x => x.tag == "Player");
 
-                    if (healthSys != null)
+                    if (victim != null)
                     {
-                        healthSys.RegisterDamage(damage);
-                    }
+                        var healthSys = victim.GetComponent<Health>();
+                        var actorState = victim.GetComponent<ActorState>();
+                        var damage = this.GetComponent<Damage>();
 
-                    if (actorState != null)
-                    {
-                        actorState.LastHitBy = this.gameObject;
-                    }
+                        if (healthSys != null)
+                        {
+                            healthSys.RegisterDamage(damage);
+                        }
 
+                        if (actorState != null)
+                        {
+                            actorState.LastHitBy = this.gameObject;
+                        }
+
+                        NotificationService.Instance.NotifyPlayerAttacked(victim, damage);
+                    }
                 }
                 else
                 {

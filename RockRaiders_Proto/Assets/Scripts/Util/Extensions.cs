@@ -8,11 +8,11 @@ namespace Assets.Scripts.Util
 {
     public static class Extensions
     {
-        public static bool QueryParents(this GameObject gameObject, Func<GameObject, bool> func)
+        public static GameObject QueryParents(this GameObject gameObject, Func<GameObject, bool> func)
         {
             if (func(gameObject))
             {
-                return true;
+                return gameObject;
             }
 
             if (gameObject.transform.parent != null)
@@ -20,7 +20,7 @@ namespace Assets.Scripts.Util
                 return QueryParents(gameObject.transform.parent.gameObject, func);
             }
 
-            return false;
+            return null;
         }
 
         public static GameObject FindParent(this GameObject gameObject, string name)

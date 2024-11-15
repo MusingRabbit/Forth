@@ -34,6 +34,14 @@ namespace Assets.Scripts.HealthSystem
             }
         }
 
+        public int Total
+        {
+            get
+            {
+                return (int)(this.Base * Multiplier);
+            }
+        }
+
         public Damage()
         {
             m_baseDamage = 1;

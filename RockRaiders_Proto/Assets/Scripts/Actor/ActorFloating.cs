@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Input;
+using Assets.Scripts.Services;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 
@@ -14,6 +15,9 @@ namespace Assets.Scripts.Actor
 
         [SerializeField]
         private float m_rotationSpeed;
+
+        [SerializeField]
+        private float m_rollSpeed;
 
         [SerializeField]
         private GameObject m_body;
@@ -67,11 +71,13 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        private Vector3 m_upVector;
         public float MoveSpeed { get { return m_moveForce; } }
 
         public ActorFloating()
         {
             m_tgtRotation = Quaternion.identity;
+            m_upVector = Vector3.up;
         }
 
         public override void Initialise()
@@ -91,6 +97,7 @@ namespace Assets.Scripts.Actor
             m_moveForce = 20.0f;
             m_maxSpeed = 50.0f;
             m_rotationSpeed = 50.0f;
+            m_rollSpeed = 25.0f;
             m_tgtRotation = Quaternion.identity;
         }
 
@@ -118,19 +125,74 @@ namespace Assets.Scripts.Actor
 
             //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, m_tgtRotation, m_rotationSpeed * Time.deltaTime);
 
-            
+
+
         }
 
         private void UpdateRotation()
         {
+            if (!this.UpdateRollRotation())
+            {
+                NotificationService.Instance.Info($"Rotating by camera control | {m_upVector}");
+
+                var tgtRot = this.transform.rotation * m_actorCamera.Rotation;
+
+                this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, tgtRot, m_rotationSpeed * Time.deltaTime);
+            }
+        }
+
+        private bool UpdateRollRotation()
+        {
+            NotificationService.Instance.Info($"Rotating by roll | {m_upVector}");
+            bool result = false;
+
+            if (m_controller.RollLeft == (int)ActionState.Active)
+            {
+                this.RollLeft();
+                result = true;
+            }
+
+            if (m_controller.RollRight == (int)ActionState.Active)
+            {
+                this.RollRight();
+                result = true;
+            }
+
+            //if (!rolling)
+            //{
+            //    this.ResetRoll();
+            //}
+
             //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
 
-            var tgtRot = ((Quaternion.FromToRotation(this.transform.up, Vector3.up) * this.transform.rotation)); //* m_camera.PlanarRotaion);
+            Debug.DrawLine(this.transform.position, this.transform.position + m_upVector, Color.yellow);
 
-            var rotation = tgtRot * m_actorCamera.Rotation;
+            var tgtRot = Quaternion.FromToRotation(this.transform.up, m_upVector) * this.transform.rotation * m_actorCamera.YRot;
 
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, tgtRot, m_rotationSpeed * Time.deltaTime);
 
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+            result = (this.transform.up - m_upVector).magnitude <= Vector3.one.magnitude;
+
+            return result;
+        }
+
+        public void ResetRoll()
+        {
+            m_upVector = this.transform.up;
+        }
+
+        public void RollLeft()
+        {
+            var rot = this.transform.rotation * Quaternion.Euler(0, 0, 1);
+            m_upVector = (rot * Vector3.up);
+            NotificationService.Instance.Info($"Up:{m_upVector}");
+        }
+
+        public void RollRight()
+        {
+            var rot = this.transform.rotation * Quaternion.Euler(0, 0, -1);
+            m_upVector = (rot * Vector3.up);
+            NotificationService.Instance.Info($"Up:{m_upVector}");
         }
 
         public void ThrustUp()

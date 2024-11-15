@@ -152,6 +152,16 @@ namespace Assets.Scripts.Network
                 m_controller.SetActionState(ControllerActions.GravBoots, ActionState.Active);
             }
 
+            if (UnityEngine.Input.GetKey(KeyCode.Q))
+            {
+                m_controller.SetActionState(ControllerActions.RollLeft, ActionState.Active);
+            }
+
+            if (UnityEngine.Input.GetKey(KeyCode.E))
+            {
+                m_controller.SetActionState(ControllerActions.RollRight, ActionState.Active);
+            }
+
             if (UnityEngine.Input.GetKey(KeyCode.LeftControl))
             {
                 m_controller.SetActionState(ControllerActions.Crouch);

@@ -373,11 +373,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4059894445043445218, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
       propertyPath: m_Name
       value: UI_Overlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 8065323770045515920, guid: e7243c34d0088384fbba3369f2e1437a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -118,7 +118,7 @@ namespace Assets.Scripts.Network
                 }
             }
 
-            throw new Exception("WeaponSpawnManager.GetPrefabByWeaponType | Couldn't find prefab for weapon type provided.");
+            return null;
         }
 
         private void InitialiseAndSpawnAllWeapons()
@@ -126,6 +126,12 @@ namespace Assets.Scripts.Network
             foreach (var spawn in m_spawnPoints)
             {
                 var prefab = this.GetPrefabByWeaponType(spawn.WeaponType);
+
+                if (prefab == null)
+                {
+                    NotificationService.Instance.Warning($"Could not find weapon prefab for specified weapon type : {spawn.WeaponType}");
+                    continue;
+                }
 
                 var data = m_weaponSpawnData[spawn.GetInstanceID()];
 

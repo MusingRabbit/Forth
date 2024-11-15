@@ -178,20 +178,34 @@ namespace Assets.Scripts
         {
             var killedData = e.Data.GetData<PlayerKilledData>();
 
-            var killerState = killedData.Killer.GetComponent<ActorState>();
-            var killedState = killedData.Killed.GetComponent<ActorState>();
-
-            switch (m_matchData.MatchType)
+            if (killedData.Killer != null)  // If the player has a killer
             {
-                case MatchType.TeamDeathmatch:
-                    var score = killedState.Team != killerState.Team ? 1 : -1;
+                var killerState = killedData.Killer.GetComponent<ActorState>();
+                var killedState = killedData.Killed.GetComponent<ActorState>();
 
-                    this.AddTeamScore(killerState.Team, score);
-                    break;
+                switch (m_matchData.MatchType)
+                {
+                    case MatchType.TeamDeathmatch:
+                        var score = killedState.Team != killerState.Team ? 1 : -1; // Teamkill check
+
+                        this.AddTeamScore(killerState.Team, score);
+                        break;
+                }
+
+
+                this.AddPlayerScore(killedData.Killer, 1);
             }
+            else // Player killed themselves
+            {
+                var killedState = killedData.Killed.GetComponent<ActorState>();
 
-
-            this.AddPlayerScore(killedData.Killer, 1);
+                switch (m_matchData.MatchType)
+                {
+                    case MatchType.TeamDeathmatch:
+                        this.AddTeamScore(killedState.Team, -1);
+                        break;
+                }
+            }
         }
 
         public void Initialise(IGameManager gameManager)

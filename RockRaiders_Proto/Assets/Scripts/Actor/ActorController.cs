@@ -124,6 +124,11 @@ public class ActorController : RRMonoBehaviour
         }
         else
         {
+            if (m_floating == false)
+            {
+                m_floating.ResetRoll();                     // Sets the 'up' vector to be whatever orientation the player is currently in.
+            }
+
             m_grounded.enabled = false;
             m_floating.enabled = true;
             m_state.IsFloating = true;

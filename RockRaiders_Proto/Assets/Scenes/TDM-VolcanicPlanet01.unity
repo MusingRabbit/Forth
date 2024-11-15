@@ -617,6 +617,30 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 803918751
       objectReference: {fileID: 0}
+    - target: {fileID: 1609752597264932248, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2022639261
+      objectReference: {fileID: 0}
+    - target: {fileID: 2041105086558935936, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3043085089111010664, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3043085089111010664, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3043085089111010664, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055035398800657508, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3394738793007870575, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3871561762
@@ -625,6 +649,14 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3419531732
       objectReference: {fileID: 0}
+    - target: {fileID: 4087540380868407144, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4687546327536998937, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 583483851
+      objectReference: {fileID: 0}
     - target: {fileID: 5246330967973641289, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 512704512
@@ -632,6 +664,10 @@ PrefabInstance:
     - target: {fileID: 5459765813084707233, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 568689293
+      objectReference: {fileID: 0}
+    - target: {fileID: 5474895590146088238, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5547746246118579495, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -644,6 +680,22 @@ PrefabInstance:
     - target: {fileID: 5946942939823481312, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1431223443
+      objectReference: {fileID: 0}
+    - target: {fileID: 6424044413608705570, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446996437174886190, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.016529083
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446996437174886190, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446996437174886190, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6607095160693126565, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -704,6 +756,14 @@ PrefabInstance:
     - target: {fileID: 7192018759004605022, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1687767164
+      objectReference: {fileID: 0}
+    - target: {fileID: 7283901337614839774, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3195815939
+      objectReference: {fileID: 0}
+    - target: {fileID: 8002921392648350150, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
+      propertyPath: m_team
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8032703802899437462, guid: 3b905de0a59292840be5941bd5a06e6d, type: 3}
       propertyPath: GlobalObjectIdHash

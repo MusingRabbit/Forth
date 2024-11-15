@@ -61,6 +61,18 @@
         RocketLauncher,
     }
 
+    public enum WeaponTypeSelection
+    {
+        Pistol = 1,
+        AssaultRifle,
+        LaserPistol,
+        LaserRifle,
+        Shotgun,
+        PlasmaRifle,
+        RocketLauncher,
+        Random
+    }
+
     public enum PackType
     {
         None = 0,
@@ -73,6 +85,7 @@
         Warning,
         Error,
         PlayerKilled,
+        PlayerAttacked,
         PlayerSpawned,
 
     }

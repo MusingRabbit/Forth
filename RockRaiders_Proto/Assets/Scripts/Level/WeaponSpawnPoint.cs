@@ -6,19 +6,24 @@ namespace Assets.Scripts
     public class WeaponSpawnPoint : MonoBehaviour
     {
         [SerializeField]
-        private WeaponType m_weaponType;
+        private WeaponTypeSelection m_weaponType;
 
         public WeaponType WeaponType
         {
             get
             {
-                return m_weaponType;
+                if (m_weaponType == WeaponTypeSelection.Random)
+                {
+                    return (WeaponType)Random.Range((int)WeaponTypeSelection.Pistol, (int)WeaponTypeSelection.Random - 1);
+                }
+
+                return (WeaponType)m_weaponType;
             }
         }
 
         public WeaponSpawnPoint()
         {
-            m_weaponType = WeaponType.AssaultRifle;
+            m_weaponType = WeaponTypeSelection.AssaultRifle;
         }
 
         private void Start()

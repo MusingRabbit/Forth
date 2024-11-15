@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Actor;
 using Assets.Scripts.Events;
+using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Pickups.Weapons;
+using Assets.Scripts.Util;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -65,6 +67,12 @@ namespace Assets.Scripts.Services
         public GameObject Killer { get; set; }
     }
 
+    public class PlayerAttackedData
+    {
+        public GameObject Victim { get; set; }
+        public GameObject Attacker { get; set; }
+    }
+
     public class NotificationService : INotificationService
     {
         public event EventHandler<OnNotificationEventArgs> OnInfo;
@@ -73,6 +81,7 @@ namespace Assets.Scripts.Services
 
 
         public event EventHandler<OnNotificationEventArgs> OnPlayerKilled;
+        public event EventHandler<OnNotificationEventArgs> OnPlayerAttacked;
 
 
         private static NotificationService _instance;
@@ -160,9 +169,42 @@ namespace Assets.Scripts.Services
                 case MessageType.PlayerKilled:
                     this.OnPlayerKilled?.Invoke(this, new OnNotificationEventArgs(new MessageData(data) { Message = message, MessageType = messageType }));
                     break;
+                case MessageType.PlayerAttacked:
+                    this.OnPlayerAttacked?.Invoke(this, new OnNotificationEventArgs(new MessageData(data) { Message = message, MessageType = messageType }));
+                    break;
                 case MessageType.PlayerSpawned:
                     break;
             }
+        }
+
+        public void NotifyPlayerAttacked(GameObject victim, Damage damage)
+        {
+            var state = victim.GetComponent<ActorState>();
+
+            if (state.LastHitBy.IsWeapon())
+            {
+                var weapon = state.LastHitBy.GetComponent<Weapon>();
+                var attacker = weapon.Owner;
+                var attackerState = attacker.GetComponent<ActorState>();
+
+                var victimName = state.PlayerName ?? "Unknown";
+                var attackerName = attackerState.PlayerName ?? "Unknown";
+                string messageText = string.Empty;
+
+                var messageData = new PlayerAttackedData
+                {
+                    Victim = victim,
+                    Attacker = attacker
+                };
+
+                var msg = $"Player {victimName} attacked by {attackerName} for {damage.Total} hp";
+                Debug.Log(msg);
+
+                this.Notify(MessageType.PlayerAttacked, msg, messageData);
+            }
+
+
+
         }
 
         public void NotifyPlayerKilled(GameObject playerActor)

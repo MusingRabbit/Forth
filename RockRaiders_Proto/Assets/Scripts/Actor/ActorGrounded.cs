@@ -159,7 +159,7 @@ namespace Assets.Scripts.Actor
 
             m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
 
-            var rotation = m_tgtSurfRot * m_actorCamera.PlanarRotaion;
+            var rotation = m_tgtSurfRot * m_actorCamera.YRot;
 
 
             this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
@@ -274,7 +274,7 @@ namespace Assets.Scripts.Actor
 
             m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
 
-            var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock");
+            var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
 
             if ((mask & (1 << collision.collider.gameObject.layer)) != 0)
             {
@@ -290,7 +290,7 @@ namespace Assets.Scripts.Actor
 
             foreach (var kvp in m_colDict)
             {
-                var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock");
+                var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
 
                 if ((mask & (1 << kvp.Value.collider.gameObject.layer)) != 0)
                 {

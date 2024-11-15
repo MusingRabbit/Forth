@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.HealthSystem;
+using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                         var ratio = 1.0f - (distance / m_explosionRadius);
                         m_damage.Multiplier = ratio;
                         hp.RegisterDamage(m_damage);
+
+                        if (obj.GetComponent<ActorController>() != null)
+                        {
+                            NotificationService.Instance.NotifyPlayerAttacked(obj.gameObject, m_damage);
+                        }
                     }
                     
                 }

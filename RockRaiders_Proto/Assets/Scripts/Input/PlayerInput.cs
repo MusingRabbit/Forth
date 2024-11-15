@@ -19,6 +19,8 @@ namespace Assets.Scripts.Input
         Crouch,                     // Causes the player to crouch
         ThrustUp,                   // Causes the player to thrust upward
         ThrustDown,                 // Causes the player to thrust downward
+        RollLeft,
+        RollRight,
         Use,                        // Causes the player character to use environmental object
         Drop,                       // Causes the player character to drop whatever is in their hand
         Throw,                      // Causes the player character to throw whatever is in their hand
@@ -207,6 +209,31 @@ namespace Assets.Scripts.Input
                 m_actionDict[ControllerActions.GravBoots] = (ActionState)value;
             }
         }
+
+        public int RollLeft
+        {
+            get
+            {
+                return (int)m_actionDict[ControllerActions.RollLeft];
+            }
+            set
+            {
+                m_actionDict[ControllerActions.RollLeft] = (ActionState)value;
+            }
+        }
+
+        public int RollRight
+        {
+            get
+            {
+                return (int)m_actionDict[ControllerActions.RollRight];
+            }
+            set
+            {
+                m_actionDict[ControllerActions.RollRight] = (ActionState)value;
+            }
+        }
+
 
         public Vector2 LookAxis
         {

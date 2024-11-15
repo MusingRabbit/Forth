@@ -101,7 +101,9 @@ namespace Assets.Scripts
 
         public Quaternion Rotation => Quaternion.Euler(m_rotX, m_rotY, 0.0f);
 
-        public Quaternion PlanarRotaion => Quaternion.Euler(0.0f, m_rotY, 0.0f);
+        public Quaternion YRot => Quaternion.Euler(0.0f, m_rotY, 0.0f);
+
+        public Quaternion XRot => Quaternion.Euler(m_rotX, 0.0f, 0.0f);
 
         public ActorCamera()
         {

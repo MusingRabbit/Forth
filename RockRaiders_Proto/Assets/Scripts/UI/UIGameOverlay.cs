@@ -5,6 +5,7 @@ using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using TMPro;
 using Unity.Netcode;
@@ -16,7 +17,6 @@ namespace Assets.Scripts.UI
 {
     public class UIGameOverlay : MonoBehaviour
     {
-
         private GameManager m_gameManager;
         private MatchManager m_matchManager;
 
@@ -58,6 +58,9 @@ namespace Assets.Scripts.UI
         private Text m_txtAmmoCountValue;
         private TMP_Text m_txtNotificationText;
         private Timer m_notificationTextBumpTimer;
+        private Timer m_hitMarkerTimer;
+
+        private GameObject m_hitMarker;
 
         private ActorState m_actorState;
         private IReadonlyMatchData m_matchData;
@@ -79,6 +82,15 @@ namespace Assets.Scripts.UI
         {
             m_notificationTextBumpTimer = new Timer(TimeSpan.FromSeconds(5));
             m_notificationTextBumpTimer.OnTimerElapsed += NotificationTextBumpTimer_OnTimerElapsed;
+
+            m_hitMarkerTimer = new Timer(TimeSpan.FromSeconds(0.5));
+            m_hitMarkerTimer.OnTimerElapsed += HitMarkerTimer_OnTimerElapsed;
+            m_hitMarkerTimer.AutoReset = false;
+        }
+
+        private void HitMarkerTimer_OnTimerElapsed(object sender, Events.TimerElapsedEventArgs e)
+        {
+            m_hitMarker.SetActive(false);
         }
 
         // Start is called before the first frame update
@@ -101,6 +113,7 @@ namespace Assets.Scripts.UI
 
             m_matchManager.OnMatchStateChanged += this.MatchManager_OnMatchStateChanged;
             NotificationService.Instance.OnPlayerKilled += this.NotificationService_OnPlayerKilled;
+            NotificationService.Instance.OnPlayerAttacked += this.NotificationService_OnPlayerAttacked;
 
             m_txtAmmoCountValue = m_hud.FindChild("Ammo.AmmoValue").GetComponent<Text>();
             m_txtGravBootsEnabled = m_hud.FindChild("GravBoots.GravbootsValue").GetComponent<Text>();
@@ -113,10 +126,35 @@ namespace Assets.Scripts.UI
             m_txtTeamScoreLimit = m_teamScore.FindChild("ScoreLimitValue").GetComponent<Text>();
             m_txtScoreLimit = m_deathmatchScore.FindChild("ScoreLimitValue").GetComponent<Text>();
 
+            m_hitMarker = m_hud.FindChild("HitMarker");
+
             m_txtNotificationText = m_hud.FindChild("NotificationText").GetComponent<TMP_Text>();
             m_txtNotificationText.text = string.Empty;
 
             m_notificationTextBumpTimer.Start();
+        }
+
+        private void NotificationService_OnPlayerAttacked(object sender, Events.OnNotificationEventArgs e)
+        {
+            var data = e.Data.GetData<PlayerAttackedData>();
+            var actNet = data.Attacker.GetComponent<ActorNetwork>();
+
+            if (actNet != null)
+            {
+                var isAtkLocal = data.Attacker.GetComponent<ActorNetwork>().IsLocalPlayer;
+
+                if (isAtkLocal)
+                {
+                    m_hitMarkerTimer.ResetTimer();
+                    m_hitMarkerTimer.Start();
+                    m_hitMarker.SetActive(true);
+                }
+            }
+            else
+            {
+                Debugger.Break();
+            }
+
         }
 
         private void MatchManager_OnMatchStateChanged(object sender, System.EventArgs e)
@@ -246,6 +284,7 @@ namespace Assets.Scripts.UI
             }
 
             m_notificationTextBumpTimer.Tick();
+            m_hitMarkerTimer.Tick();
         }
 
         private void OnGUI()

@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using Assets.Scripts.HealthSystem;
+using Assets.Scripts.Services;
+using Assets.Scripts.Pickups.Weapons.Projectiles;
 
 namespace Assets.Scripts.Actor
 {
@@ -9,6 +11,7 @@ namespace Assets.Scripts.Actor
         public event EventHandler<EventArgs> OnActorHealthStateChanged;
 
         private ActorHealthState m_state;
+        private ActorState m_actorState;
 
         [SerializeField]
         private float m_headHitMultiplier;
@@ -61,6 +64,8 @@ namespace Assets.Scripts.Actor
             base.Initialise();
 
             this.Hitpoints.OnHitpointsDepleated += this.Hitpoints_OnHitpointsDepleated;
+
+            m_actorState = this.GetComponent<ActorState>();
         }
 
         private void Hitpoints_OnHitpointsDepleated(object sender, EventArgs e)
@@ -101,10 +106,16 @@ namespace Assets.Scripts.Actor
 
         public void RegisterProjectileHit(GameObject projectile, float multiplier)
         {
+            var proj = projectile.GetComponent<Projectile>();
             var projRb = projectile.GetComponent<Rigidbody>();
             var projDmg = projectile.GetComponent<Damage>();
+
+            m_actorState.LastHitBy = proj.Weapon.gameObject;
+
             m_lastDamage = projDmg;
             this.Register(projDmg.Base, multiplier);
+
+            NotificationService.Instance.NotifyPlayerAttacked(this.gameObject, new Damage { Base = projDmg.Base, Multiplier = multiplier });
         }
     }
 }
