@@ -90,7 +90,7 @@ namespace Assets.Scripts.Pickups.Weapons
                             actorState.LastHitBy = this.gameObject;
                         }
 
-                        NotificationService.Instance.NotifyPlayerAttacked(victim, damage);
+                        NotificationService.Instance.NotifyPlayerAttacked(victim);
                     }
                 }
                 else

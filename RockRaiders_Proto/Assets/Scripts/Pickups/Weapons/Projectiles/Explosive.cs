@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.HealthSystem;
+﻿using Assets.Scripts.Actor;
+using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
@@ -44,13 +45,14 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             m_explosionForce = 500.0f;
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnDestroy()
         {
-            if (collision.relativeVelocity.magnitude >= m_triggerForce)
-            {
-                var surroundingObjs = Physics.OverlapSphere(this.transform.position, m_explosionRadius);
 
-                foreach (var obj in surroundingObjs)
+            var surroundingObjs = Physics.OverlapSphere(this.transform.position, m_explosionRadius);
+
+            foreach (var obj in surroundingObjs)
+            {
+                if (obj.GetComponent<ActorController>() != null)
                 {
                     var rb = obj.GetComponent<Rigidbody>();
                     var hp = obj.GetComponent<Health>();
@@ -72,14 +74,22 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                         m_damage.Multiplier = ratio;
                         hp.RegisterDamage(m_damage);
 
-                        if (obj.GetComponent<ActorController>() != null)
+
+                        var actorState = obj.GetComponent<ActorState>();
+
+                        if (actorState != null)
                         {
-                            NotificationService.Instance.NotifyPlayerAttacked(obj.gameObject, m_damage);
+                            var weapon = this.GetComponent<Projectile>().Weapon;
+
+                            if (weapon != null)
+                            {
+                                actorState.LastHitBy = weapon.gameObject;
+                            }
                         }
+
+                        NotificationService.Instance.NotifyPlayerAttacked(obj.gameObject);
                     }
                 }
-
-
             }
         }
     }

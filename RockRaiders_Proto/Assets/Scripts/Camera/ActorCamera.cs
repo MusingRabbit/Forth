@@ -148,10 +148,16 @@ namespace Assets.Scripts
                 var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
                 var distance = m_body.transform.rotation * new Vector3(0, 0, m_distance);
 
-                m_rotX = -m_controller.LookAxis.y * m_rotationSpeed;
                 m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
 
-                Debug.Log(m_rotY);
+                if (m_state.IsFloating)
+                {
+                    m_rotX = -m_controller.LookAxis.y * m_rotationSpeed;
+                }
+                else
+                {
+                    m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
+                }
 
                 if (m_limitYAngle)
                 {

@@ -24,9 +24,12 @@ namespace Assets.Scripts.Actor
         private ActorCrosshair m_crosshair;
 
         private Timer m_dropTimer;
+        private Timer m_packDropTimer;
 
         [SerializeField]
         private bool m_canPickup;
+
+        private bool m_canPickupPack;
 
         [SerializeField]
         private double m_dropTimeOut;
@@ -37,10 +40,12 @@ namespace Assets.Scripts.Actor
         public ActorPickup()
         {
             m_canPickup = true;
+            m_canPickupPack = true;
             m_dropForce = 3.0f;
             m_dropTimeOut = 1.0f;
 
             m_dropTimer = new Timer();
+            m_packDropTimer = new Timer();
         }
 
         private void Start()
@@ -52,21 +57,27 @@ namespace Assets.Scripts.Actor
             m_inventory.OnSidearmCleared += Inventory_OnSidearmCleared;
             m_inventory.OnPackCleared += Inventory_OnPackCleared;
 
-            if (m_canPickup)
-            {
-                m_dropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
-                m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
-                m_dropTimer.AutoReset = false;
-            }
+            m_dropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
+            m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
+            m_dropTimer.AutoReset = false;
+
+            m_packDropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
+            m_dropTimer.OnTimerElapsed += this.PackDropTimer_OnTimerElapsed;
+            m_dropTimer.AutoReset = false;
         }
 
         private void Update()
         {
             m_dropTimer.Tick();
+            m_packDropTimer.Tick();
         }
 
         public bool DropCurrentPack()
         {
+            m_packDropTimer.ResetTimer();
+            m_packDropTimer.Start();
+            m_canPickupPack = false;
+
             var packObj = m_inventory.GetPackItem();
 
             if (packObj != null)
@@ -145,7 +156,7 @@ namespace Assets.Scripts.Actor
 
         public bool PickupPack(PickupItem item)
         {
-            if (m_canPickup)
+            if (m_canPickupPack)
             {
                 NotificationService.Instance.Info(item.Name);
                 m_inventory.SetPackItem(item.gameObject);
@@ -201,6 +212,14 @@ namespace Assets.Scripts.Actor
 
             m_dropTimer.Stop();
             m_dropTimer.ResetTimer();
+
+            m_canPickup = true;
+        }
+
+        private void PackDropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
+        {
+            m_packDropTimer.Stop();
+            m_packDropTimer.ResetTimer();
 
             m_canPickup = true;
         }

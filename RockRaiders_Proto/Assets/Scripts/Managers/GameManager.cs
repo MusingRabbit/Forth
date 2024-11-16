@@ -134,6 +134,7 @@ namespace Assets.Scripts.Network
         {
             m_settings = m_settingsRepo.GetSettingsModel();
             m_audioManager.Settings = m_settings;
+            m_inputManager.Settings = m_settings;
 
             Assets.Scripts.UI.Settings.SetScreenResolution(m_settings.Game.Resolution, m_settings.Game.FullScreen);
         }
@@ -220,6 +221,25 @@ namespace Assets.Scripts.Network
             m_clientConnecting = true;
         }
 
+        private void PlayMusicForLevel(string level)
+        {
+            switch(level)
+            {
+                case "VolcanicPlanet01":
+                    m_audioManager.PlayMusic("Volcanic");
+                    break;
+                case "Morpheus":
+                    m_audioManager.PlayMusic("Ice");
+                    break;
+                case "SS_Miner01":
+                    m_audioManager.PlayMusic("Blackout");
+                    break;
+                case "Playground":
+                    m_audioManager.PlayMusic("Theme");
+                    break;
+            }
+        }
+
         private void StartSessionAsHost()
         {
             m_unityTransport.ConnectionData.Port = m_settings.Session.Port;
@@ -236,6 +256,7 @@ namespace Assets.Scripts.Network
                     case SceneEventProgressStatus.None:
                         break;
                     case SceneEventProgressStatus.Started:
+                        this.PlayMusicForLevel(m_settings.Session.Level);
                         break;
                     case SceneEventProgressStatus.SceneNotLoaded:
                     case SceneEventProgressStatus.SceneEventInProgress:
@@ -298,7 +319,7 @@ namespace Assets.Scripts.Network
             this.UnlockMouse();
             m_state = GameState.MainMenu;
             SceneManager.LoadScene("SplashScreen", LoadSceneMode.Single);
-
+            m_audioManager.PlayMusic("Theme");
         }
 
         public void RespawnPlayer()

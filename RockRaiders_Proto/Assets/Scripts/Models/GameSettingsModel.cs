@@ -90,7 +90,7 @@ namespace Assets.Scripts
             m_fullScreen = false;
             m_musicVol = 1.0f;
             m_soundVol = 1.0f;
-            m_mouseSensitivity = 1.0f;
+            m_mouseSensitivity = 0.1f;
         }
     }
 }

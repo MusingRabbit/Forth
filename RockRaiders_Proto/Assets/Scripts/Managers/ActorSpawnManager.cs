@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -343,6 +344,11 @@ namespace Assets.Scripts.Managers
             actor.GetComponent<ActorFloating>().ActorCamera = actorCamera;
             actor.GetComponent<ActorGrounded>().ActorCamera = actorCamera;
             actor.GetComponent<ActorCrosshair>().ActorCamera = actorCamera;
+            
+            if (isLocal)
+            {
+                actorCamera.AddComponent<AudioListener>();
+            }
 
             cameraSystem.AddCamera(camera, isLocal);
         }

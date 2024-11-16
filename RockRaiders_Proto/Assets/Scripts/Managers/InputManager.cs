@@ -1,4 +1,5 @@
 using Assets.Scripts.Input;
+using Assets.Scripts.UI.Models;
 using System;
 using UnityEngine;
 
@@ -12,19 +13,32 @@ namespace Assets.Scripts.Network
         {
             get
             {
-                return _instance = _instance ?? new InputManager();
+                return _instance;
             }
         }
 
 
         [SerializeField]
         private PlayerInput m_controller;
+        private SettingsModel m_settings;
 
         public PlayerInput Controller
         {
             get
             {
                 return m_controller;
+            }
+        }
+
+        public SettingsModel Settings
+        {
+            get
+            {
+                return m_settings;
+            }
+            set
+            {
+                m_settings = value;
             }
         }
 
@@ -82,10 +96,16 @@ namespace Assets.Scripts.Network
             //var mousePos = UnityEngine.Input.mousePosition;
             var mouseX = UnityEngine.Input.GetAxis("Mouse X");
             var mouseY = UnityEngine.Input.GetAxis("Mouse Y");
+            var multiplier = GetSensitivityMultiplier();
 
-            m_controller.LookAxis = new Vector2(mouseX, mouseY);
+            m_controller.LookAxis = new Vector2(mouseX * multiplier, mouseY * multiplier);
 
             //Debug.Log("Look Axis : " + m_controller.LookAxis);
+        }
+
+        private float GetSensitivityMultiplier()
+        {
+            return m_settings.Game.MouseSensetivity * 10.0f;
         }
 
         private void ProcessInputs()

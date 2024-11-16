@@ -10,6 +10,7 @@ using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -373,8 +374,10 @@ public class ActorController : RRMonoBehaviour
                             flag.Retreived = true;
                             return;
                         }
-
-                        m_pickup.PickupPack(flag);
+                        else if (flag.Team != m_state.Team)
+                        {
+                            m_pickup.PickupPack(flag);
+                        }
                     }
                     else
                     {

@@ -147,6 +147,7 @@ namespace Assets.Scripts.Level
                     {
                         this.FlagCaptured?.Invoke(this, EventArgs.Empty);
                         m_resetTimer.SetTimeSpan(TimeSpan.Zero);
+                        m_flag.Captured = false;
                     }
                 }
             }

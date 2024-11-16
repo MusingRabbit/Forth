@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actor;
+using Assets.Scripts.HealthSystem;
 using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Pickups.Weapons.Projectiles;
 using Assets.Scripts.Services;
@@ -99,6 +100,8 @@ namespace Assets.Scripts.Network
                 {
                     NotificationService.Instance.Info($"{gameObj} last hit by {actorState.LastHitBy}");
                     actorState.LastHitBy = weaponObj.gameObject;
+
+                    NotificationService.Instance.NotifyPlayerAttacked(gameObj.gameObject);
                 }
             }
             else

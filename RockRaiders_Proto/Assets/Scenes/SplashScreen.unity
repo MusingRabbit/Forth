@@ -1274,7 +1274,7 @@ PrefabInstance:
       objectReference: {fileID: 854189934}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
       propertyPath: m_music.Array.size
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
       propertyPath: m_sounds.Array.size
@@ -1293,7 +1293,55 @@ PrefabInstance:
       value: Theme
       objectReference: {fileID: 0}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[1].m_clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2c2fd42c73fef6e449e37d084f2cc6bb, type: 3}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[1].m_loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[1].m_name
+      value: Ice
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[2].m_clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 1abcfaac4c6e9d44a8bcb11a76e15472, type: 3}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[2].m_loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[2].m_name
+      value: Volcanic
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[3].m_clip
+      value: 
+      objectReference: {fileID: 8300000, guid: e6cacde1e79e2f5438cf5f6602acc7ae, type: 3}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[3].m_loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[3].m_name
+      value: Blackout
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
       propertyPath: m_music.Array.data[0].m_pitch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[1].m_pitch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[2].m_pitch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[3].m_pitch
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
@@ -1354,6 +1402,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
       propertyPath: m_music.Array.data[0].m_volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[1].m_volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[2].m_volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}
+      propertyPath: m_music.Array.data[3].m_volume
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599052557876225432, guid: 5de2dce1bf5f26d478383e0d7d6af6c4, type: 3}

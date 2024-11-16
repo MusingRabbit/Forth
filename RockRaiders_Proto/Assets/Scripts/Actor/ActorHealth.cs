@@ -124,7 +124,7 @@ namespace Assets.Scripts.Actor
             m_lastDamage = projDmg;
             this.Register(projDmg.Base, multiplier);
 
-            NotificationService.Instance.NotifyPlayerAttacked(this.gameObject, new Damage { Base = projDmg.Base, Multiplier = multiplier });
+            NotificationService.Instance.NotifyPlayerAttacked(this.gameObject);
         }
     }
 }

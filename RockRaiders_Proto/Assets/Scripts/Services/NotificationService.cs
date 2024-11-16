@@ -177,7 +177,7 @@ namespace Assets.Scripts.Services
             }
         }
 
-        public void NotifyPlayerAttacked(GameObject victim, Damage damage)
+        public void NotifyPlayerAttacked(GameObject victim)
         {
             var state = victim.GetComponent<ActorState>();
 
@@ -219,7 +219,7 @@ namespace Assets.Scripts.Services
                     Attacker = attacker
                 };
 
-                var msg = $"Player {victimName} attacked by {attackerName} for {damage.Total} hp";
+                var msg = $"Player {victimName} attacked by {attackerName}";
                 Debug.Log(msg);
 
                 this.Notify(MessageType.PlayerAttacked, msg, messageData);
@@ -233,6 +233,7 @@ namespace Assets.Scripts.Services
         {
             var state = playerActor.GetComponent<ActorState>();
             var playerName = state.PlayerName ?? "Unknown";
+            var killedBy = "Unknown";
             string messageText = string.Empty;
 
             var messageData = new PlayerKilledData
@@ -244,19 +245,28 @@ namespace Assets.Scripts.Services
             {
                 var weaponObj = state.LastHitBy;
 
-                Debug.Log("Player Killed : Weapon: " + weaponObj.name);
+                if (weaponObj != null)
+                {
+                    Debug.Log("Player Killed : Weapon: " + weaponObj.name);
 
-                var rhsActor = weaponObj.GetComponent<Weapon>().Owner;
+                    var rhsActor = weaponObj.GetComponent<Weapon>().Owner;
 
-                Debug.Log("Player Killed : RHSActor: " + rhsActor.name);
+                    if (rhsActor != null)
+                    {
+                        Debug.Log("Player Killed : RHSActor: " + rhsActor.name);
 
-                var rhsState = rhsActor.GetComponent<ActorState>();
+                        var rhsState = rhsActor.GetComponent<ActorState>();
 
-                Debug.Log("Player Killed : RHSState: " + rhsState?.name + "|" + rhsState.PlayerName);
+                        if (rhsState != null)
+                        {
+                            Debug.Log("Player Killed : RHSState: " + rhsState?.name + "|" + rhsState.PlayerName);
 
-                var killedBy = rhsState.PlayerName ?? "Unknown";
+                            killedBy = rhsState.PlayerName;
+                        }
 
-                messageData.Killer = rhsActor;
+                        messageData.Killer = rhsActor;
+                    }
+                }
 
                 messageText = $"{playerName} killed by {killedBy}";
             }

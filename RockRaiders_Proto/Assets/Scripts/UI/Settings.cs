@@ -23,6 +23,9 @@ namespace Assets.Scripts.UI
         [SerializeField]
         private Scrollbar m_musicVolume;
 
+        [SerializeField]
+        private Scrollbar m_mouseSensitivity;
+
         private SettingsRepository m_settingsRepo;
 
         public Settings()
@@ -122,15 +125,19 @@ namespace Assets.Scripts.UI
             m_playerNameInput.text = model.Game.PlayerName;
             m_musicVolume.value = model.Game.MusicVolume;
             m_soundVolume.value = model.Game.SoundVolume;
+            m_mouseSensitivity.value = model.Game.MouseSensetivity;
         }
 
         protected override void UpdateGameSettingsModel()
         {
+            var mouseSens = Mathf.Clamp(m_mouseSensitivity.value, 0.01f, 1.0f);
+
             Model.Game.FullScreen = m_fullScreenToggle.isOn;
             Model.Game.Resolution = m_screenResDropdown.options[m_screenResDropdown.value].text;
             Model.Game.PlayerName = m_playerNameInput.text;
             Model.Game.SoundVolume = m_soundVolume.value;
             Model.Game.MusicVolume = m_musicVolume.value;
+            Model.Game.MouseSensetivity = mouseSens;
         }
 
         public void Save()

@@ -147,7 +147,15 @@ namespace Assets.Scripts.UI
                 {
                     m_hitMarkerTimer.ResetTimer();
                     m_hitMarkerTimer.Start();
-                    m_hitMarker.SetActive(true);
+
+                    if (m_hitMarker != null)
+                    {
+                        m_hitMarker.SetActive(true);
+                    }
+                    else
+                    {
+                        m_hitMarker = m_hud.FindChild("HitMarker");
+                    }
                 }
             }
             else

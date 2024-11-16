@@ -5403,7 +5403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_lifeTime: 60
-  m_deactivationTime: 2
+  m_deactivationTime: 0.1
   m_mass: 0.05
   m_renderables: {fileID: 2309715580473476530}
   m_particleSystem: {fileID: 5584059151278082894}

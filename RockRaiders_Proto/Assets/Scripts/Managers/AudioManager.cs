@@ -51,19 +51,27 @@ namespace Assets.Scripts.Network
                 sound.Source.loop = sound.Loop;
             }
 
-            this.Play("Theme");
+            this.PlayMusic("Theme");
         }
 
-        public bool Play(string name)
+        public bool PlayMusic(string name)
         {
             var result = false;
 
             foreach (var sound in m_music)
             {
+                if (sound.Source.isPlaying)
+                {
+                    sound.Source.Stop();
+                }
+
                 if (sound.Name == name)
                 {
-                    sound.Source.Play();
-                    result = true;
+                    if (!sound.Source.isPlaying)
+                    {
+                        sound.Source.Play();
+                        result = true;
+                    }
                 }
             }
 
