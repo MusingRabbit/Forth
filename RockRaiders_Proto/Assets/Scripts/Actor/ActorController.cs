@@ -24,6 +24,7 @@ public class ActorController : RRMonoBehaviour
     private ActorCrosshair m_crosshair;
     private ActorHealth m_health;
     private ActorPickup m_pickup;
+    private ActorAudio m_audio;
     private Rigidbody m_rigidBody;
 
 
@@ -77,6 +78,7 @@ public class ActorController : RRMonoBehaviour
         m_crosshair = this.GetComponent<ActorCrosshair>();
         m_health = this.GetComponent<ActorHealth>();
         m_pickup = this.GetComponent<ActorPickup>();
+        m_audio = this.GetComponent<ActorAudio>();
 
         m_pickup.OnItemPickedUp += Pickup_OnItemPickedUp;
         m_pickup.OnItemDropped += Pickup_OnItemDropped;

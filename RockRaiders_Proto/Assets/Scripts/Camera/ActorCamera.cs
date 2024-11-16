@@ -148,9 +148,10 @@ namespace Assets.Scripts
                 var offset = m_body.transform.rotation * new Vector3(m_offset.x, m_offset.y);
                 var distance = m_body.transform.rotation * new Vector3(0, 0, m_distance);
 
-                m_rotX += -m_controller.LookAxis.y * m_rotationSpeed;
+                m_rotX = -m_controller.LookAxis.y * m_rotationSpeed;
                 m_rotY = m_controller.LookAxis.x * m_rotationSpeed;
 
+                Debug.Log(m_rotY);
 
                 if (m_limitYAngle)
                 {
@@ -161,9 +162,13 @@ namespace Assets.Scripts
                 var tgtRotation = Quaternion.Euler(m_rotX, m_rotY, 0);
 
                 m_tgtPos = m_body.transform.position - (tgtRotation * m_body.transform.forward) + offset - distance;
-                m_tgtRot = m_body.transform.localRotation * tgtRotation;
+                //m_tgtPos = m_body.transform.position - (tgtRotation * (m_body.transform.forward + distance)) + offset;
 
-                this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, m_tgtRot, 50 * Time.deltaTime);
+                m_tgtRot = m_body.transform.rotation * tgtRotation;
+
+                
+
+                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, m_tgtRot, 50 * Time.deltaTime);
 
 
                 if (m_groundCounter > uint.MaxValue)

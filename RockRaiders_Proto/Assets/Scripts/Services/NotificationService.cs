@@ -148,7 +148,7 @@ namespace Assets.Scripts.Services
             var prefix = this.GetMessagePrefix(callerFilePath, callerMemberName);
             var fullMessage = prefix + message;
 
-            Debug.Log(fullMessage);
+            Debug.LogError(fullMessage);
             this.Notify(MessageType.Error, fullMessage, (object)null);
         }
 
@@ -181,11 +181,33 @@ namespace Assets.Scripts.Services
         {
             var state = victim.GetComponent<ActorState>();
 
+            if (state == null)
+            {
+                return;
+            }
+
             if (state.LastHitBy.IsWeapon())
             {
                 var weapon = state.LastHitBy.GetComponent<Weapon>();
+
+                if (weapon == null)
+                {
+                    return;
+                }
+
                 var attacker = weapon.Owner;
+
+                if (attacker == null)
+                {
+                    return;
+                }
+
                 var attackerState = attacker.GetComponent<ActorState>();
+
+                if (attackerState == null)
+                {
+                    return;
+                }
 
                 var victimName = state.PlayerName ?? "Unknown";
                 var attackerName = attackerState.PlayerName ?? "Unknown";

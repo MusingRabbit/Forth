@@ -143,7 +143,7 @@ namespace Assets.Scripts.Network
 
                 var obj = GameObject.Instantiate(prefab);
 
-                obj.transform.position = data.SpawnPoint.transform.position;
+                obj.transform.position = data.SpawnPoint.SpawnPosition;
                 obj.transform.rotation = data.SpawnPoint.transform.rotation;
 
                 var network = obj.GetComponent<NetworkObject>();
@@ -197,8 +197,9 @@ namespace Assets.Scripts.Network
             if (spawn.Weapon != null)
             {
                 spawn.Weapon.Reset();
-                spawn.Weapon.DisableRigidBody();
-                spawn.Weapon.transform.position = spawn.SpawnPoint.transform.position;
+                spawn.Weapon.ResetRigidBody();
+
+                spawn.Weapon.transform.position = spawn.SpawnPoint.SpawnPosition;
                 spawn.Weapon.transform.rotation = spawn.SpawnPoint.transform.rotation;
             }
         }

@@ -131,19 +131,21 @@ namespace Assets.Scripts.Actor
 
         private void UpdateRotation()
         {
-            if (!this.UpdateRollRotation())
+            if (this.UpdateRollRotation())
             {
-                NotificationService.Instance.Info($"Rotating by camera control | {m_upVector}");
+                NotificationService.Instance.Info($"Rotating by camera control | {m_upVector} | {m_actorCamera.Rotation  }");
 
-                var tgtRot = this.transform.rotation * m_actorCamera.Rotation;
+                var tgtRot = (this.transform.rotation * m_actorCamera.XRot);
 
                 this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, tgtRot, m_rotationSpeed * Time.deltaTime);
+
+                m_upVector = this.transform.up;
             }
         }
 
         private bool UpdateRollRotation()
         {
-            NotificationService.Instance.Info($"Rotating by roll | {m_upVector}");
+            //NotificationService.Instance.Info($"Rotating by roll | {m_upVector}");
             bool result = false;
 
             if (m_controller.RollLeft == (int)ActionState.Active)
@@ -158,12 +160,6 @@ namespace Assets.Scripts.Actor
                 result = true;
             }
 
-            //if (!rolling)
-            //{
-            //    this.ResetRoll();
-            //}
-
-            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
 
             Debug.DrawLine(this.transform.position, this.transform.position + m_upVector, Color.yellow);
 

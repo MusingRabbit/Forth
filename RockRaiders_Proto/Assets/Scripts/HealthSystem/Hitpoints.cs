@@ -7,6 +7,7 @@ namespace Assets.Scripts.HealthSystem
     {
         public event EventHandler<EventArgs> OnHitpointsDepleated;
         public event EventHandler<EventArgs> OnHitpointsFull;
+        public event EventHandler<EventArgs> OnHitpointsRemoved;
 
         private int m_maxHp;
 
@@ -102,6 +103,7 @@ namespace Assets.Scripts.HealthSystem
             {
                 m_currentHp = newHp;
 
+                this.OnHitpointsRemoved?.Invoke(this, EventArgs.Empty);
 
                 if (m_currentHp <= 0)
                 {

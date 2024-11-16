@@ -60,6 +60,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                         rb.AddExplosionForce(m_explosionForce, this.transform.position, m_explosionRadius);
                     }
 
+                    if (m_particles != null)
+                    {
+                        GameObject.Instantiate(m_particles, this.transform.position, Quaternion.identity);
+                    }
+
                     if (hp != null && m_damage != null)
                     {
                         var distance = (obj.transform.position - this.transform.position).magnitude;
@@ -72,12 +77,9 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                             NotificationService.Instance.NotifyPlayerAttacked(obj.gameObject, m_damage);
                         }
                     }
-                    
                 }
-                if (m_particles != null)
-                {
-                    GameObject.Instantiate(m_particles, this.transform.position, Quaternion.identity);
-                }
+
+
             }
         }
     }

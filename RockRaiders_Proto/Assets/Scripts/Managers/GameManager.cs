@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Actor;
+using Assets.Scripts.Data;
 using Assets.Scripts.Input;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Network;
@@ -26,12 +27,16 @@ namespace Assets.Scripts.Network
 
     public class GameManager : NetworkBehaviour, IGameManager
     {
+        public event EventHandler<EventArgs> OnSettingsChanged;
+
         private bool m_playerPaused;
         private bool m_localPlayerAwaitingRespawn;
         private bool m_clientConnecting;
 
         private Dictionary<ulong, GameObject> m_players;
         private GameObject m_localPlayer;
+
+        private SettingsRepository m_settingsRepo;
 
         public bool PlayerPaused
         {
@@ -58,6 +63,9 @@ namespace Assets.Scripts.Network
 
         [SerializeField]
         private ActorSpawnManager m_spawnManager;
+
+        [SerializeField]
+        private AudioManager m_audioManager;
 
         [SerializeField]
         private MatchManager m_matchManager;
@@ -97,16 +105,22 @@ namespace Assets.Scripts.Network
         public GameManager()
         {
             m_state = GameState.MainMenu;
-            m_settings = new SettingsModel();
-
+            
             m_clientPrefabs = new Dictionary<ulong, NetworkPrefab>();
             m_players = new Dictionary<ulong, GameObject>();
+
+            m_settingsRepo = new SettingsRepository();
         }
 
         private void Awake()
         {
             if (_instance == null)
             {
+                this.LoadSettings();
+
+                //m_settings.Game.PropertyChanged += GameSettings_PropertyChanged;
+                //m_settings.Session.PropertyChanged += SessionSettings_PropertyChanged;
+
                 _instance = this;
                 GameObject.DontDestroyOnLoad(base.gameObject);
             }
@@ -115,6 +129,15 @@ namespace Assets.Scripts.Network
                 GameObject.Destroy(base.gameObject);
             }
         }
+
+        private void LoadSettings()
+        {
+            m_settings = m_settingsRepo.GetSettingsModel();
+            m_audioManager.Settings = m_settings;
+
+            Assets.Scripts.UI.Settings.SetScreenResolution(m_settings.Game.Resolution, m_settings.Game.FullScreen);
+        }
+
 
         private void Start()
         {
@@ -546,6 +569,16 @@ namespace Assets.Scripts.Network
 
 
         }
+
+        //private void SessionSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //{
+        //    this.OnSettingsChanged?.Invoke(this, EventArgs.Empty);
+        //}
+
+        //private void GameSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //{
+        //    this.OnSettingsChanged?.Invoke(this, EventArgs.Empty);
+        //}
 
         //private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
         //{

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Models;
+using System;
 
 namespace Assets.Scripts
 {
@@ -9,21 +10,90 @@ namespace Assets.Scripts
         public TimeSpan TimeLimit;
     }
 
-    public class SessionSettingsModel
+    public class SessionSettingsModel : ObservableModel
     {
-        public string LocalPlayerName { get; set; }
-        public string ServerIP { get; set; }
-        public ushort Port { get; set; }
-        public string ServerName { get; set; }
-        public bool IsHost { get; set; }
+        private string m_localPlayerName;
+        private string m_serverIp;
+        private string m_level;
+        private ushort m_port;
+        private string m_serverName;
+        private bool m_isHost;
+
+        public string LocalPlayerName
+        {
+            get
+            {
+                return m_localPlayerName;
+            }
+            set
+            {
+                this.SetValue(ref m_localPlayerName, value);
+            }
+        }
+
+        public string ServerIP
+        {
+            get
+            {
+                return m_serverIp;
+            }
+            set
+            {
+                this.SetValue(ref m_serverIp, value);
+            }
+        }
+        public ushort Port
+        {
+            get
+            {
+                return m_port;
+            }
+            set
+            {
+                this.SetValue(ref m_port, value);
+            }
+        }
+        public string ServerName
+        {
+            get
+            {
+                return m_serverName;
+            }
+            set
+            {
+                this.SetValue(ref m_serverName, value);
+            }
+        }
+        public bool IsHost
+        {
+            get
+            {
+                return m_isHost;
+            }
+            set
+            {
+                this.SetValue(ref m_isHost, value);
+            }
+        }
+
+        public string Level
+        {
+            get
+            {
+                return m_level;
+            }
+            set
+            {
+                this.SetValue(ref m_level, value);
+            }
+        }
 
         public MatchSettings MatchSettings { get; set; }
-        public string Level { get; set; }
 
         public SessionSettingsModel()
         {
-            this.Port = 7777;
-            this.ServerIP = "127.0.0.1";
+            m_port = 7777;
+            m_serverIp = "127.0.0.1";
 
             this.MatchSettings = new MatchSettings
             {
@@ -32,8 +102,8 @@ namespace Assets.Scripts
                 TimeLimit = TimeSpan.Zero
             };
 
-            this.ServerName = "ServerName";
-            this.LocalPlayerName = "PlayerName";
+            m_serverName = "ServerName";
+            m_localPlayerName = "PlayerName";
         }
 
         public string GetSceneName()

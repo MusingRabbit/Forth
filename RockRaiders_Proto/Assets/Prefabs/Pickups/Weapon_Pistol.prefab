@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 2046513352711798596}
   - component: {fileID: 861327123017507712}
   - component: {fileID: 6869224484262087759}
+  - component: {fileID: 20037119965341074}
   m_Layer: 11
   m_Name: Weapon_Pistol
   m_TagString: Untagged
@@ -211,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 651860317
+  GlobalObjectIdHash: 320012238
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -276,6 +277,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &20037119965341074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3132132636237027123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be920d0ae5cdc74e82357f69bb39d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: 5e0ae15bffd270246bcabda9ebdd8e41, type: 3}
+    m_name: Pistol01
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &5821579036590646319
 GameObject:
   m_ObjectHideFlags: 0

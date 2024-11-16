@@ -39,6 +39,7 @@ namespace Assets.Scripts.Pickups.Weapons
             m_muzzle = gameObject.FindChild("Projectile_Exit");
             m_trailPool = new ObjectPool<TrailRenderer>(CreateTrail);
             m_particleSystem = GetComponent<ParticleSystem>();
+            base.Start();
         }
 
         // Update is called once per frame
@@ -56,6 +57,7 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 m_lastShotTime = Time.time;
                 m_particleSystem.Play();
+                base.Fire();
 
                 var shootDir = m_muzzle.transform.forward +
                     new Vector3(
@@ -96,6 +98,8 @@ namespace Assets.Scripts.Pickups.Weapons
                     StartCoroutine(PlayTrail(shootPos, shootPos + shootDir * m_shootConfig.Range, new RaycastHit()));
                 }
             }
+
+            
         }
 
         private IEnumerator PlayTrail(Vector3 startPoint, Vector3 endPoint, RaycastHit hit)

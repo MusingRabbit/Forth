@@ -68,6 +68,9 @@ namespace Assets.Scripts.Managers
         [SerializeField]
         private GameObject m_playerPrefab;
 
+        [SerializeField]
+        private GameObject m_cameraPrefab;
+
         private Dictionary<ulong, NetworkObject> m_clients;
 
         private HashSet<ulong> m_pendingSpawn;
@@ -326,14 +329,12 @@ namespace Assets.Scripts.Managers
             }
 
             var cameraSystem = m_cameraManager.GetComponent<CameraManager>();
-            var cameraObj = new GameObject();
-            cameraObj.name = "Actor Camera";
-            cameraObj.AddComponent<ActorCamera>();
 
+            var cameraObj = GameObject.Instantiate(m_cameraPrefab);
             var actorCamera = cameraObj.GetComponent<ActorCamera>();
             actorCamera.Target = actor;
-            actorCamera.Offset = new Vector2(0.5f, 0.5f);
-            actorCamera.Distance = 1.0f;
+            //actorCamera.Offset = new Vector2(0.5f, 0.5f);
+            //actorCamera.Distance = 1.0f;
 
             cameraObj.AddComponent<Camera>();
 

@@ -21,16 +21,25 @@ namespace Assets.Scripts
             }
         }
 
+        public Vector3 SpawnPosition { get; set; }
+
         public WeaponSpawnPoint()
         {
             m_weaponType = WeaponTypeSelection.AssaultRifle;
         }
 
-        private void Start()
+        private void Awake()
         {
             var debugMeshObj = this.gameObject.FindChild("DebugMesh");
             var meshRenderer = debugMeshObj.GetComponent<MeshRenderer>();
             meshRenderer.enabled = false;
+
+            this.SpawnPosition = debugMeshObj.transform.position;
+        }
+
+        private void Start()
+        {
+
         }
 
         private void Update()

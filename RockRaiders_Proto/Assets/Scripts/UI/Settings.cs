@@ -1,3 +1,4 @@
+using Assets.Scripts.Data;
 using Assets.Scripts.UI.Models;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,19 @@ namespace Assets.Scripts.UI
 
         [SerializeField]
         private TMP_InputField m_playerNameInput;
+
+        [SerializeField]
+        private Scrollbar m_soundVolume;
+
+        [SerializeField]
+        private Scrollbar m_musicVolume;
+
+        private SettingsRepository m_settingsRepo;
+
+        public Settings()
+        {
+            m_settingsRepo = new SettingsRepository();
+        }
 
 
         // Start is called before the first frame update
@@ -60,7 +74,7 @@ namespace Assets.Scripts.UI
             }
         }
 
-        private void SetScreenResolution(string resolution, bool fullScreen = false)
+        public static void SetScreenResolution(string resolution, bool fullScreen = false)
         {
             var tokens = resolution.Split('x', '@');
             var width = int.Parse(tokens[0]);
@@ -106,6 +120,8 @@ namespace Assets.Scripts.UI
             SelectScreenResolution(model.Game.Resolution);
             m_fullScreenToggle.isOn = model.Game.FullScreen;
             m_playerNameInput.text = model.Game.PlayerName;
+            m_musicVolume.value = model.Game.MusicVolume;
+            m_soundVolume.value = model.Game.SoundVolume;
         }
 
         protected override void UpdateGameSettingsModel()
@@ -113,6 +129,13 @@ namespace Assets.Scripts.UI
             Model.Game.FullScreen = m_fullScreenToggle.isOn;
             Model.Game.Resolution = m_screenResDropdown.options[m_screenResDropdown.value].text;
             Model.Game.PlayerName = m_playerNameInput.text;
+            Model.Game.SoundVolume = m_soundVolume.value;
+            Model.Game.MusicVolume = m_musicVolume.value;
+        }
+
+        public void Save()
+        {
+            m_settingsRepo.SetSettingsModel(this.Model);
         }
     }
 }

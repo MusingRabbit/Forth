@@ -579,6 +579,7 @@ GameObject:
   - component: {fileID: 330910926778944685}
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
+  - component: {fileID: 4142370295861206930}
   m_Layer: 11
   m_Name: Weapon_AssaultRifle
   m_TagString: Untagged
@@ -692,7 +693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3933634123
+  GlobalObjectIdHash: 3628988434
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -757,6 +758,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4142370295861206930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be920d0ae5cdc74e82357f69bb39d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: 8622ac8d460942f45b49157b857e8837, type: 3}
+    m_name: ARSound1
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 2c37d097203689d4e8b982e22d1fa7e0, type: 3}
+    m_name: ARSound2
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 8921f66bc49bf014f8c3196fbe962db8, type: 3}
+    m_name: ARSound3
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: de109dc8a7e628c4493ee98be249e39e, type: 3}
+    m_name: ARSound4
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &6691918644700404237
 GameObject:
   m_ObjectHideFlags: 0

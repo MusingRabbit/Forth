@@ -28,7 +28,6 @@ namespace Assets.Scripts.Pickups.Weapons
         public event EventHandler<OnShotFiredEventArgs> OnShotFired;
 
         [SerializeField]
-        [SerializeAs("WeaponSlot")]
         private WeaponSlot m_slot;
 
         [SerializeField]
@@ -46,6 +45,7 @@ namespace Assets.Scripts.Pickups.Weapons
 
         [SerializeField]
         private ActorCrosshair m_crosshair;
+        private WeaponAudio m_weaponAudio;
 
         public bool CanFire => m_ammoCount >= 0 || m_maxAmmo == -1;
 
@@ -136,6 +136,8 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 NotificationService.Instance.Warning("Weapon type is set to 'None'! " + this.Name);
             }
+
+            m_weaponAudio = this.GetComponent<WeaponAudio>();
         }
 
         protected override void Update()
@@ -156,12 +158,20 @@ namespace Assets.Scripts.Pickups.Weapons
 
         public virtual void Fire()
         {
-
+            if (m_weaponAudio != null)
+            {
+                m_weaponAudio.PlayRandomShotSound();
+            }
         }
 
         protected void Invoke_OnShotFired(Vector3 velocity, float mass)
         {
             this.OnShotFired?.Invoke(this, new OnShotFiredEventArgs(velocity, mass));
+
+            if (m_weaponAudio != null)
+            {
+                m_weaponAudio.PlayRandomShotSound();
+            }
         }
 
         protected void DecreaseAmmoCount()
@@ -179,9 +189,11 @@ namespace Assets.Scripts.Pickups.Weapons
             m_ammoCount = m_maxAmmo;
         }
 
-        public void DisableRigidBody()
+        public void ResetRigidBody()
         {
             m_rigidBody.constraints = RigidbodyConstraints.FreezePosition;
+            m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
         }
     }
 }

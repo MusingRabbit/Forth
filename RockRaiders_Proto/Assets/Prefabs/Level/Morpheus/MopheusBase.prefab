@@ -149,6 +149,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6991685289283115780}
     m_Modifications:
+    - target: {fileID: 1435361338518491730, guid: cf201e1a8479e2948bdcf8862189a7e0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 17.823
+      objectReference: {fileID: 0}
     - target: {fileID: 1672365443088054746, guid: cf201e1a8479e2948bdcf8862189a7e0, type: 3}
       propertyPath: m_Name
       value: MorphTower (1)

@@ -765,6 +765,7 @@ GameObject:
   - component: {fileID: 4389467978364081424}
   - component: {fileID: 5119795479301819221}
   - component: {fileID: 4510127233842751094}
+  - component: {fileID: 8725016847103788227}
   m_Layer: 11
   m_Name: Weapon_LazerRifle
   m_TagString: Untagged
@@ -1001,7 +1002,7 @@ MonoBehaviour:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    m_missDistance: 300
+    m_missDistance: 1500
     m_simulationSpeed: 300
 --- !u!114 &4389467978364081424
 MonoBehaviour:
@@ -5815,6 +5816,34 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &8725016847103788227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be920d0ae5cdc74e82357f69bb39d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: 2eb36ca1cadefad43be3920ed5c56336, type: 3}
+    m_name: LazerRifle01
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 7c64e4a7aaf0e494095282255b00baf1, type: 3}
+    m_name: LazerRifle02
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 9a155bbb307578244ab15a0378b34d4c, type: 3}
+    m_name: LazerRifle03
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &6691918644700404237
 GameObject:
   m_ObjectHideFlags: 0

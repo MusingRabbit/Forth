@@ -604,6 +604,7 @@ GameObject:
   - component: {fileID: 330910926778944685}
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
+  - component: {fileID: 4076577204284888451}
   m_Layer: 11
   m_Name: Weapon_Shotgun
   m_TagString: Untagged
@@ -689,7 +690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Weapon
   m_slot: 0
-  m_weaponDamage: 5
+  m_weaponDamage: 10
   m_type: 5
   m_maxAmmo: 30
   m_crosshair: {fileID: 0}
@@ -699,10 +700,10 @@ MonoBehaviour:
     m_hitMask:
       serializedVersion: 2
       m_Bits: 0
-    m_spread: {x: 1, y: 1, z: 0}
+    m_spread: {x: 0.5, y: 1, z: 0}
     m_fireRate: 0.5
     m_range: 125
-    m_shotsPerRound: 5
+    m_shotsPerRound: 7
   m_muzzleVelocity: 0.25
 --- !u!114 &1591483823692987831
 MonoBehaviour:
@@ -781,6 +782,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4076577204284888451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be920d0ae5cdc74e82357f69bb39d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: d494516b4f396544e8882fdf3e9cb862, type: 3}
+    m_name: 
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &6691918644700404237
 GameObject:
   m_ObjectHideFlags: 0

@@ -5315,6 +5315,7 @@ GameObject:
   - component: {fileID: 6769624834214156026}
   - component: {fileID: 5121600181889252215}
   - component: {fileID: 1726368187522168186}
+  - component: {fileID: 7975512601835164516}
   m_Layer: 0
   m_Name: Rocket
   m_TagString: Untagged
@@ -5401,7 +5402,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ec374320ffa9c40be29d7f1b4d4d90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_deactivationTime: 10
+  m_lifeTime: 60
+  m_deactivationTime: 2
   m_mass: 0.05
   m_renderables: {fileID: 2309715580473476530}
   m_particleSystem: {fileID: 5584059151278082894}
@@ -5417,7 +5419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1552333812
+  GlobalObjectIdHash: 1618181058
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -5465,7 +5467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_triggerForce: 0.1
-  m_explosionRadius: 30
+  m_explosionRadius: 18
   m_explosionForce: 1200
   m_particles: {fileID: 7102178839698046388, guid: 931a0fe8b49300c4f90c7006fc725093, type: 3}
 --- !u!114 &6769624834214156026
@@ -5524,6 +5526,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7975512601835164516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048868486205371406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1ae05fc92270f42833660b90758660, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: c21464b738f4944439bd4d61d52c440a, type: 3}
+    m_name: Rocket01
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 1
 --- !u!1 &7350603234025329219
 GameObject:
   m_ObjectHideFlags: 0

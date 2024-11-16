@@ -15,7 +15,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         private Weapon m_weapon;
 
         [SerializeField]
-        private TimeSpan m_lifeSpan;
+        private float m_lifeTime;
 
         [SerializeField]
         private float m_deactivationTime;
@@ -74,11 +74,13 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         [SerializeField]
         private ParticleSystem m_particleSystem;
 
+        private TimeSpan m_lifeSpan;
         private CapsuleCollider m_collider;
         private Explosive m_explosive;
         private Damage m_damage;
         private Rigidbody m_rigidBody;
         private ProjectileSpawnManager m_projNetwork;
+        private AudioSource m_audioSource;
 
         public Projectile()
         {
@@ -98,6 +100,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
 
             m_explosive = this.GetComponent<Explosive>();
             m_damage = this.GetComponent<Damage>();
+            m_audioSource = this.GetComponent<AudioSource>();
 
             if (m_explosive != null)
             {
@@ -109,7 +112,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             m_rigidBody.AddForce(transform.forward.normalized * m_muzzleVelcity, ForceMode.Impulse);
             
             m_startTime = Time.time;
-            m_lifeSpan = TimeSpan.FromSeconds(5);
+            m_lifeSpan = TimeSpan.FromSeconds(m_lifeTime);
 
             foreach (var force in m_additionalForces)
             {
@@ -159,6 +162,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             {
                 var em = m_particleSystem.emission;
                 em.enabled = false;
+            }
+
+            if (m_audioSource != null)
+            {
+                m_audioSource.enabled = false;
             }
         }
 

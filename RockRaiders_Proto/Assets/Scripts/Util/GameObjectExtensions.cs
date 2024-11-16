@@ -14,6 +14,11 @@ namespace Assets.Scripts.Util
 
         public static bool IsWeapon(this GameObject obj)
         {
+            if (obj == null)
+            {
+                return false;
+            }
+
             return obj.GetComponent<Weapon>() != null;
         }
 

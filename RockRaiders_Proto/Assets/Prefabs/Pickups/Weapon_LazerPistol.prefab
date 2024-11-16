@@ -516,6 +516,7 @@ GameObject:
   - component: {fileID: 4389467978364081424}
   - component: {fileID: 5119795479301819221}
   - component: {fileID: 4510127233842751094}
+  - component: {fileID: 8433019750009032679}
   m_Layer: 11
   m_Name: Weapon_LazerPistol
   m_TagString: Untagged
@@ -610,7 +611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 350170734
+  GlobalObjectIdHash: 312077521
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -5561,6 +5562,34 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &8433019750009032679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3be920d0ae5cdc74e82357f69bb39d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: 264dd2c265ae7174f9b2fc683507389c, type: 3}
+    m_name: Lazer01
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 0e4e4f8f753957242b768b17654a8f92, type: 3}
+    m_name: Lazer02
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 194442fb5929feb41976740e0a65fa0d, type: 3}
+    m_name: Lazer03
+    m_volume: 0.8
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &6691918644700404237
 GameObject:
   m_ObjectHideFlags: 0

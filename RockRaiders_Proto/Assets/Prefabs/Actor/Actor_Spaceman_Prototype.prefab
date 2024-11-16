@@ -2481,6 +2481,7 @@ GameObject:
   - component: {fileID: 4312716368416135918}
   - component: {fileID: 5081212574051940991}
   - component: {fileID: 3611883684537403955}
+  - component: {fileID: 6057511414138378056}
   m_Layer: 0
   m_Name: Actor_Spaceman_Prototype
   m_TagString: Player
@@ -2637,7 +2638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_canPickup: 1
-  m_dropTimeOut: 1
+  m_dropTimeOut: 0.5
   m_dropForce: 3
 --- !u!114 &5092461762216943984
 MonoBehaviour:
@@ -2666,7 +2667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_layerMask:
     serializedVersion: 2
-    m_Bits: 7641
+    m_Bits: 5593
   m_actorCamera: {fileID: 0}
   m_debugObj: {fileID: 0}
   m_maxDistance: 9999
@@ -2723,6 +2724,7 @@ MonoBehaviour:
   m_moveForce: 15
   m_maxSpeed: 100
   m_rotationSpeed: 200
+  m_rollSpeed: 0
   m_body: {fileID: 3567866040056171928}
   m_head: {fileID: 3567866041601796693}
   m_actorCamera: {fileID: 0}
@@ -2786,7 +2788,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4166983387
+  GlobalObjectIdHash: 3804523594
   InScenePlacedSourceGlobalObjectIdHash: 3804523594
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -2808,6 +2810,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_serverAuth: 0
+--- !u!114 &6057511414138378056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3567866041812562767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a96c5f42bedbcf44cb00def64fa801df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sounds:
+  - m_clip: {fileID: 8300000, guid: 3ffe2bdaa2afd8a46a785686551d7012, type: 3}
+    m_name: Ouch01
+    m_volume: 1
+    m_pitch: 1
+    m_loop: 0
+  - m_clip: {fileID: 8300000, guid: 8e4e798676c2d024da640004529ae93a, type: 3}
+    m_name: Ouch02
+    m_volume: 1
+    m_pitch: 1
+    m_loop: 0
 --- !u!1 &3883793107647890175
 GameObject:
   m_ObjectHideFlags: 0
