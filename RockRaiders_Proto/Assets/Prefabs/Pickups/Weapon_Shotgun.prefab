@@ -704,7 +704,7 @@ MonoBehaviour:
     m_fireRate: 0.5
     m_range: 125
     m_shotsPerRound: 7
-  m_muzzleVelocity: 0.25
+  m_muzzleVelocity: 0.5
 --- !u!114 &1591483823692987831
 MonoBehaviour:
   m_ObjectHideFlags: 0

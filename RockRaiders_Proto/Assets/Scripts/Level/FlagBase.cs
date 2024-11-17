@@ -111,14 +111,12 @@ namespace Assets.Scripts.Level
 
             if (m_flag != null)
             {
-                var fab = this.FlagAtBase;
-
-                if (m_flag.Owner == null && !fab)
+                if (m_flag.Owner == null && !this.FlagAtBase)
                 {
                     m_resetTimer.Start();
                 }
 
-                if (fab && m_resetTimer.Elapsed)
+                if (this.FlagAtBase)
                 {
                     m_resetTimer.SetTimeSpan(m_resetTimeSpan);
                     m_resetTimer.ResetTimer();

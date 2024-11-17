@@ -232,7 +232,7 @@ namespace Assets.Scripts.Actor
 
             if (m_stateChanged)
             {
-                NotificationService.Instance.Info($"State Changed : {m_playerName} |Dying:{this.IsDying}|Dead:{this.IsDead}|HP:{hp}");
+                //NotificationService.Instance.Info($"State Changed : {m_playerName} |Dying:{this.IsDying}|Dead:{this.IsDead}|HP:{hp}");
                  this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
                 m_stateChanged = false;
             }

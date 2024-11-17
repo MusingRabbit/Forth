@@ -119,16 +119,16 @@ namespace Assets.Scripts.Pickups
         {
             m_rigidBody.velocity = Vector3.zero;
             m_rigidBody.angularVelocity = Vector3.zero;
-           // m_rigidBody.detectCollisions = false;
+            m_rigidBody.isKinematic = true;
             m_rigidBody.includeLayers = LayerMask.GetMask("Level");
             m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
         }
 
         public void SetDropped()
         {
-           // m_rigidBody.detectCollisions = true;
             m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
             m_rigidBody.includeLayers = LayerMask.GetMask("Level");
+            m_rigidBody.isKinematic = false;
             m_dropTimer.ResetTimer();
             m_dropTimer.Start();
         }

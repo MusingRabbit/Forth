@@ -147,7 +147,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 4168
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2702,10 +2702,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a014efd06648e04d8c090c54632e8f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_moveSpeed: 5
+  m_moveSpeed: 8
   m_jumpForce: 15
   m_jumpTimeout: 3
-  m_gravStrength: 150
+  m_gravStrength: 250
   m_rotationSpeed: 100
   m_body: {fileID: 3567866040056171928}
   m_actorCamera: {fileID: 0}
@@ -2721,7 +2721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3553b522b01c7e44ace77bf01e2f0c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_moveForce: 15
+  m_moveForce: 10
   m_maxSpeed: 100
   m_rotationSpeed: 200
   m_rollSpeed: 0

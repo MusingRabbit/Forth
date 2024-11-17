@@ -133,7 +133,7 @@ namespace Assets.Scripts.Actor
         {
             if (this.UpdateRollRotation())
             {
-                NotificationService.Instance.Info($"Rotating by camera control | {m_upVector} | {m_actorCamera.Rotation  }");
+                //NotificationService.Instance.Info($"Rotating by camera control | {m_upVector} | {m_actorCamera.Rotation  }");
 
                 var tgtRot = (this.transform.rotation * m_actorCamera.XRot);
 

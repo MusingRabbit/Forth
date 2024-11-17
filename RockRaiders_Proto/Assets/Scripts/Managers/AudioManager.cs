@@ -32,7 +32,7 @@ namespace Assets.Scripts.Network
 
                 m_settings = value;
                 m_settings.Game.PropertyChanged += this.GameSettings_PropertyChanged;
-                //this.UpdateVolume();
+                this.UpdateVolume();
             }
         }
 
@@ -137,12 +137,18 @@ namespace Assets.Scripts.Network
         {
             foreach (var sound in m_music)
             {
-                sound.Source.volume = sound.Volume * m_settings.Game.MusicVolume;
+                if (sound.Source != null)
+                {
+                    sound.Source.volume = sound.Volume * m_settings.Game.MusicVolume;
+                }
             }
 
             foreach (var sound in m_gameSounds)
             {
-                sound.Source.volume = sound.Volume * m_settings.Game.SoundVolume;
+                if (sound.Source != null)
+                {
+                    sound.Source.volume = sound.Volume * m_settings.Game.SoundVolume;
+                }
             }
         }
 

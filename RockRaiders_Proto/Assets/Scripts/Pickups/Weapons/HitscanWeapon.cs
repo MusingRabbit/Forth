@@ -12,9 +12,9 @@ namespace Assets.Scripts.Pickups.Weapons
 {
     public class HitscanWeapon : Weapon
     {
-        [SerializeField]
-        [SerializeAs("MagazineSize")]
-        private int m_magazineSize;
+        //[SerializeField]
+        //[SerializeAs("MagazineSize")]
+        //private int m_magazineSize;
 
         [SerializeField]
         [SerializeAs("TotalCapacity")]

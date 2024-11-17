@@ -97,6 +97,7 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         public virtual void Start()
         {
             m_collider = this.GetComponent<CapsuleCollider>();
+            m_collider.enabled = false;
 
             m_explosive = this.GetComponent<Explosive>();
             m_damage = this.GetComponent<Damage>();
@@ -140,6 +141,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         public virtual void Update()
         {
             var currSpan = Time.time - m_startTime;
+
+            if (currSpan > 0.1f)
+            {
+                m_collider.enabled = true;
+            }
 
             if (m_lifeSpan < TimeSpan.FromSeconds(currSpan))
             {

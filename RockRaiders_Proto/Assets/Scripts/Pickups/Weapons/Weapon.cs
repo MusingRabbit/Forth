@@ -39,15 +39,31 @@ namespace Assets.Scripts.Pickups.Weapons
         [SerializeField]
         private int m_maxAmmo;
 
+        [SerializeField]
+        private ActorCrosshair m_crosshair;
+
         private int m_ammoCount;
+
+        private bool m_selfDespawn;
 
         private TriggerState m_triggerState;
 
-        [SerializeField]
-        private ActorCrosshair m_crosshair;
+
         private WeaponAudio m_weaponAudio;
 
-        public bool CanFire => m_ammoCount >= 0 || m_maxAmmo == -1;
+        public bool CanFire => m_ammoCount > 0 || m_maxAmmo == -1;
+
+        public bool SelfDespawnEnabled
+        {
+            get
+            {
+                return m_selfDespawn;
+            }
+            set
+            {
+                m_selfDespawn = value;
+            }
+        }
 
         public int MaxAmmo
         {
@@ -162,21 +178,21 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 m_weaponAudio.PlayRandomShotSound();
             }
+
+            this.DecreaseAmmoCount();
         }
 
         protected void Invoke_OnShotFired(Vector3 velocity, float mass)
         {
             this.OnShotFired?.Invoke(this, new OnShotFiredEventArgs(velocity, mass));
-
-            if (m_weaponAudio != null)
-            {
-                m_weaponAudio.PlayRandomShotSound();
-            }
         }
 
         protected void DecreaseAmmoCount()
         {
-            m_ammoCount--;
+            if (m_ammoCount > 0)
+            {
+                m_ammoCount--;
+            }
         }
 
         public void Reset()

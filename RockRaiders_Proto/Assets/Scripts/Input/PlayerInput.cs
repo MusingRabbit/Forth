@@ -353,6 +353,7 @@ namespace Assets.Scripts.Input
             EquipSide = netController.EquipSide;
             GravBoots = netController.GravBoots;
             Melee = netController.Melee;
+            Crouch = netController.Crouch;
             Use = netController.Use;
             Trigger = netController.Trigger;
             Jump = netController.Jump;

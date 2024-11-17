@@ -85,7 +85,9 @@ namespace Assets.Scripts.Actor
             }
 
             var dir = m_actorCamera.transform.forward;
-            var hit = Physics.Raycast(m_actorCamera.transform.position, dir, out var hitInfo, m_maxDistance, m_layerMask);
+            var dPos = this.transform.position - m_actorCamera.transform.position;
+            var startPos = m_actorCamera.transform.position + (m_actorCamera.transform.forward * (dPos.magnitude * 2));
+            var hit = Physics.Raycast(startPos, dir, out var hitInfo, m_maxDistance, m_layerMask);
 
             if (hit)
             {

@@ -168,22 +168,22 @@ namespace Assets.Scripts.Actor
         private void UpdateMovement()
         {
             m_moveVector = Vector3.zero;
+            var moveSpeed = m_state.IsCrouched ? m_moveSpeed / 3 : m_moveSpeed;
 
-            if (m_state.IsMoving && m_rigidBody.velocity.magnitude < m_moveSpeed)
+            if (m_state.IsMoving && m_rigidBody.velocity.magnitude < moveSpeed)
             {
                 m_moveVector = this.GetMoveVector(m_surfaceInfo, m_controller.MoveAxis);
+                m_rigidBody.AddForce((m_moveVector * (moveSpeed / 10)), ForceMode.Impulse);
             }
             else
             {
-                m_rigidBody.velocity -= m_rigidBody.velocity * (0.98f * Time.deltaTime);
+                m_rigidBody.velocity -= (m_rigidBody.velocity * 10) * Time.deltaTime;
             }
 
             if (m_groundRay.Hit)
             {
                 this.ApplyGravity();
-                m_rigidBody.AddForce(m_moveVector * (m_moveSpeed / 10), ForceMode.Impulse);
             }
-
         }
 
         private void ApplyGravity()
