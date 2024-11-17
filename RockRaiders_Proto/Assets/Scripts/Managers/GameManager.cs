@@ -122,6 +122,7 @@ namespace Assets.Scripts.Network
                 //m_settings.Session.PropertyChanged += SessionSettings_PropertyChanged;
 
                 _instance = this;
+                
                 GameObject.DontDestroyOnLoad(base.gameObject);
             }
             else
