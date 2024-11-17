@@ -174,7 +174,7 @@ namespace Assets.Scripts
 
                 
 
-                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, m_tgtRot, 50 * Time.deltaTime);
+                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, m_tgtRot, m_rotationSpeed * Time.deltaTime);
 
 
                 if (m_groundCounter > uint.MaxValue)

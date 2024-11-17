@@ -89,19 +89,28 @@ namespace Assets.Scripts.Network
             {
                 NotificationService.Instance.Info($"WeaponNetworkObjectId : {m_wpnNetworkObjectId.Value} | HitNetworkObjectId : {newValue}");
 
-                var gameObj = NetworkManager.SpawnManager.SpawnedObjects[newValue];
-                var weaponObj = NetworkManager.SpawnManager.SpawnedObjects[m_wpnNetworkObjectId.Value];
+                var spawnedObjects = NetworkManager.SpawnManager.SpawnedObjects;
 
-                NotificationService.Instance.Info($"{gameObj} | {weaponObj}");
-
-                var actorState = gameObj.GetComponent<ActorState>();
-
-                if (actorState != null)
+                if (spawnedObjects.ContainsKey(newValue))
                 {
-                    NotificationService.Instance.Info($"{gameObj} last hit by {actorState.LastHitBy}");
-                    actorState.LastHitBy = weaponObj.gameObject;
+                    var gameObj = spawnedObjects[newValue];
+                    var weaponObj = spawnedObjects[m_wpnNetworkObjectId.Value];
 
-                    NotificationService.Instance.NotifyPlayerAttacked(gameObj.gameObject);
+                    NotificationService.Instance.Info($"{gameObj} | {weaponObj}");
+
+                    var actorState = gameObj.GetComponent<ActorState>();
+
+                    if (actorState != null)
+                    {
+                        NotificationService.Instance.Info($"{gameObj} last hit by {actorState.LastHitBy}");
+                        actorState.LastHitBy = weaponObj.gameObject;
+
+                        NotificationService.Instance.NotifyPlayerAttacked(gameObj.gameObject);
+                    }
+                }
+                else
+                {
+                    NotificationService.Instance.Warning($"No spawned object for {newValue} exists");
                 }
             }
             else
@@ -123,8 +132,13 @@ namespace Assets.Scripts.Network
                 m_wpnNetworkObjectId.Value = weaponObjId;
             }
 
-            var weaponObj = NetworkManager.SpawnManager.SpawnedObjects[weaponObjId];
-            m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
+            var spawnedObjects = NetworkManager.SpawnManager.SpawnedObjects;
+
+            if (spawnedObjects.ContainsKey(weaponObjId))
+            {
+                var weaponObj = spawnedObjects[weaponObjId];
+                m_projectile.Weapon = weaponObj.gameObject.GetComponent<Weapon>();
+            }
         }
 
         [Rpc(SendTo.Server)]

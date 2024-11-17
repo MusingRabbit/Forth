@@ -930,7 +930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: LazerRifle
   m_slot: 0
-  m_weaponDamage: 0
+  m_weaponDamage: 6
   m_type: 4
   m_maxAmmo: 150
   m_crosshair: {fileID: 0}

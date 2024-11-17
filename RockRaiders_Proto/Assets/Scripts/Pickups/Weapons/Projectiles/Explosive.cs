@@ -46,10 +46,8 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         }
 
         private void OnDestroy()
-        {
-
+         {
             var surroundingObjs = Physics.OverlapSphere(this.transform.position, m_explosionRadius);
-
             foreach (var obj in surroundingObjs)
             {
                 if (obj.GetComponent<ActorController>() != null)
@@ -60,11 +58,6 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                     if (rb != null)
                     {
                         rb.AddExplosionForce(m_explosionForce, this.transform.position, m_explosionRadius);
-                    }
-
-                    if (m_particles != null)
-                    {
-                        GameObject.Instantiate(m_particles, this.transform.position, Quaternion.identity);
                     }
 
                     if (hp != null && m_damage != null)
@@ -90,6 +83,11 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
                         NotificationService.Instance.NotifyPlayerAttacked(obj.gameObject);
                     }
                 }
+            }
+
+            if (m_particles != null)
+            {
+                GameObject.Instantiate(m_particles, this.transform.position, Quaternion.identity);
             }
         }
     }

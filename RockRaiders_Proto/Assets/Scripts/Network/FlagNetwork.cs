@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Level;
+using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,9 +81,16 @@ namespace Assets.Scripts.Network
 
             NetworkObject owner = null;
 
-            if (state.OwnerNetworkId > 0 && spawnedObjs.ContainsKey(state.OwnerNetworkId))
+            if (state.OwnerNetworkId > 0)
             {
-                owner = NetworkManager.SpawnManager.SpawnedObjects[state.OwnerNetworkId];
+                if (spawnedObjs.ContainsKey(state.OwnerNetworkId))
+                {
+                    owner = spawnedObjs[state.OwnerNetworkId];
+                }
+                else
+                {
+                    NotificationService.Instance.Warning($"No spawned object for Id '{state.OwnerNetworkId}' could be found.");
+                }
             }
 
             m_flag.Team = state.Team;

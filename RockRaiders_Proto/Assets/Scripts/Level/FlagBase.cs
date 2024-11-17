@@ -87,6 +87,13 @@ namespace Assets.Scripts.Level
 
                 this.ResetFlag();
             }
+
+            var debugMesh = this.gameObject.FindChild("DebugMesh");
+
+            if (debugMesh != null)
+            {
+                debugMesh.SetActive(false);
+            }
         }
 
         // Update is called once per frame

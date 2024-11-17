@@ -155,14 +155,14 @@ namespace Assets.Scripts.Actor
 
             m_surfaceInfo = this.GetSurfaceRotationInfo();
 
-            //this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, info.TargetRotation, 50.0f * Time.deltaTime);
 
-            m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); //* m_camera.PlanarRotaion);
+            m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); 
 
-            var rotation = m_tgtSurfRot * m_actorCamera.YRot;
+            var rotation = m_tgtSurfRot;
+            var surfaceRot = Quaternion.RotateTowards(this.transform.rotation, m_tgtSurfRot, m_rotationSpeed * Time.deltaTime);
+            var horiRot = m_actorCamera.YRot;
 
-
-            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, rotation, m_rotationSpeed * Time.deltaTime);
+            this.transform.rotation = surfaceRot * horiRot;
         }
 
         private void UpdateMovement()

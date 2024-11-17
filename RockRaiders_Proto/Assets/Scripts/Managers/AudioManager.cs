@@ -32,6 +32,7 @@ namespace Assets.Scripts.Network
 
                 m_settings = value;
                 m_settings.Game.PropertyChanged += this.GameSettings_PropertyChanged;
+                //this.UpdateVolume();
             }
         }
 
@@ -46,7 +47,16 @@ namespace Assets.Scripts.Network
             {
                 sound.Source = this.gameObject.AddComponent<AudioSource>();
                 sound.Source.clip = sound.Clip;
-                sound.Source.volume = sound.Volume * m_settings?.Game.MusicVolume ?? 1.0f;
+
+                if (m_settings != null)
+                {
+                    sound.Source.volume = sound.Volume * m_settings.Game.MusicVolume;
+                }
+                else
+                {
+                    sound.Source.volume = 1.0f;
+                }
+                
                 sound.Source.pitch = sound.Pitch;
                 sound.Source.loop = sound.Loop;
             }
