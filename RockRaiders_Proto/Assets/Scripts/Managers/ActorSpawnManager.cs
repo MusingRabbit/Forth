@@ -2,6 +2,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.Input;
 using Assets.Scripts.Network;
+using Assets.Scripts.Pickups;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI;
 using System;
@@ -18,8 +19,6 @@ namespace Assets.Scripts.Managers
     [Serializable]
     public class SceneSpawnSettings
     {
-        
-
         [SerializeField]
         private UIGameOverlay m_uiOverlay;
 
@@ -42,6 +41,9 @@ namespace Assets.Scripts.Managers
         private bool m_isReady;
         private static ActorSpawnManager _instance;
         private List<SpawnPoint> m_spawnPoints;
+
+        [SerializeField]
+        private GameObject m_actorStartWeaponPrefab;
 
         public static ActorSpawnManager Instance
         {
@@ -217,14 +219,26 @@ namespace Assets.Scripts.Managers
             var actorNetwork = player.GetComponent<ActorNetwork>();
             actorNetwork.ActorSpawnManager = this;
 
-            //var spawnPoint = this.GetSpawnPoint(player);
-            //player.transform.position = spawnPoint.transform.position;
-
             var playerNet = player.GetComponent<NetworkObject>();
 
             playerNet.SpawnAsPlayerObject(clientId, true);
 
+            this.SpawnStarterWeaponForPlayer(player);
+
             m_clients[clientId] = playerNet;
+        }
+
+        private void SpawnStarterWeaponForPlayer(GameObject actor)
+        {
+            if (this.IsServer)
+            {
+                GameObject obj = GameObject.Instantiate(m_actorStartWeaponPrefab);
+                PickupItem item = obj.GetComponent<PickupItem>();
+                item.SelfDespawnEnabled = true;
+                obj.transform.position = actor.transform.position;
+                var networkObj = obj.GetComponent<NetworkObject>();
+                networkObj.Spawn(true);
+            }
         }
 
         public void DespawnClient(ulong clientId)

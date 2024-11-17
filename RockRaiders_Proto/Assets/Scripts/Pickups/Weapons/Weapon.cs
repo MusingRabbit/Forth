@@ -38,13 +38,11 @@ namespace Assets.Scripts.Pickups.Weapons
 
         [SerializeField]
         private int m_maxAmmo;
-
+        
         [SerializeField]
         private ActorCrosshair m_crosshair;
 
         private int m_ammoCount;
-
-        private bool m_selfDespawn;
 
         private TriggerState m_triggerState;
 
@@ -52,18 +50,6 @@ namespace Assets.Scripts.Pickups.Weapons
         private WeaponAudio m_weaponAudio;
 
         public bool CanFire => m_ammoCount > 0 || m_maxAmmo == -1;
-
-        public bool SelfDespawnEnabled
-        {
-            get
-            {
-                return m_selfDespawn;
-            }
-            set
-            {
-                m_selfDespawn = value;
-            }
-        }
 
         public int MaxAmmo
         {
@@ -140,6 +126,8 @@ namespace Assets.Scripts.Pickups.Weapons
             m_triggerState = TriggerState.Released;
             this.Name = "Weapon";
             m_maxAmmo = 150;
+
+            
         }
 
         protected override void Start()
@@ -154,6 +142,8 @@ namespace Assets.Scripts.Pickups.Weapons
             }
 
             m_weaponAudio = this.GetComponent<WeaponAudio>();
+
+
         }
 
         protected override void Update()
@@ -204,6 +194,7 @@ namespace Assets.Scripts.Pickups.Weapons
         {
             m_ammoCount = m_maxAmmo;
         }
+
 
         public void ResetRigidBody()
         {

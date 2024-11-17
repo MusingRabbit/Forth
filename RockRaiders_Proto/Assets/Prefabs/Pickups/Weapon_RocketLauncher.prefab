@@ -497,6 +497,7 @@ GameObject:
   - component: {fileID: 3253429179163836099}
   - component: {fileID: 1108001003844575942}
   - component: {fileID: 1320361139917456560}
+  - component: {fileID: 4511926879814787672}
   m_Layer: 11
   m_Name: Weapon_RocketLauncher
   m_TagString: Untagged
@@ -582,6 +583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: Weapon
+  m_selfDespawn: 0
   m_slot: 0
   m_weaponDamage: 100
   m_type: 7
@@ -693,6 +695,18 @@ MonoBehaviour:
     m_volume: 0.8
     m_pitch: 1
     m_loop: 0
+--- !u!114 &4511926879814787672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6454855206075445079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a6f6f8efce6aef40903b81f549d9e94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6691918644700404237
 GameObject:
   m_ObjectHideFlags: 0

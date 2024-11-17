@@ -22,6 +22,9 @@ namespace Assets.Scripts.Pickups
         private Rigidbody m_parentRigidBody;
         private ulong m_networkOwnerId;
 
+        [SerializeField]
+        private bool m_selfDespawn;
+
         private GameObject m_owner;
 
         public PackType PackType
@@ -71,6 +74,18 @@ namespace Assets.Scripts.Pickups
             get
             {
                 return m_parentRigidBody;
+            }
+        }
+
+        public bool SelfDespawnEnabled
+        {
+            get
+            {
+                return m_selfDespawn;
+            }
+            set
+            {
+                m_selfDespawn = value;
             }
         }
 

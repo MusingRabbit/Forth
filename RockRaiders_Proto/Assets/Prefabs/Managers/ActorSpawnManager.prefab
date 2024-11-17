@@ -67,10 +67,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac5555a2055358046844807862387c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_actorStartWeaponPrefab: {fileID: 3132132636237027123, guid: 21c57e6ec51133c438f9f8017da960e0, type: 3}
   m_cameraManager: {fileID: 0}
   m_playerPrefab: {fileID: 0}
+  m_cameraPrefab: {fileID: 0}
   m_sceneSettings:
-    m_spawnPoints: []
     m_uiOverlay: {fileID: 0}
 --- !u!114 &353474672815131859
 MonoBehaviour:

@@ -62,16 +62,16 @@ namespace Assets.Scripts.Pickups.Weapons
                         var spreadX = Random.Range(-m_shootConfig.Spread.x, m_shootConfig.Spread.x);
                         var spreadY = Random.Range(-m_shootConfig.Spread.y, m_shootConfig.Spread.y);
                         var spread = new Vector3(spreadX, spreadY, 0.0f);
-                        var velOffset = new Vector3(0,0, OwnerRigidBody.velocity.magnitude) + spread;
+                        //var velOffset = new Vector3(0,0, OwnerRigidBody.velocity.magnitude) + spread;
 
                         m_lastShotTime = Time.time;
                         if (m_projectileSpawner.SpawnProjectile(this.gameObject,
                             m_muzzle.transform.position,
                             rotation,
-                            velOffset,
+                            spread,
                             m_muzzleVelocity))
                         {
-                            Invoke_OnShotFired((velOffset + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
+                            Invoke_OnShotFired((spread + m_muzzle.transform.forward).normalized * m_muzzleVelocity, m_projectileSpawner.Projectile.Mass);
                         }
                     }
 

@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 861327123017507712}
   - component: {fileID: 6869224484262087759}
   - component: {fileID: 20037119965341074}
+  - component: {fileID: -5205254042068382962}
   m_Layer: 11
   m_Name: Weapon_Pistol
   m_TagString: Untagged
@@ -184,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: Weapon
+  m_selfDespawn: 0
   m_slot: 1
   m_weaponDamage: 20
   m_type: 1
@@ -212,7 +214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 320012238
+  GlobalObjectIdHash: 651860317
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -295,6 +297,18 @@ MonoBehaviour:
     m_volume: 0.8
     m_pitch: 1
     m_loop: 0
+--- !u!114 &-5205254042068382962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3132132636237027123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a6f6f8efce6aef40903b81f549d9e94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5821579036590646319
 GameObject:
   m_ObjectHideFlags: 0
