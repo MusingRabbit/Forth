@@ -24,7 +24,7 @@ namespace Assets.Scripts
         {
             m_reverse = false;
             m_transform = gameObject.transform;
-            ResetStartTime();
+            this.ResetStartTime();
         }
 
         // Update is called once per frame
@@ -44,7 +44,7 @@ namespace Assets.Scripts
             if (deltaTime >= m_interpolationTime)
             {
                 //m_reverse = !m_reverse;
-                ResetStartTime();
+                this.ResetStartTime();
             }
         }
 

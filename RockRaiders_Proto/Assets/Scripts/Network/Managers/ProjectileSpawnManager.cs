@@ -29,7 +29,6 @@ namespace Assets.Scripts.Network
         private void Start()
         {
             m_projectile = m_projectilePrefab.GetComponent<Projectile>();
-
         }
 
         public bool SpawnProjectile(GameObject weaponObj, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)

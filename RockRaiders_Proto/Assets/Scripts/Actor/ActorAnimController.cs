@@ -3,10 +3,14 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Animation controller for actor entity.
+    /// </summary>
     public class ActorAnimController : RRMonoBehaviour
     {
         private bool m_deathAnimPlayed = false; 
 
+        //String constants...
         private const string ANIM_IDLE = "Idle";
         private const string ANIM_CROUCH_IDLE = "Actor_Crouch_Idle";
 
@@ -39,12 +43,19 @@ namespace Assets.Scripts.Actor
         [SerializeField]
         private Animator m_animator;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorAnimController()
         {
         }
 
+        /// <summary>
+        /// Initialisation
+        /// </summary>
         public override void Initialise()
         {
+            m_animator = this.GetComponent<Animator>();
         }
 
 
@@ -53,6 +64,10 @@ namespace Assets.Scripts.Actor
 
         }
 
+        /// <summary>
+        /// Gets the animation best fitting the current actor state and plays it.
+        /// </summary>
+        /// <param name="state">Actor state component<see cref="ActorState"/></param>
         public void PlayAnimationForActorState(ActorState state)
         {
 
@@ -79,6 +94,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the animation name for the current actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetAnimationForActorState(ActorState state)
         {
             if (state.IsMoving)
@@ -98,6 +118,12 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the crouch animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
+        /// <exception cref="InvalidOperationException">Animation not found</exception>
         private string GetIdleCrouchAnimationForActorState(ActorState state)
         {
             switch (state.SelectedWeapon)
@@ -115,6 +141,11 @@ namespace Assets.Scripts.Actor
             throw new InvalidOperationException($"Invalid {nameof(SelectedWeapon)}");
         }
 
+        /// <summary>
+        /// Gets the run animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetRunAnimationForActorState(ActorState state)
         {
             if (state.IsCrouched)
@@ -127,6 +158,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the idle animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetIdleAnimationForActorState(ActorState state)
         {
             if (state.IsCrouched)
@@ -150,6 +186,11 @@ namespace Assets.Scripts.Actor
 
         }
 
+        /// <summary>
+        /// Gets the run animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetRunAnimation(ActorState state)
         {
             switch (state.SelectedWeapon)
@@ -167,6 +208,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the crouch animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetCrouchRunAnimation(ActorState state)
         {
             switch (state.SelectedWeapon)
@@ -184,6 +230,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the floating animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetFloatAnimation(ActorState state)
         {
             switch (state.SelectedWeapon)
@@ -201,6 +252,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the idle empty animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetIdleEmptyAnimation(ActorState state)
         {
             if (state.IsFloating)
@@ -213,6 +269,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the idle main weapon animation for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetIdleMainWeaponAnimation(ActorState state)
         {
             if (state.IsFloating)
@@ -225,6 +286,11 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the idle side arm animation name for specified actor state.
+        /// </summary>
+        /// <param name="state">Actor state component <see cref="ActorState"/></param>
+        /// <returns>Animation name</returns>
         private string GetIdleSideArmAnimation(ActorState state)
         {
             if (state.IsFloating)

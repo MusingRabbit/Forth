@@ -25,7 +25,6 @@ namespace Assets.Scripts
 
         public event EventHandler<EventArgs> OnInitialisation;
         public event EventHandler<EventArgs> OnMatchStateChanged;
-        public event EventHandler<EventArgs> OnMatchTypeChanged;
 
         public event EventHandler<OnPlayerAddedArgs> OnPlayerAdded;
         public event EventHandler<OnPlayerSwitchTeamsArgs> OnPlayerTeamSwitch;
@@ -353,7 +352,11 @@ namespace Assets.Scripts
             this.RemovePlayerFromTeam(clientId, Team.Red);
             this.RemovePlayerFromTeam(clientId, Team.None);
 
+            var data = m_players[clientId];
+
             m_players.Remove(clientId);
+
+            this.OnPlayerRemoved?.Invoke(this, new OnPlayerRemovedArgs(data));
         }
 
         private void RemovePlayerFromTeam(ulong clientId, Team team)
@@ -450,7 +453,6 @@ namespace Assets.Scripts
             }
 
             var player = players.OrderByDescending(x => x.Value.Score).FirstOrDefault();
-
 
             return player.Value;
         }

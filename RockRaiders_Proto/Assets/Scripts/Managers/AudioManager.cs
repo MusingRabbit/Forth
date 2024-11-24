@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Playables;
 
-namespace Assets.Scripts.Network
+namespace Assets.Scripts
 {
     public class AudioManager : MonoBehaviour
     {

@@ -176,7 +176,21 @@ namespace Assets.Scripts.UI
             if (matchData.Teams.ContainsKey(Team.None))
             {
                 var winner = matchData.GetTopPlayerByTeam(Team.None);
+
+                if (winner == null)
+                {
+                    NotificationService.Instance.Warning("No winner could be found!");
+                    return;
+                }
+
                 var wState = winner.Player.GetComponent<ActorState>();
+
+                if (wState == null)
+                {
+                    NotificationService.Instance.Warning("No winner state could be retrieved! No player name could be determined.");
+                    txt.text = "Unknown";
+                    return;
+                }
 
                 txt.text = wState.PlayerName;
             }

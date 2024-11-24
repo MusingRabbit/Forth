@@ -1,4 +1,5 @@
 using Assets.Scripts.Events;
+using Assets.Scripts.Services;
 using Assets.Scripts.Util;
 using System;
 using System.Xml.Linq;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Pickups
 {
-    public class PickupItem : MonoBehaviour
+    public class PickupItem : RRMonoBehaviour
     {
         [SerializeField]
         [SerializeAs("Name")]
@@ -26,6 +27,7 @@ namespace Assets.Scripts.Pickups
         private bool m_selfDespawn;
 
         private GameObject m_owner;
+        private BoxCollider m_trigger;
 
         public PackType PackType
         {
@@ -89,6 +91,9 @@ namespace Assets.Scripts.Pickups
             }
         }
 
+        public event EventHandler<EventArgs> OnPickedUp;
+        public event EventHandler<EventArgs> OnDropped;
+
         public PickupItem()
         {
             m_dropTimer = new Timer(TimeSpan.FromSeconds(3));
@@ -96,10 +101,18 @@ namespace Assets.Scripts.Pickups
             m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
         }
 
+        public override void Initialise()
+        {
+            m_rigidBody = this.GetComponent<Rigidbody>();
+            m_trigger = this.GetComponent<BoxCollider>();
+
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
+        }
+
         // Start is called before the first frame update
         protected virtual void Start()
         {
-            m_rigidBody = this.GetComponent<Rigidbody>();
+            this.Initialise();
         }
 
         // Update is called once per frame
@@ -108,19 +121,23 @@ namespace Assets.Scripts.Pickups
             if (m_rigidBody == null)
             {
                 m_rigidBody = this.GetComponent<Rigidbody>();
-                m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
-                m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
+            }
+
+            if (this.Owner == null && m_dropTimer.Elapsed == false)
+            {
+                m_dropTimer.Start();
             }
 
             m_dropTimer.Tick();
 
             if (m_dropTimer.Elapsed)
             {
+                m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
                 m_dropTimer.Stop();
             }
         }
 
-        private void Reset()
+        public override void Reset()
         {
             if (m_rigidBody == null)
             {
@@ -130,30 +147,52 @@ namespace Assets.Scripts.Pickups
             m_rigidBody.ResetVelocity();
         }
 
-        public void SetPickedUp()
+        public void SetPickedUp(bool suppressNotifications = false)
         {
             m_rigidBody.velocity = Vector3.zero;
             m_rigidBody.angularVelocity = Vector3.zero;
-            m_rigidBody.isKinematic = true;
-            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
-            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
+            //m_rigidBody.isKinematic = true;
+            m_rigidBody.constraints = RigidbodyConstraints.None;
+
+            //m_rigidBody.includeLayers = LayerMask.GetMask("Nothing");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Players");
+            m_trigger.includeLayers = m_rigidBody.includeLayers;
+            m_trigger.excludeLayers = m_rigidBody.excludeLayers;
+
+            m_dropTimer.Stop();
+            m_dropTimer.ResetTimer();
+
+            if (!suppressNotifications)
+            {
+                this.OnPickedUp?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        public void SetDropped()
+        public void SetDropped(bool suppressNotifications = false)
         {
-            m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
-            m_rigidBody.includeLayers = LayerMask.GetMask("Level");
-            m_rigidBody.isKinematic = false;
+            //m_rigidBody.excludeLayers = LayerMask.GetMask("Default");
+            //m_rigidBody.includeLayers = LayerMask.GetMask("Nothing");
+            m_rigidBody.excludeLayers = LayerMask.GetMask("Players");
+            m_trigger.includeLayers = m_rigidBody.includeLayers;
+            m_trigger.excludeLayers = m_rigidBody.excludeLayers;
+            //m_rigidBody.isKinematic = false;
             m_dropTimer.ResetTimer();
             m_dropTimer.Start();
+
+            if (!suppressNotifications)
+            {
+                this.OnDropped?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
-            m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
             m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
+            m_trigger.excludeLayers = m_rigidBody.excludeLayers;
             m_dropTimer.ResetTimer();
             m_dropTimer.Stop();
         }
+
+
     }
 }

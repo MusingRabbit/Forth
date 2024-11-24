@@ -14,21 +14,67 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Controller component for actor entity.
+/// </summary>
 public class ActorController : RRMonoBehaviour
 {
+    /// <summary>
+    /// Represents the players control input
+    /// </summary>
     private PlayerInput m_controller;
+    
+    /// <summary>
+    /// The actors current state (data) component.
+    /// </summary>
     private ActorState m_state;
+
+    /// <summary>
+    /// The actors' grounded behaviour.
+    /// </summary>
     private ActorGrounded m_grounded;
-    private ActorAnimController m_animController;
+
+    /// <summary>
+    /// The actors' floating behaviour
+    /// </summary>
     private ActorFloating m_floating;
+
+    /// <summary>
+    /// The actors' animation controller
+    /// </summary>
+    private ActorAnimController m_animController;
+    
+    /// <summary>
+    /// The actors ground ray component. This is for detecting ground proximty and orientation.
+    /// </summary>
     private ActorGroundRay m_groundRay;
+
+    /// <summary>
+    /// The actors crosshair component.
+    /// </summary>
     private ActorCrosshair m_crosshair;
+
+    /// <summary>
+    /// The actors' health component.
+    /// </summary>
     private ActorHealth m_health;
+
+    /// <summary>
+    /// The actors' pickup component.
+    /// </summary>
     private ActorPickup m_pickup;
+
+    /// <summary>
+    /// The actors' audio component.
+    /// </summary>
     private ActorAudio m_audio;
+
+    /// <summary>
+    /// The actors rigidbody component.
+    /// </summary>
     private Rigidbody m_rigidBody;
 
-
+    //Body Parts...
     private GameObject m_body;
     private GameObject m_head;
     private GameObject m_RHGrip;
@@ -36,32 +82,22 @@ public class ActorController : RRMonoBehaviour
     private GameObject m_lArm;
     private GameObject m_neck;
 
+    /// <summary>
+    /// Actors' head boxcollider component.
+    /// </summary>
     private BoxCollider m_headBoxCollider;
-
-    public Team Team
-    {
-        get
-        {
-            return m_state.Team;
-        }
-    }
-
-    public ActorState State
-    {
-        get
-        {
-            return m_state;
-        }
-    }
 
     public ActorController()
     {
 
     }
 
+    /// <summary>
+    /// Initialises the actors' controller component.
+    /// </summary>
     public override void Initialise()
     {
-        // I know this is frowned up. So sue me - its only once on initialisation. Might change later, didn't want to have unnecessary duplicate serialized fields.
+        // I know this is frowned upon. So sue me - its only once on initialisation. Might change later, didn't want to have unnecessary duplicate serialized fields.
         m_body = this.gameObject.FindChild("Body");
         m_head = this.gameObject.FindChild("Head");
         m_neck = this.gameObject.FindChild("Neck");
@@ -69,6 +105,7 @@ public class ActorController : RRMonoBehaviour
         m_rArm = this.gameObject.FindChild("Body.UpperBody.RArm.UpperArmGroup");
         m_lArm = this.gameObject.FindChild("Body.UpperBody.LArm.UpperArmGroup");
 
+        // Get all components
         m_controller = this.GetComponent<PlayerInput>();
         m_state = this.GetComponent<ActorState>();
         m_floating = this.GetComponent<ActorFloating>();
@@ -80,10 +117,6 @@ public class ActorController : RRMonoBehaviour
         m_health = this.GetComponent<ActorHealth>();
         m_pickup = this.GetComponent<ActorPickup>();
         m_audio = this.GetComponent<ActorAudio>();
-
-        m_pickup.OnItemPickedUp += Pickup_OnItemPickedUp;
-        m_pickup.OnItemDropped += Pickup_OnItemDropped;
-
         m_headBoxCollider = m_head.GetComponent<BoxCollider>();
 
         m_grounded.Body = m_body;
@@ -92,6 +125,10 @@ public class ActorController : RRMonoBehaviour
         m_floating.Head = m_head;
 
         m_state.GravBootsEnabled = true;
+
+        // Event subscription
+        m_pickup.OnItemPickedUp += this.Pickup_OnItemPickedUp;
+        m_pickup.OnItemDropped += this.Pickup_OnItemDropped;
     }
 
     // Start is called before the first frame update
@@ -103,44 +140,47 @@ public class ActorController : RRMonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (m_state.IsDead)
+        if (m_state.IsDead) // If actor is dead, drop everything, play death animation, and return.
         {
-            m_pickup.DropSelectedWeapon();
+            m_pickup.DropSelectedWeapon(false);
             m_pickup.DropCurrentPack();
             m_animController.PlayAnimationForActorState(m_state);
             m_state.IsMoving = false;
             return;
         }
 
-        //m_dropTimer.Tick();
-
-        if (m_controller != null)
+        if (m_controller != null) // If actor has controller attatched, process control inputs.
         {
             this.ProcessControllerActions();
         }
 
-        if (m_state.GravBootsEnabled && m_groundRay.Hit)
+        if (m_state.GravBootsEnabled && m_groundRay.Hit) //If actor is touching a surface, and grav boots are enabled - enable actor grounded behaviour
         {
+            m_state.FeetOnGround = true;
             m_grounded.enabled = true;
             m_floating.enabled = false;
             m_state.IsFloating = false;
         }
-        else
+        else // Actor is in a floating state
         {
             if (m_floating.enabled == false)
             {
                 m_floating.ResetRoll();                     // Sets the 'up' vector to be whatever orientation the player is currently in.
             }
 
+            m_state.FeetOnGround = false;
             m_grounded.enabled = false;
             m_floating.enabled = true;
             m_state.IsFloating = true;
         }
 
-        m_animController.PlayAnimationForActorState(m_state);
+        m_animController.PlayAnimationForActorState(m_state);   // Selects and plays the correct animation for the current actor state.
         this.Debug_DrawVelocityVector();
     }
 
+    /// <summary>
+    /// Is called by unity every physics update/time-step.
+    /// </summary>
     private void LateUpdate()
     {
         var canAnimate = !(m_state.IsDying || m_state.IsDying);
@@ -158,6 +198,9 @@ public class ActorController : RRMonoBehaviour
         this.UpdateSelectedWeaponWorldPos();
     }
 
+    /// <summary>
+    /// Resets all components referenced by this ActorController
+    /// </summary>
     public override void Reset()
     {
         m_controller.Reset();
@@ -165,19 +208,26 @@ public class ActorController : RRMonoBehaviour
         m_floating.Reset();
         m_grounded.Reset();
         m_groundRay.Reset();
-        
+        m_rigidBody.ResetVelocity();
         m_animController.Reset();
         m_crosshair.Reset();
         m_health.Reset();
+        m_pickup.Reset();
 
         m_rigidBody.ResetVelocity();
     }
 
+    /// <summary>
+    /// Draws the actors' current velocity vector on screen.
+    /// </summary>
     private void Debug_DrawVelocityVector()
     {
         Debug.DrawRay(m_body.transform.position, m_rigidBody.velocity, Color.cyan);
     }
 
+    /// <summary>
+    /// Processes all of the concurrent controller actions made active by the controller and translates them into behaviours performed by the actor.
+    /// </summary>
     private void ProcessControllerActions()
     {
         var actionList = m_controller.GetActiveControllerActions();
@@ -201,7 +251,7 @@ public class ActorController : RRMonoBehaviour
                 case ControllerActions.Use:
                     break;
                 case ControllerActions.Drop:
-                    m_pickup.DropSelectedWeapon();
+                    m_pickup.DropSelectedWeapon(false);
                     break;
                 case ControllerActions.Throw:
                     break;
@@ -222,6 +272,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Fires the actors' currently selected weapon
+    /// </summary>
     private void FireSelectedWeapon()
     {
         var weaponObj = m_state.GetSelectedWeapon();
@@ -233,6 +286,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Causes the actor to perform a jump
+    /// </summary>
     private void Jump()
     {
         if (m_grounded.enabled)
@@ -241,6 +297,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Causes the actor to thrust upward.
+    /// </summary>
     private void ThrustUp()
     {
         if (m_floating.enabled)
@@ -249,6 +308,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Causes the actor to crouch / thrust downward.
+    /// </summary>
     private void Crouch()
     {
         if (m_grounded.enabled)
@@ -262,16 +324,17 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggles the actors' gravity boots on or off.
+    /// </summary>
     private void ToggleGravBoots()
     {
         m_state.GravBootsEnabled = !m_state.GravBootsEnabled;
     }
 
-    private void Weapon_OnShotFired(object sender, OnShotFiredEventArgs e)
-    {
-        this.HandleRecoil(e.ProjectileVelocity, e.ProjectileMass);
-    }
-
+    /// <summary>
+    /// Updates the world position of the currently selected weapon
+    /// </summary>
     private void UpdateSelectedWeaponWorldPos()
     {
         GameObject selectedWeapon = null;
@@ -292,7 +355,6 @@ public class ActorController : RRMonoBehaviour
                 break;
         }
 
-
         if (selectedWeapon != null)
         {
             var pos = m_crosshair.AimPoint;
@@ -302,6 +364,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the actors' arm orientation such that it faces the crosshair position.
+    /// </summary>
     private void UpdateActorArmRotation()
     {
         var rArmTrans = m_rArm.GetComponent<Transform>();
@@ -330,6 +395,9 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the actors' head rotation such that it faces the corsshair's aimpoint.
+    /// </summary>
     private void UpdateActorHeadRotation()
     {
         var headTransform = m_head.GetComponent<Transform>();
@@ -341,53 +409,58 @@ public class ActorController : RRMonoBehaviour
         headTransform.Rotate(0, -90, 0);
     }
 
-    private void HandleRecoil(Vector3 velocity, float mass)
+    /// <summary>
+    /// Handles gun recoil.
+    /// </summary>
+    /// <param name="projectileVelocity">velocity of the projectile fired.</param>
+    /// <param name="projectileMass">Mass of the projectile fired</param>
+    private void HandleRecoil(Vector3 projectileVelocity, float projectileMass)
     {
         if (m_state.IsFloating)
         {
-            m_rigidBody.AddForce(-velocity * mass, ForceMode.Impulse);
+            m_rigidBody.AddForce(-projectileVelocity * projectileMass, ForceMode.Impulse);
         }
     }
 
+    /// <summary>
+    /// Triggers whenever a collision occurs with the actor entity's sphere collider.
+    /// </summary>
+    /// <param name="collision">Collision details</param>
     private void OnCollisionEnter(Collision collision)
     {
         foreach (var contact in collision.contacts)
         {
             var gameObj = contact.otherCollider.gameObject;
 
-            if (gameObj.IsPickupItem())
+            if (gameObj == this.gameObject)
             {
-                if (gameObj.IsWeapon())
+                return;
+            }
+
+            if (gameObj.IsPickupItem())     // if the collision object is a flag pickup, pickup the flag.  TODO : Move this into Flag.cs
+            {
+                var flag = gameObj.GetComponent<Flag>();
+
+                if (flag != null)
                 {
-                    var weapon = gameObj.GetComponent<Weapon>();
-                    m_pickup.PickupWeapon(weapon);
+                    if (flag.Team == m_state.Team && !flag.Retreived)
+                    {
+                        NotificationService.Instance.Info($"{flag.Team} flag retreived");
+                        flag.Retreived = true;
+                        return;
+                    }
+                    else if (flag.Team != m_state.Team)
+                    {
+                        m_pickup.PickupPack(flag, false);
+                    }
                 }
                 else
                 {
-                    var flag = gameObj.GetComponent<Flag>();
-
-                    if (flag != null)
-                    {
-                        if (flag.Team == m_state.Team && !flag.Retreived)
-                        {
-                            NotificationService.Instance.Info($"{flag.Team} flag retreived");
-                            flag.Retreived = true;
-                            return;
-                        }
-                        else if (flag.Team != m_state.Team)
-                        {
-                            m_pickup.PickupPack(flag);
-                        }
-                    }
-                    else
-                    {
-                        m_pickup.PickupPack(gameObj.GetComponent<PickupItem>());
-                    }
-                    
+                    m_pickup.PickupPack(gameObj.GetComponent<PickupItem>(), false);
                 }
             }
 
-            if (gameObj.IsProjectile())
+            if (gameObj.IsProjectile()) //if gameobject is a projectile - handle in interaction,and register the hit.
             {
                 var projectile = gameObj.GetComponent<Projectile>();
                 var projectileNet = gameObj.GetComponent<ProjectileNetwork>();
@@ -402,7 +475,7 @@ public class ActorController : RRMonoBehaviour
                     m_health.RegisterProjectileHit(gameObj, 1.0f);
                 }
 
-                NotificationService.Instance.Info("Projectile hit " + this.State.PlayerName);
+                NotificationService.Instance.Info("Projectile hit " + m_state.PlayerName);
 
                 projectileNet.HitNetworkObjectId = this.GetComponent<NetworkObject>().NetworkObjectId;
 
@@ -411,11 +484,22 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the current movement speed of the actor.
+    /// </summary>
+    /// <returns></returns>
     public float GetCurrentMoveSpeed()
     {
-        return m_state.IsFloating ? m_floating.MoveSpeed : m_grounded.MoveSpeed;
+        return m_rigidBody.velocity.magnitude;
+
+        //return m_state.IsFloating ? m_floating.MoveForce : m_grounded.MoveSpeed;
     }
 
+    /// <summary>
+    /// Triggered when actor has dropped an item
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event Args : <see cref="OnPickupEventArgs"/></param>
     private void Pickup_OnItemDropped(object sender, OnPickupEventArgs e)
     {
         if (e.Item.gameObject.IsWeapon())
@@ -425,6 +509,11 @@ public class ActorController : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Triggered when actor has picked up an item
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event Args : <see cref="OnPickupEventArgs"/></param>
     private void Pickup_OnItemPickedUp(object sender, OnPickupEventArgs e)
     {
         if (e.Item.gameObject.IsWeapon())
@@ -432,5 +521,15 @@ public class ActorController : RRMonoBehaviour
             var weapon = e.Item.GetComponent<Weapon>();
             weapon.OnShotFired += this.Weapon_OnShotFired;
         }
+    }
+
+    /// <summary>
+    /// Triggered when actor has distcharged their weapon.
+    /// </summary>
+    /// <param name="sender">Sender</param>
+    /// <param name="e">Event arguments</param>
+    private void Weapon_OnShotFired(object sender, OnShotFiredEventArgs e)
+    {
+        this.HandleRecoil(e.ProjectileVelocity, e.ProjectileMass);
     }
 }

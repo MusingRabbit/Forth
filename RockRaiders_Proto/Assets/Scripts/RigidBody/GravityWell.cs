@@ -1,3 +1,4 @@
+using Assets.Scripts.Actor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,23 +26,30 @@ public class GravityWell : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         var removeList = new List<int>();
 
         foreach(var kvp in m_rigidBodies)
         {
-            var rb = kvp.Value;
-
-            if (rb != null)
+            if (kvp.Value != null)
             {
+                var rb = kvp.Value;
+                var obj = rb.gameObject;
+                var gw = obj.GetComponent<IGravityWell>();
+
+                if (gw != null)
+                {
+                    gw.InGravityWell = true;
+                }
+
                 var objPos = rb.transform.position;
                 var centre = m_sphereCollider.center;
                 var pullDir = (centre - objPos).normalized;
-                var totalForce = pullDir * (m_gravStrength * rb.mass);
+                var acceleration = pullDir * (m_gravStrength * rb.mass);
 
-                Debug.Log($"Grav:{m_gravStrength}|Mass:{rb.mass}|Force:{totalForce}|Obj:{rb.gameObject.name}");
-                rb.AddForce(totalForce * Time.deltaTime, ForceMode.Force);
+                //Debug.Log($"Grav:{m_gravStrength}|Mass:{rb.mass}|Force:{totalForce}|Obj:{rb.gameObject.name}");
+                rb.AddForce(acceleration, ForceMode.Acceleration);
             }
             else
             {

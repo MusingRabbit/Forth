@@ -3,6 +3,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.Input;
 using Assets.Scripts.Network;
 using Assets.Scripts.Pickups;
+using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
 using Assets.Scripts.UI;
 using System;
@@ -41,9 +42,6 @@ namespace Assets.Scripts.Managers
         private bool m_isReady;
         private static ActorSpawnManager _instance;
         private List<SpawnPoint> m_spawnPoints;
-
-        [SerializeField]
-        private GameObject m_actorStartWeaponPrefab;
 
         public static ActorSpawnManager Instance
         {
@@ -86,6 +84,8 @@ namespace Assets.Scripts.Managers
         [SerializeField]
         private SceneSpawnSettings m_sceneSettings;
 
+
+
         // private static Dictionary<ulong, string> playerNameDictionary;
 
         public ActorSpawnManager()
@@ -96,6 +96,7 @@ namespace Assets.Scripts.Managers
             m_pendingSpawn = new HashSet<ulong>();
             m_pendingDespawn = new HashSet<ulong>();
             m_clients = new Dictionary<ulong, NetworkObject>();
+
             //playerNameDictionary = new Dictionary<ulong, string>();
         }
 
@@ -144,7 +145,8 @@ namespace Assets.Scripts.Managers
 
         private void Update()
         {
-            _instance.m_isReady = SceneManager.GetActiveScene().name != "SplashScreen" && SceneManager.GetActiveScene().isLoaded;
+            var activeScene = SceneManager.GetActiveScene();
+            m_isReady = activeScene.name != "SplashScreen" && activeScene.isLoaded;
 
             if (m_isReady)
             {
@@ -223,22 +225,7 @@ namespace Assets.Scripts.Managers
 
             playerNet.SpawnAsPlayerObject(clientId, true);
 
-            this.SpawnStarterWeaponForPlayer(player);
-
             m_clients[clientId] = playerNet;
-        }
-
-        private void SpawnStarterWeaponForPlayer(GameObject actor)
-        {
-            if (this.IsServer)
-            {
-                GameObject obj = GameObject.Instantiate(m_actorStartWeaponPrefab);
-                PickupItem item = obj.GetComponent<PickupItem>();
-                item.SelfDespawnEnabled = true;
-                obj.transform.position = actor.transform.position;
-                var networkObj = obj.GetComponent<NetworkObject>();
-                networkObj.Spawn(true);
-            }
         }
 
         public void DespawnClient(ulong clientId)
@@ -267,6 +254,8 @@ namespace Assets.Scripts.Managers
                 }
 
                 m_clients.Remove(clientId);
+
+                this.OnActorDespawn?.Invoke(this, new OnActorDespawnedArgs(clientId));
             }
         }
 
@@ -388,20 +377,24 @@ namespace Assets.Scripts.Managers
 
         public void PrepareLocalPlayerActor(GameObject actor)
         {
+            this.InitialiseBehaviours(actor);
             this.SetupActorNetworkComponent(actor);
             this.RegisterActorOnInputManager(actor);
             this.CreateActorCamera(actor, true);
             this.SetupUIOverlay(actor);
 
             this.MoveActorToSpawnPoint(actor);
+
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
         }
 
         public void PrepareRemotePlayerActor(GameObject actor)
         {
+            this.InitialiseBehaviours(actor);
             this.SetupActorNetworkComponent(actor);
             this.CreateActorCamera(actor, false);
             this.MoveActorToSpawnPoint(actor);
+
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
         }
 

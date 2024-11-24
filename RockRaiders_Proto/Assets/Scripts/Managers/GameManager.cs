@@ -9,6 +9,7 @@ using Assets.Scripts.UI.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Xml;
 using Unity.Netcode;
@@ -27,8 +28,6 @@ namespace Assets.Scripts.Network
 
     public class GameManager : NetworkBehaviour, IGameManager
     {
-        public event EventHandler<EventArgs> OnSettingsChanged;
-
         private bool m_playerPaused;
         private bool m_localPlayerAwaitingRespawn;
         private bool m_clientConnecting;
@@ -63,6 +62,8 @@ namespace Assets.Scripts.Network
 
         [SerializeField]
         private ActorSpawnManager m_spawnManager;
+
+        private WeaponSpawnManager m_weaponSpawnManager;
 
         [SerializeField]
         private AudioManager m_audioManager;
@@ -122,7 +123,7 @@ namespace Assets.Scripts.Network
                 //m_settings.Session.PropertyChanged += SessionSettings_PropertyChanged;
 
                 _instance = this;
-                
+
                 GameObject.DontDestroyOnLoad(base.gameObject);
             }
             else
@@ -138,6 +139,20 @@ namespace Assets.Scripts.Network
             m_inputManager.Settings = m_settings;
 
             Assets.Scripts.UI.Settings.SetScreenResolution(m_settings.Game.Resolution, m_settings.Game.FullScreen);
+        }
+
+        private WeaponSpawnManager GetWeaponSpawnManager()
+        {
+            WeaponSpawnManager result = m_weaponSpawnManager;
+
+            if (result == null)
+            {
+                var spawnManagerObj = SceneManager.GetActiveScene().GetRootGameObjects().SingleOrDefault(x => x.name == "WeaponSpawnManager");
+                result = spawnManagerObj.GetComponent<WeaponSpawnManager>();
+                m_weaponSpawnManager = result;
+            }
+
+            return result ;
         }
 
 
@@ -157,6 +172,8 @@ namespace Assets.Scripts.Network
             m_netManager.ConnectionApprovalCallback += this.Netmanager_OnConnectionApproval;
             m_netManager.OnClientConnectedCallback += this.Netmanager_OnClientConnectedCallback;
             m_netManager.OnClientDisconnectCallback += this.NetManager_OnClientDisconnectCallback;
+
+
         }
 
         private void Update()
@@ -530,6 +547,15 @@ namespace Assets.Scripts.Network
                     var actorState = e.Actor.GetComponent<ActorState>();
                     actorState.Team = matchData.Team;
                 }
+
+                var weaponSpawnManager = this.GetWeaponSpawnManager();
+
+                if (weaponSpawnManager != null)
+                {
+                    var pickup = e.Actor.GetComponent<ActorPickup>();
+                    var wpn = weaponSpawnManager.SpawnWeapon(WeaponType.Pistol, Vector3.zero);
+                    pickup.PickupWeapon(wpn, false);
+                }
             }
         }
 
@@ -573,6 +599,7 @@ namespace Assets.Scripts.Network
 
         private void MatchManager_OnMatchStateChanged(object sender, EventArgs e)
         {
+
             var data = m_matchManager.GetMatchData();
 
             switch (data.MatchState)
@@ -580,6 +607,7 @@ namespace Assets.Scripts.Network
                 case MatchState.PendingStart:
                     m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.PendingStart);
                     m_spawnManager.RespawnAllClients();
+
                     break;
                 case MatchState.Running:
                     m_matchManager.InitialiseMatch(m_settings.Session.MatchSettings, MatchState.Running);
@@ -589,6 +617,12 @@ namespace Assets.Scripts.Network
                     break;
             }
 
+            var wpnSpawnManager = this.GetWeaponSpawnManager();
+
+            if (wpnSpawnManager != null)
+            {
+                wpnSpawnManager.DespawnAllRegisteredWeapons();
+            }
 
         }
 

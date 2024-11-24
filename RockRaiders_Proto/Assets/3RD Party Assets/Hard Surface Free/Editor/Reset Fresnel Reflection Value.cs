@@ -16,9 +16,11 @@ public class MaterialValuesCopier : ScriptableObject
     	
     	foreach (Material m in Selection.GetFiltered(typeof(Material), SelectionMode.DeepAssets))
         {
-        	Undo.RegisterUndo (m, "Material Copy Change");
-        	        	
-        	if(m.HasProperty("_FrezPow"))
+#pragma warning disable CS0618 // Type or member is obsolete
+            Undo.RegisterUndo (m, "Material Copy Change");
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            if (m.HasProperty("_FrezPow"))
 			{
         		frezvalue = m.GetFloat("_FrezPow");
 				frezvalue *= 0.0009765625f;

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Input;
+﻿using Assets.Scripts.Events;
+using Assets.Scripts.Input;
 using Assets.Scripts.Util;
 using System;
 using System.Collections.Generic;
@@ -16,49 +17,115 @@ namespace Assets.Scripts.Actor
         public Quaternion TargetRotation;
     }
 
-    internal class ActorGrounded : RRMonoBehaviour
+    internal class ActorGrounded : RRMonoBehaviour, IGravityWell
     {
+        /// <summary>
+        /// Maximum move speed of the actor
+        /// </summary>
         [SerializeField]
-        private float m_moveSpeed;
+        private float m_maxMoveSpeed;
 
+        [SerializeField]
+        private float m_acceleration;
+
+        /// <summary>
+        /// The actors' jump force/impulse
+        /// </summary>
         [SerializeField]
         private float m_jumpForce;
 
+        /// <summary>
+        /// The minumum amount of time between actor jumps
+        /// </summary>
         [SerializeField]
         private float m_jumpTimeout;
 
+        /// <summary>
+        /// The strength of grav boots. The amount of 'gravity' / pullforce they have.
+        /// </summary>
         [SerializeField]
-        private float m_gravStrength;
+        private float m_gravBootStrength;
 
+        /// <summary>
+        /// The maximum speed at which the actor will rotate.
+        /// </summary>
         [SerializeField]
         private float m_rotationSpeed;
 
-        private bool m_crouch;
-
-        private PlayerInput m_controller;
-        private ActorState m_state;
-        private Rigidbody m_rigidBody;
-        private ActorGroundRay m_groundRay;
-
-        private bool m_canJump;
-
-        private Timer m_jumpTimer;
-
+        /// <summary>
+        /// The actor's body gameobject
+        /// </summary>
         [SerializeField]
         private GameObject m_body;
 
-        private BoxCollider m_groundCollider;
-
-        [SerializeField]
+        /// <summary>
+        /// The actors camera component
+        /// </summary>
         private ActorCamera m_actorCamera;
 
+        /// <summary>
+        /// Player Input / Controller component
+        /// </summary>
+        private PlayerInput m_controller;
+
+        /// <summary>
+        /// Actor state component
+        /// </summary>
+        private ActorState m_state;
+
+        /// <summary>
+        /// Actors rigidbody component
+        /// </summary>
+        private Rigidbody m_rigidBody;
+
+        /// <summary>
+        /// Actors' ground ray component - this is used to check for nearby walkable surfaces.
+        /// </summary>
+        private ActorGroundRay m_groundRay;
+
+        /// <summary>
+        /// Whether the actor can jump
+        /// </summary>
+        private bool m_canJump;
+
+        /// <summary>
+        /// Whether the actor is crouching.
+        /// </summary>
+        private bool m_crouch;
+
+        /// <summary>
+        /// The timer that tracks time between jumps.
+        /// </summary>
+        private Timer m_jumpTimer;
+
+        /// <summary>
+        /// Surface rotation information.
+        /// </summary>
         private SurfaceRotationInfo m_surfaceInfo;
+
+        /// <summary>
+        /// Target surface rotation
+        /// </summary>
         private Quaternion m_tgtSurfRot;
+
+        /// <summary>
+        /// Target lookAt rotation
+        /// </summary>
         private Quaternion m_tgtLookatRot;
+
+        /// <summary>
+        /// Current move vector.
+        /// </summary>
         private Vector3 m_moveVector;
 
-        private Dictionary<int, Collision> m_colDict;
+        /// <summary>
+        /// Stores whether in gravity well
+        /// </summary>
+        private bool m_inGravityWell;
 
+        /// <summary>
+        /// Gets or sets the actors' body gameobject
+        /// </summary>
         public GameObject Body
         {
             get
@@ -71,6 +138,9 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets or sets the actors' camera component
+        /// </summary>
         public ActorCamera ActorCamera
         {
             get
@@ -83,24 +153,44 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the max move speed.
+        /// </summary>
         public float MoveSpeed
         {
             get
             {
-                return m_moveSpeed;
+                return m_maxMoveSpeed;
             }
         }
 
+        public bool InGravityWell
+        {
+            get
+            {
+                return m_inGravityWell;
+            }
+            set
+            {
+                m_inGravityWell = value;
+            }
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorGrounded()
         {
-            m_colDict = new Dictionary<int, Collision>();
-
             m_jumpTimer = new Timer();
             m_jumpTimer.SetTimeSpan(TimeSpan.FromSeconds(m_jumpTimeout));
             m_jumpTimer.OnTimerElapsed += this.JumpTimer_OnTimerElapsed;
             m_canJump = true;
+            m_acceleration = 10f;
         }
 
+        /// <summary>
+        /// Initialisation
+        /// </summary>
         public override void Initialise()
         {
             m_controller = this.GetComponent<PlayerInput>();
@@ -109,31 +199,40 @@ namespace Assets.Scripts.Actor
             m_groundRay = this.GetComponent<ActorGroundRay>();
         }
 
+
+        /// <summary>
+        /// Start / Initialisation - called once prior to first frame in scene.
+        /// </summary>
         private void Start()
         {
             this.Initialise();
         }
 
+        /// <summary>
+        /// Resets the actors' grounded behaviour
+        /// </summary>
         public override void Reset()
         {
             m_canJump = true;
             m_crouch = false;
-            m_colDict.Clear();
             m_moveVector = Vector3.zero;
             m_tgtLookatRot = Quaternion.identity;
             m_tgtSurfRot = Quaternion.identity;
         }
 
+        /// <summary>
+        /// Called every frame
+        /// </summary>
         private void Update()
         {
-            if (m_state.IsDead)
+            if (m_state.IsDead) // If actor is dead, apply any gravity and return.
             {
-                this.ApplyGravity();
+                this.ApplyGravBoots();
                 return;
             }
 
-            var moveX = m_controller?.MoveAxis.x * (m_moveSpeed * Time.deltaTime) ?? 0.0f;
-            var moveZ = m_controller?.MoveAxis.y * (m_moveSpeed * Time.deltaTime) ?? 0.0f;
+            var moveX = m_controller?.MoveAxis.x * (m_maxMoveSpeed * Time.deltaTime) ?? 0.0f;
+            var moveZ = m_controller?.MoveAxis.y * (m_maxMoveSpeed * Time.deltaTime) ?? 0.0f;
             m_moveVector = new Vector3(moveX, 0.0f, moveZ);
 
             m_state.IsMoving = m_moveVector.magnitude > 0.0f;
@@ -147,14 +246,17 @@ namespace Assets.Scripts.Actor
                 this.UpdateMovement();
             }
 
+            m_state.FeetOnGround = m_groundRay.Hit;
+
             m_crouch = false;
         }
 
+        /// <summary>
+        /// Updates the surface rotation information used to calculate the actor's rotations relative to the surface they walk on.
+        /// </summary>
         private void UpdateSurfaceRotaion()
         {
-
             m_surfaceInfo = this.GetSurfaceRotationInfo();
-
 
             m_tgtSurfRot = ((m_surfaceInfo.TargetRotation * this.transform.rotation)); 
 
@@ -165,33 +267,46 @@ namespace Assets.Scripts.Actor
             this.transform.rotation = surfaceRot * horiRot;
         }
 
+        /// <summary>
+        /// Updates actor movement relative to the surface being walked upon
+        /// </summary>
         private void UpdateMovement()
         {
             m_moveVector = Vector3.zero;
-            var moveSpeed = m_state.IsCrouched ? m_moveSpeed / 3 : m_moveSpeed;
+            var moveSpeed = m_state.IsCrouched ? m_maxMoveSpeed / 3 : m_maxMoveSpeed;
 
             if (m_state.IsMoving && m_rigidBody.velocity.magnitude < moveSpeed)
             {
                 m_moveVector = this.GetMoveVector(m_surfaceInfo, m_controller.MoveAxis);
-                m_rigidBody.AddForce((m_moveVector * (moveSpeed / 10)), ForceMode.Impulse);
+                m_rigidBody.AddForce(m_moveVector * m_acceleration, ForceMode.VelocityChange);
             }
             else
             {
-                m_rigidBody.velocity -= (m_rigidBody.velocity * 10) * Time.deltaTime;
+                m_rigidBody.AddForce(-m_rigidBody.velocity / 2, ForceMode.Acceleration);
+                //m_rigidBody.velocity -= (m_rigidBody.velocity / 10) * Time.deltaTime;
             }
 
             if (m_groundRay.Hit)
             {
-                this.ApplyGravity();
+                this.ApplyGravBoots();
             }
         }
 
-        private void ApplyGravity()
+        /// <summary>
+        /// Applies gravity (from grav-boots)
+        /// </summary>
+        private void ApplyGravBoots()
         {
-            var gravity = (m_groundRay.Normal.normalized * (-m_gravStrength * m_rigidBody.mass));
+            var gravity = (m_groundRay.Normal.normalized * (-m_gravBootStrength * m_rigidBody.mass));
             m_rigidBody.AddForce(gravity * Time.deltaTime, ForceMode.Force);
         }
 
+        /// <summary>
+        /// Gets move vector based upon the inputs current move axis and surface rotation.
+        /// </summary>
+        /// <param name="info">Surface Rotation Info <see cref="SurfaceRotationInfo"/></param>
+        /// <param name="moveAxis">Move Axis</param>
+        /// <returns>3D Move world vector</returns>
         private Vector3 GetMoveVector(SurfaceRotationInfo info, Vector2 moveAxis)
         {
             var result = new Vector3();
@@ -209,6 +324,10 @@ namespace Assets.Scripts.Actor
             return result.normalized;
         }
 
+        /// <summary>
+        /// Gets the surface rotation info process by the actors' 'GroundRay' component
+        /// </summary>
+        /// <returns>Suface Rotation Information <see cref="SurfaceRotationInfo"/></returns>
         private SurfaceRotationInfo GetSurfaceRotationInfo()
         {
             var result = new SurfaceRotationInfo();
@@ -236,6 +355,9 @@ namespace Assets.Scripts.Actor
             return result;
         }
 
+        /// <summary>
+        /// Makes the actor perform a jump.
+        /// </summary>
         public void Jump()
         {
             if (m_canJump)
@@ -246,7 +368,12 @@ namespace Assets.Scripts.Actor
             }
         }
 
-        private void JumpTimer_OnTimerElapsed(object sender, Events.TimerElapsedEventArgs e)
+        /// <summary>
+        /// Triggers when the jump timer has elapsed, and the actor can perform another jump.
+        /// </summary>
+        /// <param name="sender">Sender of the event</param>
+        /// <param name="e">Event Args <see cref="TimerElapsedEventArgs"/></param>
+        private void JumpTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
             m_jumpTimer.Stop();
             m_jumpTimer.ResetTimer();
@@ -254,52 +381,57 @@ namespace Assets.Scripts.Actor
             m_canJump = true;
         }
 
+        /// <summary>
+        /// Makes the actor crouch.
+        /// </summary>
         public void Crouch()
         {
             m_crouch = true;
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            m_state.FeetOnGround = true;
-        }
+        //private void OnTriggerEnter(Collider other)
+        //{
 
-        private void OnTriggerExit(Collider other)
-        {
-            m_state.FeetOnGround = false;
-        }
 
-        private void OnCollisionEnter(Collision collision)
-        {
+        //    //m_state.FeetOnGround = other.gameObject.layer != LayerMask.GetMask("Players");
+        //}
 
-            m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
+        //private void OnTriggerExit(Collider other)
+        //{
+        //    //m_state.FeetOnGround = false;
+        //}
 
-            var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
+        //private void OnCollisionEnter(Collision collision)
+        //{
 
-            if ((mask & (1 << collision.collider.gameObject.layer)) != 0)
-            {
-                m_state.FeetOnGround = true;
-            }
-        }
+        //    //m_colDict.TryAdd(collision.collider.GetInstanceID(), collision);
 
-        private void OnCollisionExit(Collision collision)
-        {
-            bool feetOnGround = false;
+        //    //var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
 
-            m_colDict.Remove(collision.collider.GetInstanceID());
+        //    //if ((mask & (1 << collision.collider.gameObject.layer)) != 0)
+        //    //{
+        //    //    m_state.FeetOnGround = true;
+        //    //}
+        //}
 
-            foreach (var kvp in m_colDict)
-            {
-                var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
+        //private void OnCollisionExit(Collision collision)
+        //{
+        //    //bool feetOnGround = false;
 
-                if ((mask & (1 << kvp.Value.collider.gameObject.layer)) != 0)
-                {
-                    feetOnGround = true;
-                    break;
-                }
-            }
+        //    //m_colDict.Remove(collision.collider.GetInstanceID());
 
-            m_state.FeetOnGround = feetOnGround;
-        }
+        //    //foreach (var kvp in m_colDict)
+        //    //{
+        //    //    var mask = LayerMask.GetMask("Level", "Asteroid_Mesh_Rock", "Level_Buildings");
+
+        //    //    if ((mask & (1 << kvp.Value.collider.gameObject.layer)) != 0)
+        //    //    {
+        //    //        feetOnGround = true;
+        //    //        break;
+        //    //    }
+        //    //}
+
+        //    //m_state.FeetOnGround = feetOnGround;
+        //}
     }
 }

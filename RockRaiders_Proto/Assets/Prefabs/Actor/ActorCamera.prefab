@@ -100,5 +100,5 @@ MonoBehaviour:
   m_rotationSpeed: 5
   m_distance: 1
   m_limitYAngle: 1
-  m_maxYAngle: 45
+  m_maxYAngle: 75
   m_offset: {x: 0.5, y: 0.5}

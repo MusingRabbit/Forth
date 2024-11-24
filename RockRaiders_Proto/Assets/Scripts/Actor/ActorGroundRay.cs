@@ -8,23 +8,42 @@ using UnityEngine;
 public struct ActorGroundRayHitInfo
 {
     public bool IsHit;
-    public RaycastHit Info;
     public Vector3 Position;
     public Quaternion Rotation;
 }
 
 public class ActorGroundRay : RRMonoBehaviour
 {
+    /// <summary>
+    /// Ground Rays' scanning behaviour
+    /// </summary>
     [SerializeField]
     private Scan m_scan;
 
+    /// <summary>
+    /// Stores whether the ray is touching ground or not.
+    /// </summary>
     private bool m_rayHit;
-    private RaycastHit m_hitInfo;
-    private Quaternion m_rot;
-    private Vector3 m_pos;
-    private Vector3 m_norm;
-    private float m_height;
 
+    /// <summary>
+    /// Stores the average rotation of all raycasts.
+    /// </summary>
+    private Quaternion m_rot;
+
+    /// <summary>
+    /// Stores average position of all raycasts
+    /// </summary>
+    private Vector3 m_pos;
+
+    /// <summary>
+    /// Stores the average normal of all raycasts.
+    /// </summary>
+    private Vector3 m_norm;
+    //private float m_height;
+
+    /// <summary>
+    /// Gets wheather ray is touching a surface.
+    /// </summary>
     public bool Hit
     {
         get
@@ -33,13 +52,13 @@ public class ActorGroundRay : RRMonoBehaviour
         }
     }
 
-    public float Height
-    {
-        get
-        {
-            return m_height;
-        }
-    }
+    //public float Height
+    //{
+    //    get
+    //    {
+    //        return m_height;
+    //    }
+    //}
 
     //public RaycastHit HitInfo
     //{
@@ -49,6 +68,9 @@ public class ActorGroundRay : RRMonoBehaviour
     //    }
     //}
 
+    /// <summary>
+    /// Gets the average rotation of the ground ray
+    /// </summary>
     public Quaternion Rotation
     {
         get
@@ -57,6 +79,9 @@ public class ActorGroundRay : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the average position of all raycasts.
+    /// </summary>
     public Vector3 Positon
     {
         get
@@ -65,6 +90,9 @@ public class ActorGroundRay : RRMonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the average normals of all raycasts.
+    /// </summary>
     public Vector3 Normal
     {
         get
@@ -73,12 +101,17 @@ public class ActorGroundRay : RRMonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public ActorGroundRay()
     {
 
     }
 
+    /// <summary>
+    /// initialisation
+    /// </summary>
     public override void Initialise()
     {
         m_pos = Vector3.zero;
@@ -91,21 +124,23 @@ public class ActorGroundRay : RRMonoBehaviour
         this.Initialise();
     }
 
+    /// <summary>
+    /// Resets the ground ray
+    /// </summary>
     public override void Reset()
     {
         m_pos = Vector3.zero;
         m_rot = Quaternion.identity;
         m_rayHit = false;
         m_norm = Vector3.up;
-        m_height = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        var points = m_scan.GetPoints();
+        var points = m_scan.GetPoints();                    // Gets all points from the scan that make contact with a surface
 
-        Quaternion avgRot;
+        Quaternion avgRot;                                  
         List<Quaternion> rots = new List<Quaternion>();
         List<float> weights = new List<float>();
         Vector3 avgPos = Vector3.zero;
@@ -114,7 +149,7 @@ public class ActorGroundRay : RRMonoBehaviour
 
         int nbPoint = 0;
 
-        foreach (var item in points)
+        foreach (var item in points)                      // Aggregate the roation, weights, positions, normal, and height of all points
         {
             rots.Add(item.Rotation);
             weights.Add(item.Weight);
@@ -124,27 +159,29 @@ public class ActorGroundRay : RRMonoBehaviour
             nbPoint++;
         }
 
-        avgPos /= points.Count;
+        avgPos /= points.Count;                         // Calculage the average rotation, normal, height and position
         avgNorm /= points.Count;
         avgHeight /= points.Count;
-        avgRot = QuaternionExtensions.QuatAvgApprox(rots.ToArray(), weights.ToArray());
+        avgRot = QuaternionExtensions.QuatAvgApprox(rots.ToArray(), weights.ToArray());     // Calculate the weighted average rotation of all rotations.
 
         m_pos = avgPos;
         m_rot = avgRot;
         m_norm = avgNorm;
-        m_height = avgHeight;
+        //m_height = avgHeight;
 
         //Debug.Log("Height : " + m_height);
 
         m_rayHit = points.Any();
     }
 
-
+    /// <summary>
+    /// Returns ray hit information
+    /// </summary>
+    /// <returns><see cref="ActorGroundRayHitInfo"/>Ray hit information</returns>
     public ActorGroundRayHitInfo GetActorGroundRayHitInfo()
     {
         return new ActorGroundRayHitInfo
         {
-            Info = m_hitInfo,
             IsHit = m_rayHit,
             Position = m_pos,
             Rotation = m_rot

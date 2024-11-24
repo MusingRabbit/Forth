@@ -109,55 +109,56 @@ namespace Assets.Scripts.Level
                 }
             }
 
-            if (m_flag != null)
+            if (this.IsServer)
             {
-                if (m_flag.Owner == null && !this.FlagAtBase)
+                if (m_flag != null)
                 {
-                    m_resetTimer.Start();
-                }
+                    if (m_flag.Owner == null && !this.FlagAtBase)
+                    {
+                        m_resetTimer.Start();
+                    }
 
-                if (this.FlagAtBase)
-                {
-                    m_resetTimer.SetTimeSpan(m_resetTimeSpan);
-                    m_resetTimer.ResetTimer();
-                    m_resetTimer.Stop();
-                }
+                    if (this.FlagAtBase)
+                    {
+                        m_resetTimer.SetTimeSpan(m_resetTimeSpan);
+                        m_resetTimer.ResetTimer();
+                        m_resetTimer.Stop();
 
-                if (m_flagStand.Flag != null)
-                {
-                    m_flagRb.isKinematic = true;
-                }
-                else
-                {
-                    m_flagRb.isKinematic = false;
-                }
+                        m_flagStand.Flag = m_flag;
+                    }
 
-                if (!this.FlagAtBase && m_flag.Retreived)
-                {
-                    if (this.IsServer)
+                    if (m_flagStand.Flag != null)
+                    {
+                        //m_flagRb.isKinematic = true;
+                        m_flagRb.constraints = RigidbodyConstraints.FreezeAll;
+                    }
+                    else
+                    {
+                        //m_flagRb.isKinematic = false;
+                        m_flagRb.constraints = RigidbodyConstraints.None;
+                    }
+
+                    if (!this.FlagAtBase && m_flag.Retreived)
                     {
                         m_resetTimer.SetTimeSpan(TimeSpan.Zero);
                     }
-                }
 
-                if (m_flag.Captured)
-                {
-                    if (m_flag.Owner != null)
+                    if (m_flag.Captured)
                     {
-                        var ownPickup = m_flag.Owner.GetComponent<ActorPickup>();
-                        ownPickup.DropCurrentPack();
-                    }
+                        if (m_flag.Owner != null)
+                        {
+                            var ownPickup = m_flag.Owner.GetComponent<ActorPickup>();
+                            ownPickup.DropCurrentPack();
+                        }
 
-                    if (this.IsServer)
-                    {
                         this.FlagCaptured?.Invoke(this, EventArgs.Empty);
                         m_resetTimer.SetTimeSpan(TimeSpan.Zero);
                         m_flag.Captured = false;
                     }
                 }
-            }
 
-            m_resetTimer.Tick();
+                m_resetTimer.Tick();
+            }
         }
 
         private Flag GetFlagByNetworkObjectId(ulong networkObjId)
@@ -193,6 +194,7 @@ namespace Assets.Scripts.Level
             var basePos = this.transform.position;
             obj.transform.position = new Vector3(basePos.x, basePos.y + obj.transform.localScale.y, basePos.z);
             obj.transform.rotation = this.transform.rotation;
+            m_flagRb.constraints = RigidbodyConstraints.FreezeAll;
             m_flag.Captured = false;
             m_flag.Retreived = false;
             m_flagStand.Flag = m_flag;

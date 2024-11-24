@@ -25,12 +25,29 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         [SerializeField]
         private float m_mass;
 
+        [SerializeField]
+        private LayerMask m_layerMask;
+
         private List<Vector3> m_additionalForces;
 
         private float m_startTime;
         private float m_muzzleVelcity;
 
         private bool m_isDespawning;
+
+        [SerializeField]
+        private GameObject m_renderables;
+
+        [SerializeField]
+        private ParticleSystem m_particleSystem;
+
+        private TimeSpan m_lifeSpan;
+        private CapsuleCollider m_collider;
+        private Explosive m_explosive;
+        private Damage m_damage;
+        private Rigidbody m_rigidBody;
+        private ProjectileSpawnManager m_projNetwork;
+        private AudioSource m_audioSource;
 
         public float MuzzleVelocity
         {
@@ -68,19 +85,13 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             }
         }
 
-        [SerializeField]
-        private GameObject m_renderables;
-
-        [SerializeField]
-        private ParticleSystem m_particleSystem;
-
-        private TimeSpan m_lifeSpan;
-        private CapsuleCollider m_collider;
-        private Explosive m_explosive;
-        private Damage m_damage;
-        private Rigidbody m_rigidBody;
-        private ProjectileSpawnManager m_projNetwork;
-        private AudioSource m_audioSource;
+        public LayerMask LayerMask
+        {
+            get
+            {
+                return m_layerMask;
+            }
+        }
 
         public Projectile()
         {
@@ -97,8 +108,8 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         public virtual void Start()
         {
             m_collider = this.GetComponent<CapsuleCollider>();
-            m_collider.enabled = false;
-
+            m_collider.excludeLayers = LayerMask.GetMask("Players", "PickupItem", "Projectile_Bullet");
+            
             m_explosive = this.GetComponent<Explosive>();
             m_damage = this.GetComponent<Damage>();
             m_audioSource = this.GetComponent<AudioSource>();
@@ -142,9 +153,9 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
         {
             var currSpan = Time.time - m_startTime;
 
-            if (currSpan > 0.1f)
+            if (currSpan > 0.01f)
             {
-                m_collider.enabled = true;
+                m_collider.excludeLayers = LayerMask.GetMask("PickupItem", "Projectile_Bullet");
             }
 
             if (m_lifeSpan < TimeSpan.FromSeconds(currSpan))
@@ -161,7 +172,8 @@ namespace Assets.Scripts.Pickups.Weapons.Projectiles
             m_renderables.SetActive(false);
             m_collider.enabled = false;
 
-            m_rigidBody.isKinematic = true;
+            //m_rigidBody.isKinematic = true;
+
             m_rigidBody.velocity = Vector3.zero;
 
             if (m_particleSystem != null)

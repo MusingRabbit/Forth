@@ -7,7 +7,7 @@
         Blue = 2
     }
 
-    public enum ActorHealthState
+    public enum ActorHealthStatus
     {
         Live = 0,
         Dying,

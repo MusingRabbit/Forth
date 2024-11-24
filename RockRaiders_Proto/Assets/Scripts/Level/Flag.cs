@@ -61,7 +61,7 @@ public class Flag : PickupItem
         m_packType = PackType.Flag;
     }
 
-    public void Initialise()
+    public override void Initialise()
     {
         m_flagL = base.gameObject.FindChild("FlagL");
         m_flagR = base.gameObject.FindChild("FlagR");
@@ -73,6 +73,8 @@ public class Flag : PickupItem
         this.Paint(colour);
 
         m_captured = false;
+
+        base.Initialise();
     }
 
     protected override void Start()

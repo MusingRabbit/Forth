@@ -12,9 +12,9 @@ namespace Assets.Scripts
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         public static void Initialise()
         {
-            #if !(DEVELOPMENT_BUILD || UNITY_EDITOR)
-                        Debug.unityLogger.filterLogType = LogType.Warning | LogType.Error | LogType.Exception;
-            #endif
+#if !(DEVELOPMENT_BUILD || UNITY_EDITOR)
+                        Debug.unityLogger.filterLogType =  LogType.Warning;
+#endif
         }
 
 

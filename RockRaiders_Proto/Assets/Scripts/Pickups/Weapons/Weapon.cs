@@ -65,6 +65,10 @@ namespace Assets.Scripts.Pickups.Weapons
             {
                 return m_ammoCount;
             }
+            set
+            {
+                m_ammoCount = value;
+            }
         }
 
         public int Damage
@@ -133,7 +137,10 @@ namespace Assets.Scripts.Pickups.Weapons
         protected override void Start()
         {
             base.Start();
+        }
 
+        public override void Initialise()
+        {
             this.ResetAmmo();
 
             if (m_type == WeaponType.None)
@@ -143,7 +150,7 @@ namespace Assets.Scripts.Pickups.Weapons
 
             m_weaponAudio = this.GetComponent<WeaponAudio>();
 
-
+            base.Initialise();
         }
 
         protected override void Update()
@@ -166,7 +173,7 @@ namespace Assets.Scripts.Pickups.Weapons
         {
             if (m_weaponAudio != null)
             {
-                m_weaponAudio.PlayRandomShotSound();
+                m_weaponAudio.PlayRandomSound();
             }
 
             this.DecreaseAmmoCount();
@@ -185,9 +192,10 @@ namespace Assets.Scripts.Pickups.Weapons
             }
         }
 
-        public void Reset()
+        public override void Reset()
         {
             this.ResetAmmo();
+            base.Reset();
         }
 
         public void ResetAmmo()
@@ -199,8 +207,17 @@ namespace Assets.Scripts.Pickups.Weapons
         public void ResetRigidBody()
         {
             m_rigidBody.constraints = RigidbodyConstraints.FreezePosition;
-            m_rigidBody.includeLayers = LayerMask.GetMask("Level", "Default");
             m_rigidBody.excludeLayers = LayerMask.GetMask("Nothing");
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            var actorPickup = other.gameObject.GetComponent<ActorPickup>();
+
+            if (actorPickup != null)
+            {
+                actorPickup.PickupWeapon(this, false);
+            }
         }
     }
 }

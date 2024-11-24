@@ -69,7 +69,8 @@ namespace Assets.Scripts.Match
 
         public IReadonlyPayerMatchData GetTopPlayerByTeam(Team team)
         {
-            return this.Teams[team].Players.OrderByDescending(x => x.Value.Score).First().Value;
+            var result = this.Teams[team].Players.OrderByDescending(x => x.Value.Score).Select(x => x.Value).FirstOrDefault();
+            return result;
         }
     }
 }

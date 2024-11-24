@@ -156,6 +156,10 @@ namespace Assets.Scripts.Actor
             {
                 return m_isDead;
             }
+            set
+            {
+                m_isDead = value;
+            }
         }
 
         public bool IsDying
@@ -163,6 +167,10 @@ namespace Assets.Scripts.Actor
             get
             {
                 return m_isDying;
+            }
+            set
+            {
+                m_isDying = value;
             }
         }
 
@@ -207,8 +215,8 @@ namespace Assets.Scripts.Actor
 
         private void Update()
         {
-            var isDying = m_health.State == ActorHealthState.Dying;
-            var isDead = m_health.State == ActorHealthState.Dead;
+            var isDying = m_health.Status == ActorHealthStatus.Dying;
+            var isDead = m_health.Status == ActorHealthStatus.Dead;
             var hp = m_health?.Hitpoints.Current ?? 0;
 
             if (isDying != m_isDying)

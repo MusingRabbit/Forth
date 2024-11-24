@@ -92,7 +92,6 @@ namespace Assets.Scripts.Network
     {
         private MatchManager m_matchManager;
         private Timer m_updateTimer;
-        private bool m_pendingRequest;
 
         public MatchManagerNetwork()
         {
@@ -124,7 +123,6 @@ namespace Assets.Scripts.Network
             if (!this.IsServer && this.NetworkManager != null)
             {
                 this.SendMatchDataToClient(this.NetworkManager.LocalClientId);
-                m_pendingRequest = true;
             }
         }
 
@@ -180,7 +178,6 @@ namespace Assets.Scripts.Network
             MatchData matchData = data.ToMatchData();
 
             m_matchManager.SetMatchData(matchData);
-            m_pendingRequest = false;
         }
 
         private void UpdateTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)

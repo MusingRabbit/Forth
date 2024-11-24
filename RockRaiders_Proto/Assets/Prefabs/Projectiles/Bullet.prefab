@@ -322,7 +322,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 4105
+    m_Bits: 12297
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 3584
@@ -377,6 +377,9 @@ MonoBehaviour:
   m_lifeTime: 10
   m_deactivationTime: 2
   m_mass: 0.01
+  m_layerMask:
+    serializedVersion: 2
+    m_Bits: 8192
   m_renderables: {fileID: 4412319797637718472}
   m_particleSystem: {fileID: 0}
 --- !u!114 &4068920403755082656

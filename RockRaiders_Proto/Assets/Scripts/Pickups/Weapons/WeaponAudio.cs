@@ -14,18 +14,4 @@ public class WeaponAudio : RRAudioBehaviour
     void Start()
     {
     }
-
-    public bool PlayRandomShotSound()
-    {
-        if (this.Sounds.Length < 1)
-        {
-            return false;
-        }
-
-        var rndIdx = Random.Range(0, this.Sounds.Length);
-        var sound = this.Sounds[rndIdx];
-        sound.Source.Play();
-
-        return true;
-    }
 }

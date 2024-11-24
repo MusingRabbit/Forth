@@ -5350,7 +5350,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 5193
+    m_Bits: 13385
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 512
@@ -5405,6 +5405,9 @@ MonoBehaviour:
   m_lifeTime: 60
   m_deactivationTime: 0.1
   m_mass: 0.05
+  m_layerMask:
+    serializedVersion: 2
+    m_Bits: 12361
   m_renderables: {fileID: 2309715580473476530}
   m_particleSystem: {fileID: 5584059151278082894}
 --- !u!114 &4068920403755082656
@@ -5470,6 +5473,9 @@ MonoBehaviour:
   m_explosionRadius: 18
   m_explosionForce: 1200
   m_particles: {fileID: 7102178839698046388, guid: 931a0fe8b49300c4f90c7006fc725093, type: 3}
+  m_layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &6769624834214156026
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,6 +14,10 @@ namespace Assets.Scripts.Actor
 
         }
 
+        /// <summary>
+        /// Will play a random ouch / pain sound by the actor.
+        /// </summary>
+        /// <returns>Sound play successful? (true/false)</returns>
         public bool PlayRandomOuchSound()
         {
             if (this.Sounds.Length < 1)

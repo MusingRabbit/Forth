@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Pickups.Weapons;
+﻿using Assets.Scripts.Pickups;
+using Assets.Scripts.Pickups.Weapons;
 using Assets.Scripts.Services;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,8 @@ namespace Assets.Scripts.Network
         private List<WeaponSpawnPoint> m_spawnPoints;
         private TimeSpan m_respawnTimeSpan;
 
+        private Dictionary<int, Weapon> m_weaponDictionary;
+
 
         private Dictionary<int, WeaponSpawnPointData> m_weaponSpawnData;
 
@@ -47,6 +50,7 @@ namespace Assets.Scripts.Network
         {
             m_respawnTimeout = 60.0f;
             m_spawnPoints = new List<WeaponSpawnPoint>();
+            m_weaponDictionary = new Dictionary<int, Weapon>();
             m_weaponSpawnData = new Dictionary<int, WeaponSpawnPointData>();
             m_respawnTimeSpan = TimeSpan.FromSeconds(m_respawnTimeout);
         }
@@ -70,6 +74,58 @@ namespace Assets.Scripts.Network
             {
                 this.CheckWeaponOwnershipState();
                 this.CheckSpawnTimers();
+            }
+        }
+
+        public Weapon SpawnWeapon(WeaponType weaponType, Vector3 position)
+        {
+            if (this.IsServer)
+            {
+                var prefab = this.GetPrefabByWeaponType(weaponType);
+                var obj = GameObject.Instantiate(prefab);
+                var netObj = obj.GetComponent<NetworkObject>();
+                netObj.Spawn(true);
+
+                var rb = obj.GetComponent<Rigidbody>();
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+
+                var wpn = obj.GetComponent<Weapon>();
+                wpn.Initialise();
+                this.RegisterWeapon(wpn);
+                return wpn;
+            }
+
+            return null;
+        }
+
+        public void RegisterWeapon(Weapon wpn)
+        {
+            if (this.IsServer)
+            {
+                var key = wpn.GetInstanceID();
+
+                if (!m_weaponDictionary.ContainsKey(key))
+                {
+                    m_weaponDictionary.Add(key, wpn);
+                }
+            }
+        }
+
+        public void DespawnAllRegisteredWeapons()
+        {
+            if (this.IsServer)
+            {
+                var allItems = m_weaponDictionary.Values.ToList();
+
+                foreach (var item in allItems)
+                {
+                    var netObj = item.GetComponent<NetworkObject>();
+
+                    if (netObj.IsSpawned)
+                    {
+                        netObj.Despawn(true);
+                    }
+                }
             }
         }
 

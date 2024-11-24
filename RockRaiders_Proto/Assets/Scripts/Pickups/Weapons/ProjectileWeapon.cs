@@ -34,9 +34,15 @@ namespace Assets.Scripts.Pickups.Weapons
         // Start is called before the first frame update
         protected override void Start()
         {
+            base.Start();
+        }
+
+        public override void Initialise()
+        {
             m_muzzle = gameObject.FindChild("Projectile_Exit");
             m_projectileSpawner = gameObject.GetComponent<ProjectileSpawnManager>();
-            base.Start();
+
+            base.Initialise();
         }
 
         // Update is called once per frame

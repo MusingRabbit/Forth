@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Network
 {
-    public struct ActorStateData : INetworkSerializable
+    public struct ActorStateData : INetworkSerializable, IEquatable<ActorStateData>
     {
         public bool IsReady;
         public NetActorInventory Inventory;
@@ -22,6 +22,21 @@ namespace Assets.Scripts.Network
         public int Hitpoints;
         public Team Team;
         public Color Colour;
+        public bool IsDying;
+        public bool IsDead;
+
+        public bool Equals(ActorStateData other)
+        {
+            var invEq = this.Inventory.Equals(other.Inventory);
+            var wpnEq = this.SelectedWeapon.Equals(other.SelectedWeapon);
+            var hpEq = this.Hitpoints.Equals(other.Hitpoints);
+            var teamEq = this.Team.Equals(other.Team);
+            var tintEq = this.Colour.Equals(other.Colour);
+            var dyingEq = this.IsDying == other.IsDying;
+            var isDeadEq = this.IsDead == other.IsDead;
+
+            return invEq && wpnEq && hpEq && teamEq && tintEq && dyingEq && isDeadEq;
+        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer)
             where T : IReaderWriter
@@ -32,6 +47,8 @@ namespace Assets.Scripts.Network
             serializer.SerializeValue(ref this.Hitpoints);
             serializer.SerializeValue(ref this.Team);
             serializer.SerializeValue(ref this.Colour);
+            serializer.SerializeValue(ref this.IsDying);
+            serializer.SerializeValue(ref this.IsDead);
         }
     }
 
@@ -148,6 +165,8 @@ namespace Assets.Scripts.Network
             }
 
             m_updateHealthTimer.Start();
+
+            this.PrepareActor();
         }
 
         private void Update()
@@ -186,10 +205,10 @@ namespace Assets.Scripts.Network
         {
             var state = m_actorState.Value;
 
-            m_actorController.State.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
-            m_actorController.State.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
+            m_state.Inventory.SetInventoryFromActorInventoryState(state.Inventory.ToActorInventoryState());
+            m_state.SelectWeapon((SelectedWeapon)state.SelectedWeapon);
 
-            var color = m_paint.GetPaint();
+            var color = m_paint.GetColour();
 
             if (color != state.Colour)
             {
@@ -218,19 +237,20 @@ namespace Assets.Scripts.Network
 
             if (playerData.PlayerName != string.Empty)
             {
-                m_actorController.State.PlayerName = playerData.PlayerName.ToString();
+                m_state.PlayerName = playerData.PlayerName.ToString();
             }
 
             if (m_actorState.Value.IsReady)
             {
                 this.UpdateActorTransform();
-                this.UpdateActorState();
+                
                 this.UpdateActorControl();
 
                 if (m_updateHealthTimer.Elapsed)
                 {
                     m_updateHealthTimer.ResetTimer();
                     this.UpdateActorHealth();
+                    this.UpdateActorState();
                 }
             }
         }
@@ -255,9 +275,11 @@ namespace Assets.Scripts.Network
                 IsReady = true,
                 SelectedWeapon = (int)this.GetComponent<ActorState>().SelectedWeapon,
                 Hitpoints = m_health.Hitpoints.Current,
-                Inventory = m_actorController.State.Inventory.GetNetActorInventory(),
-                Colour = m_paint.GetPaint(),
+                Inventory = m_state.Inventory.GetNetActorInventory(),
+                Colour = m_paint.GetColour(),
                 Team = m_state.Team,
+                IsDead = m_state.IsDead,
+                IsDying = m_state.IsDying
             };
         }
 
@@ -341,7 +363,8 @@ namespace Assets.Scripts.Network
                 m_actorTransform.Value = transform;
                 m_actorControl.Value = control;
                 m_playerData.Value = playerNetData;
-                m_actorController.State.PlayerName = playerNetData.PlayerName.ToString();
+                m_state.PlayerName = playerNetData.PlayerName.ToString();
+                m_actorState.SetDirty(!m_actorControl.Value.Equals(state));
             }
             else
             {
@@ -453,13 +476,13 @@ namespace Assets.Scripts.Network
             if (serverState.SelectedWeapon != clientState.SelectedWeapon)
             {
                 serverState.SelectedWeapon = clientState.SelectedWeapon;
-                inValid = true;
+                //inValid = true;
             }
 
             if (!serverState.Inventory.Equals(clientState.Inventory))
             {
-                NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to server");
-                serverState.Inventory = clientState.Inventory;
+                NotificationService.Instance.Info($"Inventory mismatch : Sending corrected inventory state to client");
+                clientState.Inventory = serverState.Inventory;
 
                 inValid = true;
             }
@@ -468,6 +491,22 @@ namespace Assets.Scripts.Network
             {
                 NotificationService.Instance.Info($"State HP : {serverState.Hitpoints}->{clientState.Hitpoints}");
                 clientState.Hitpoints = serverState.Hitpoints;
+                inValid = true;
+            }
+
+            if (clientState.IsDead != serverState.IsDead)
+            {
+                NotificationService.Instance.Info($"IsDead : {clientState.IsDead}->{serverState.IsDead} ");
+                clientState.IsDead = serverState.IsDead;
+                clientState.Hitpoints = 0;
+                inValid = true;
+            }
+
+            if (clientState.IsDead != serverState.IsDying)
+            {
+                NotificationService.Instance.Info($"IsDying : {clientState.IsDead}->{serverState.IsDead} ");
+                clientState.IsDying = serverState.IsDying;
+                clientState.Hitpoints = 0;
                 inValid = true;
             }
 
@@ -497,9 +536,9 @@ namespace Assets.Scripts.Network
         [Rpc(SendTo.ClientsAndHost)]
         private void SendPlayerNetDataToClientRpc(PlayerNetData playerNetData)
         {
-            if (m_actorController != null)
+            if (m_state != null)
             {
-                m_actorController.State.PlayerName = playerNetData.PlayerName.ToString();
+                m_state.PlayerName = playerNetData.PlayerName.ToString();
             }
         }
 
@@ -518,16 +557,14 @@ namespace Assets.Scripts.Network
                 m_health.Hitpoints.SetHitPoints(actorState.Hitpoints);
             }
 
-            if (m_actorController != null)
-            {
-                var serverInvState = actorState.Inventory.ToActorInventoryState();
-                m_actorController.State.Inventory.SetInventoryFromActorInventoryState(serverInvState);
-                m_actorController.State.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
-            }
-
             if (m_state != null)
             {
+                var serverInvState = actorState.Inventory.ToActorInventoryState();
+                m_state.Inventory.SetInventoryFromActorInventoryState(serverInvState);
+                m_state.SelectWeapon((SelectedWeapon)actorState.SelectedWeapon);
                 m_state.Team = actorState.Team;
+                m_state.IsDying = actorState.IsDying;
+                m_state.IsDead = actorState.IsDead;
             }
 
             if (m_paint != null)
@@ -548,7 +585,7 @@ namespace Assets.Scripts.Network
             base.OnNetworkDespawn();
         }
 
-        public override void OnNetworkSpawn()
+        private void PrepareActor()
         {
             if (m_actorManager == null)
             {
@@ -559,7 +596,7 @@ namespace Assets.Scripts.Network
 
             if (this.IsOwner)
             {
-                NotificationService.Instance.Info("Preparing local player actor ");
+                NotificationService.Instance.Info("Preparing local player actor");
                 m_actorManager.PrepareLocalPlayerActor(this.gameObject);
             }
             else
@@ -567,9 +604,10 @@ namespace Assets.Scripts.Network
                 NotificationService.Instance.Info("Preparing remote player actor");
                 m_actorManager.PrepareRemotePlayerActor(this.gameObject);
             }
+        }
 
-
-
+        public override void OnNetworkSpawn()
+        {
             base.OnNetworkSpawn();
         }
     }

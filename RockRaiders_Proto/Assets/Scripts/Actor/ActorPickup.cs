@@ -15,47 +15,112 @@ using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Actor
 {
-    public class ActorPickup : MonoBehaviour
+    public class ActorPickup : RRMonoBehaviour
     {
+        /// <summary>
+        /// Fired when item has been picked up
+        /// </summary>
         public event EventHandler<OnPickupEventArgs> OnItemPickedUp;
+
+        /// <summary>
+        /// Fired when item has been dropped
+        /// </summary>
         public event EventHandler<OnPickupEventArgs> OnItemDropped;
 
-        private ActorInventory m_inventory;
+        /// <summary>
+        /// Stores a reference to the actors' state
+        /// </summary>
+        private ActorState m_actorState;
+
+        /// <summary>
+        /// Stores a reference to the actors' crosshair
+        /// </summary>
         private ActorCrosshair m_crosshair;
 
+        /// <summary>
+        /// The drop timer determines how long before the actor may pick up another weapon after dropping
+        /// </summary>
         private Timer m_dropTimer;
+
+        /// <summary>
+        /// The drop timer determines how long before the actor may pick up another pack after dropping
+        /// </summary>
         private Timer m_packDropTimer;
 
+        /// <summary>
+        /// Stores whether the actor can pick up weapons 
+        /// </summary>
         [SerializeField]
         private bool m_canPickup;
 
+        /// <summary>
+        /// Stores whether the actor can pick up packs
+        /// </summary>
         private bool m_canPickupPack;
 
+        /// <summary>
+        /// The amount of time after dropping a weapon, can the actor pick up another weapon
+        /// </summary>
         [SerializeField]
         private double m_dropTimeOut;
 
+        /// <summary>
+        /// The amount of force exerted on the object / pack as it is dropped.
+        /// </summary>
         [SerializeField]
         private float m_dropForce;
+
+        /// <summary>
+        /// Gets the actors inventory
+        /// </summary>
+        private ActorInventory ActorInventory
+        {
+            get
+            {
+                return m_actorState.Inventory;
+            }
+        }
+
 
         public ActorPickup()
         {
             m_canPickup = true;
             m_canPickupPack = true;
-            m_dropForce = 3.0f;
+            m_dropForce = 1.0f;
             m_dropTimeOut = 1.0f;
 
             m_dropTimer = new Timer();
             m_packDropTimer = new Timer();
         }
 
+        /// <summary>
+        /// Start - called before first frame in scene
+        /// </summary>
         private void Start()
         {
-            m_inventory = this.GetComponent<ActorState>().Inventory;
+            this.Initialise();
+        }
+
+        /// <summary>
+        /// Called every frame
+        /// </summary>
+        private void Update()
+        {
+            m_dropTimer.Tick();
+            m_packDropTimer.Tick();
+        }
+
+        /// <summary>
+        /// Initialisation
+        /// </summary>
+        public override void Initialise()
+        {
+            m_actorState = this.GetComponent<ActorState>();
             m_crosshair = this.GetComponent<ActorCrosshair>();
 
-            m_inventory.OnMainWeaponCleared += Inventory_OnMainWeaponCleared;
-            m_inventory.OnSidearmCleared += Inventory_OnSidearmCleared;
-            m_inventory.OnPackCleared += Inventory_OnPackCleared;
+            this.ActorInventory.OnMainWeaponCleared += Inventory_OnMainWeaponCleared;
+            this.ActorInventory.OnSidearmCleared += Inventory_OnSidearmCleared;
+            this.ActorInventory.OnPackCleared += Inventory_OnPackCleared;
 
             m_dropTimer.SetTimeSpan(TimeSpan.FromSeconds(m_dropTimeOut));
             m_dropTimer.OnTimerElapsed += this.DropTimer_OnTimerElapsed;
@@ -66,25 +131,38 @@ namespace Assets.Scripts.Actor
             m_dropTimer.AutoReset = false;
         }
 
-        private void Update()
+        /// <summary>
+        /// Resets actor pickup component
+        /// </summary>
+        public override void Reset()
         {
-            m_dropTimer.Tick();
-            m_packDropTimer.Tick();
+            m_canPickup = true;
+            m_canPickupPack = true;
+            m_dropForce = 3.0f;
+            m_dropTimeOut = 1.0f;
+
+            m_dropTimer = new Timer();
+            m_packDropTimer = new Timer();
         }
 
-        public bool DropCurrentPack()
+        /// <summary>
+        /// Drops the current pack
+        /// </summary>
+        /// <param name="suppressNotification">Suppress events following drop</param>
+        /// <returns>Weapon dropped? (true/false)</returns>
+        public bool DropCurrentPack(bool suppressNotification = false)
         {
             m_packDropTimer.ResetTimer();
             m_packDropTimer.Start();
             m_canPickupPack = false;
 
-            var packObj = m_inventory.GetPackItem();
+            var packObj = this.ActorInventory.GetPackItem();
 
             if (packObj != null)
             {
-                m_inventory.ClearPackItem();
+                this.ActorInventory.ClearPackItem();
 
-                this.DropPickupItem(packObj.GetComponent<PickupItem>());
+                this.DropPickupItem(packObj.GetComponent<PickupItem>(), suppressNotification);
 
                 return true;
             }
@@ -92,35 +170,37 @@ namespace Assets.Scripts.Actor
             return false;
         }
 
-        public bool DropSelectedWeapon()
+        /// <summary>
+        /// Drops the currently selected weapon
+        /// </summary>
+        /// <param name="suppressNotifications">suppress events following drop</param>
+        /// <returns>Weapon dropped? (true/false)</returns>
+        public bool DropSelectedWeapon(bool suppressNotifications = false)
         {
-            var weaponObj = m_inventory.GetSelectedWeapon();
+            var weaponObj = this.ActorInventory.GetSelectedWeapon();
 
             if (weaponObj != null)
             {
-                switch (m_inventory.SelectedWeapon)
+                switch (this.ActorInventory.SelectedWeapon)
                 {
                     case SelectedWeapon.None:
                         break;
                     case SelectedWeapon.Main:
-                        m_inventory.ClearMainWeapon();
+                        this.ActorInventory.ClearMainWeapon();
                         break;
                     case SelectedWeapon.Sidearm:
-                        m_inventory.ClearSideArm();
+                        this.ActorInventory.ClearSideArm();
                         break;
                     case SelectedWeapon.Pack:
-                        m_inventory.ClearPackItem();
+                        this.ActorInventory.ClearPackItem();
                         break;
                 }
 
-                m_inventory.SelectWeapon(SelectedWeapon.None);
+                this.ActorInventory.SelectWeapon(SelectedWeapon.None);
 
-
-                this.DropPickupItem(weaponObj.GetComponent<Weapon>());
+                this.DropPickupItem(weaponObj.GetComponent<Weapon>(), suppressNotifications);
 
                 NotificationService.Instance.Info(weaponObj.ToString());
-
-                
 
                 return true;
             }
@@ -128,7 +208,12 @@ namespace Assets.Scripts.Actor
             return false;
         }
 
-        private void DropPickupItem(PickupItem pickupItem)
+        /// <summary>
+        /// Drop pickup item
+        /// </summary>
+        /// <param name="pickupItem"></param>
+        /// <param name="suppressNotifications"></param>
+        private void DropPickupItem(PickupItem pickupItem, bool suppressNotifications = false)
         {
             NotificationService.Instance.Info(pickupItem.Name);
 
@@ -139,10 +224,12 @@ namespace Assets.Scripts.Actor
             var rb = pickupItem.GetComponent<Rigidbody>();
 
             rb.constraints = RigidbodyConstraints.None;
-            rb.AddForce(pickupItem.transform.forward.normalized * m_dropForce, ForceMode.Impulse);
-            rb.AddTorque(new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)), ForceMode.Impulse);
+            rb.AddForce(pickupItem.transform.forward.normalized * m_dropForce, ForceMode.Force);
+            rb.AddTorque(new Vector3(Random.Range(-0.05f, 0.05f), Random.Range(0f, 0.01f), Random.Range(-0.05f, 0.05f)), ForceMode.Force);
+            
+            pickupItem.SetDropped(suppressNotifications);
+
             pickupItem.Owner = null;
-            pickupItem.SetDropped();
 
             var wpn = pickupItem is Weapon ? pickupItem as Weapon : null;
 
@@ -154,22 +241,34 @@ namespace Assets.Scripts.Actor
             this.OnItemDropped?.Invoke(this, new OnPickupEventArgs(pickupItem));
         }
 
-        public bool PickupPack(PickupItem item)
+        /// <summary>
+        /// Pickup pickup item (pack)
+        /// </summary>
+        /// <param name="item">Pack pickup item</param>
+        /// <param name="suppressNotifications">Suppress events following pickup</param>
+        /// <returns>pickup success? (true/false)</returns>
+        public bool PickupPack(PickupItem item, bool suppressNotifications = false)
         {
             if (m_canPickupPack)
             {
                 NotificationService.Instance.Info(item.Name);
-                m_inventory.SetPackItem(item.gameObject);
+                this.ActorInventory.SetPackItem(item.gameObject);
 
                 item.Owner = this.gameObject;
-                item.SetPickedUp();
+                item.SetPickedUp(suppressNotifications);
                 return true;
             }
 
             return false;
         }
 
-        public bool PickupWeapon(Weapon weapon)
+        /// <summary>
+        /// Pickup pickup item (weapon)
+        /// </summary>
+        /// <param name="item">Pack weapon item</param>
+        /// <param name="suppressNotifications">Suppress events following pickup</param>
+        /// <returns>pickup success? (true/false)</returns>
+        public bool PickupWeapon(Weapon weapon, bool suppressNotifications)
         {
             if (m_canPickup)
             {
@@ -178,16 +277,16 @@ namespace Assets.Scripts.Actor
                 switch (weapon.WeaponSlot)
                 {
                     case WeaponSlot.Main:
-                        if (!m_inventory.HasMainWeapon())
+                        if (!this.ActorInventory.HasMainWeapon())
                         {
-                            m_inventory.SetMainWeapon(weapon.gameObject);
+                            this.ActorInventory.SetMainWeapon(weapon.gameObject);
                         }
 
                         break;
                     case WeaponSlot.Sidearm:
-                        if (!m_inventory.HasSideArm())
+                        if (!this.ActorInventory.HasSideArm())
                         {
-                            m_inventory.SetSideArm(weapon.gameObject);
+                            this.ActorInventory.SetSideArm(weapon.gameObject);
                         }
 
                         break;
@@ -195,7 +294,7 @@ namespace Assets.Scripts.Actor
 
                 weapon.Crosshair = m_crosshair;
                 weapon.Owner = this.gameObject;
-                weapon.SetPickedUp();
+                weapon.SetPickedUp(suppressNotifications);
 
                 this.OnItemPickedUp?.Invoke(this, new OnPickupEventArgs(weapon));
 
@@ -205,7 +304,11 @@ namespace Assets.Scripts.Actor
             return false;
         }
 
-
+        /// <summary>
+        /// Triggered on the lapse of m_dropTimer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
             NotificationService.Instance.Info();
@@ -216,28 +319,47 @@ namespace Assets.Scripts.Actor
             m_canPickup = true;
         }
 
+        /// <summary>
+        /// Triggered on the lapse of m_packDropTimer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PackDropTimer_OnTimerElapsed(object sender, TimerElapsedEventArgs e)
         {
             m_packDropTimer.Stop();
             m_packDropTimer.ResetTimer();
 
-            m_canPickup = true;
+            m_canPickupPack = true;
         }
 
+        /// <summary>
+        /// Triggered when the inventory pack slot has been cleared
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Inventory_OnPackCleared(object sender, OnPickupEventArgs e)
         {
             this.DropPickupItem(e.Item);
         }
 
+        /// <summary>
+        /// Triggered when the inventory sidearm slot has been cleared
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Inventory_OnSidearmCleared(object sender, OnPickupEventArgs e)
         {
             this.DropPickupItem(e.Item);
         }
 
+        /// <summary>
+        /// Triggered when the inventory main weapon slot has been cleared.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Inventory_OnMainWeaponCleared(object sender, OnPickupEventArgs e)
         {
             this.DropPickupItem(e.Item);
         }
-
     }
 }
