@@ -280,7 +280,7 @@ namespace Assets.Scripts.Actor
         /// </summary>
         public void ThrustUp()
         {
-            m_rigidBody.AddForce(this.transform.up.normalized * (m_moveForce * 0.3f), ForceMode.Impulse);
+            m_rigidBody.AddForce(this.transform.up.normalized * (m_moveForce * 0.1f), ForceMode.Impulse);
         }
         
         /// <summary>
@@ -288,7 +288,7 @@ namespace Assets.Scripts.Actor
         /// </summary>
         public void ThrustDown()
         {
-            m_rigidBody.AddForce(-this.transform.up.normalized * (m_moveForce * 0.3f), ForceMode.Impulse);
+            m_rigidBody.AddForce(-this.transform.up.normalized * (m_moveForce * 0.1f), ForceMode.Impulse);
         }
     }
 }

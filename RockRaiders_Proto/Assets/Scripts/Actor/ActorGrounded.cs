@@ -280,11 +280,11 @@ namespace Assets.Scripts.Actor
             if (m_state.IsMoving && m_rigidBody.velocity.magnitude < moveSpeed)
             {
                 m_moveVector = this.GetMoveVector(m_surfaceInfo, m_controller.MoveAxis);
-                m_rigidBody.AddForce(m_moveVector * m_acceleration, ForceMode.VelocityChange);
+                m_rigidBody.AddForce(m_moveVector * (m_acceleration), ForceMode.Acceleration);
             }
             else
             {
-                m_rigidBody.AddForce(-m_rigidBody.velocity / 2, ForceMode.Acceleration);
+                m_rigidBody.AddForce(-(m_rigidBody.velocity * (1 / m_acceleration)), ForceMode.Acceleration);
                 //m_rigidBody.velocity -= (m_rigidBody.velocity / 10) * Time.deltaTime;
             }
 
