@@ -10,6 +10,9 @@ using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Weapon spawn point data
+    /// </summary>
     internal class WeaponSpawnPointData
     {
         public int SpawnInstanceId { get; set; }
@@ -21,6 +24,9 @@ namespace Assets.Scripts.Network
         public Weapon Weapon { get; set; }
     }
 
+    /// <summary>
+    /// Weapon type defenition
+    /// </summary>
     [Serializable]
     public struct WeaponTypeDefenition
     {
@@ -31,21 +37,46 @@ namespace Assets.Scripts.Network
         public GameObject Prefab;
     }
 
+    /// <summary>
+    /// Weapn spawn manager
+    /// </summary>
     public class WeaponSpawnManager : NetworkBehaviour
     {
+        /// <summary>
+        /// A list of all available weapon prefabs
+        /// </summary>
         [SerializeField]
         private List<WeaponTypeDefenition> m_availableWeaponPrefabs;
 
+        /// <summary>
+        /// Respawn timeout
+        /// </summary>
         [SerializeField]
         private float m_respawnTimeout;
+
+        /// <summary>
+        /// A list of all spawn points
+        /// </summary>
         private List<WeaponSpawnPoint> m_spawnPoints;
+
+        /// <summary>
+        /// Respawn timespan
+        /// </summary>
         private TimeSpan m_respawnTimeSpan;
 
+        /// <summary>
+        /// Weapon dictionary
+        /// </summary>
         private Dictionary<int, Weapon> m_weaponDictionary;
 
-
+        /// <summary>
+        /// Weapon spawn data
+        /// </summary>
         private Dictionary<int, WeaponSpawnPointData> m_weaponSpawnData;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public WeaponSpawnManager()
         {
             m_respawnTimeout = 60.0f;
@@ -55,6 +86,13 @@ namespace Assets.Scripts.Network
             m_respawnTimeSpan = TimeSpan.FromSeconds(m_respawnTimeout);
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// If is server
+        ///     -> Refreshes all spawn points for current scene
+        ///     -> Initialises member data sturctures
+        ///     -> Spawns in all weapons
+        /// </summary>
         private void Start()
         {
             if (this.IsServer)
@@ -67,7 +105,12 @@ namespace Assets.Scripts.Network
             }
         }
 
-
+        /// <summary>
+        /// Called every frame
+        /// -> If server
+        ///     -> Checks all weapon ownership states
+        ///     -> Check sall spawn timers
+        /// </summary>
         private void Update()
         {
             if (this.IsServer)
@@ -77,6 +120,12 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Spawns weapon
+        /// </summary>
+        /// <param name="weaponType">Type of weapon to be spawned</param>
+        /// <param name="position">Position to spawn the weapon at</param>
+        /// <returns>Spawned weapon</returns>
         public Weapon SpawnWeapon(WeaponType weaponType, Vector3 position)
         {
             if (this.IsServer)
@@ -98,6 +147,10 @@ namespace Assets.Scripts.Network
             return null;
         }
 
+        /// <summary>
+        /// Registers weapon with this manager
+        /// </summary>
+        /// <param name="wpn">Weapon to be registered</param>
         public void RegisterWeapon(Weapon wpn)
         {
             if (this.IsServer)
@@ -111,6 +164,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Despawns all registered weapons
+        /// </summary>
         public void DespawnAllRegisteredWeapons()
         {
             if (this.IsServer)
@@ -129,6 +185,11 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Gets all spawn points within the scene specified
+        /// </summary>
+        /// <param name="scene">Scene to query</param>
+        /// <returns>Spawn points from within 'scene'</returns>
         private List<WeaponSpawnPoint> GetAllWeaponSpawnPointsInScene(Scene scene)
         {
             var result = new List<WeaponSpawnPoint>();
@@ -148,6 +209,11 @@ namespace Assets.Scripts.Network
             return result;
         }
 
+        /// <summary>
+        /// Initialises the spawn data dictionary
+        /// -> For every spawn point
+        ///     -> Create a new spawn point data instance, and populate it with information from the spawn point
+        /// </summary>
         private void InitialiseSpawnDataDictionary()
         {
             foreach (var spawn in m_spawnPoints)
@@ -164,6 +230,11 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Fetches weapon prefab by specified weapon type.
+        /// </summary>
+        /// <param name="weaponType">The weapon type</param>
+        /// <returns>Weapon prefab</returns>
         private GameObject GetPrefabByWeaponType(WeaponType weaponType)
         {
             foreach (var item in m_availableWeaponPrefabs)
@@ -177,6 +248,9 @@ namespace Assets.Scripts.Network
             return null;
         }
 
+        /// <summary>
+        /// Initialises and spawns all weapons for all spawn points
+        /// </summary>
         private void InitialiseAndSpawnAllWeapons()
         {
             foreach (var spawn in m_spawnPoints)
@@ -216,24 +290,20 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Gets spawn point data by object instance Id
+        /// </summary>
+        /// <param name="instanceId"></param>
+        /// <returns></returns>
         private WeaponSpawnPointData GetWeaponSpawnPointDataByInstanceId(int instanceId)
         {
             return m_weaponSpawnData[instanceId];
         }
 
-        private WeaponSpawnPointData GetAvailableWeaponSpawnPoint()
-        {
-            foreach (var spawn in m_spawnPoints)
-            {
-                if (m_weaponSpawnData[spawn.gameObject.GetInstanceID()].IsAvailable)
-                {
-                    return m_weaponSpawnData[spawn.gameObject.GetInstanceID()];
-                }
-            }
-
-            return null;
-        }
-
+        /// <summary>
+        /// Checks spawn timers
+        /// If any timers have been lapsed, reset the associated weapon and reset the timer.
+        /// </summary>
         private void CheckSpawnTimers()
         {
             foreach (var spawn in m_weaponSpawnData.Values)
@@ -248,6 +318,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Respawns weapon for weapon spawn point data
+        /// </summary>
+        /// <param name="spawn">Weapon spawn point data</param>
         private void RespawnWeapon(WeaponSpawnPointData spawn)
         {
             if (spawn.Weapon != null)
@@ -260,6 +334,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Checks which weapons are currently in use by anyone
+        /// </summary>
         private void CheckWeaponOwnershipState()
         {
             foreach (var spawn in m_weaponSpawnData.Values)
@@ -282,7 +359,10 @@ namespace Assets.Scripts.Network
             }
         }
 
-
+        /// <summary>
+        /// Randomly gets an available spawn point
+        /// </summary>
+        /// <returns></returns>
         private WeaponSpawnPointData GetAvailableSpawnPoint()
         {
             var availableSpawns = m_weaponSpawnData.Values.Where(x => x.IsAvailable).ToList();

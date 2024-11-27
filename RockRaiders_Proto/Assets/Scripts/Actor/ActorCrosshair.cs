@@ -2,6 +2,10 @@
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Actor crosshair behaviour
+    /// Manages the actors aimpoint
+    /// </summary>
     public class ActorCrosshair : RRMonoBehaviour
     {
         /// <summary>

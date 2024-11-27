@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Audio
 {
+    /// <summary>
+    /// Base behaviour class for audio behaviour in rock raiders
+    /// </summary>
     public class RRAudioBehaviour : MonoBehaviour
     {
         /// <summary>
@@ -80,6 +83,9 @@ namespace Assets.Scripts.Audio
             }
         }
 
+        /// <summary>
+        /// Plays all sounds in sound list, if audio source is available.
+        /// </summary>
         public void PlayAllSounds()
         {
             for (int i = 0; i < m_sounds.Length; i++)
@@ -93,6 +99,10 @@ namespace Assets.Scripts.Audio
             }
         }
 
+        /// <summary>
+        /// Plays random sound in sound list, if audio source is available.
+        /// </summary>
+        /// <returns></returns>
         public bool PlayRandomSound()
         {
             if (this.Sounds.Length < 1)

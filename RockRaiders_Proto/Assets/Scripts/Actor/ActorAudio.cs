@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Actor audio behaviour
+    /// This class is responsible for managing all of the sounds for any given actor.
+    /// </summary>
     public class ActorAudio : RRAudioBehaviour
     {
         private HashSet<string> m_ouchSounds = new HashSet<string> { "Ouch1", "Ouch2" };

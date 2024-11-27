@@ -11,6 +11,9 @@ namespace Assets.Scripts
         private float m_soundVol;
         private float m_mouseSensitivity;
 
+        /// <summary>
+        /// Gets or sets the player name
+        /// </summary>
         public string PlayerName
         {
             get
@@ -23,6 +26,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the game resolution
+        /// </summary>
         public string Resolution
         {
             get
@@ -35,6 +41,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether the window is full screen or not
+        /// </summary>
         public bool FullScreen
         {
             get
@@ -47,6 +56,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the in game music volume
+        /// </summary>
         public float MusicVolume
         {
             get
@@ -59,6 +71,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the in game sound volume
+        /// </summary>
         public float SoundVolume
         {
             get
@@ -71,6 +86,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the games mouse sensetivity
+        /// </summary>
         public float MouseSensetivity
         {
             get
@@ -83,6 +101,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public GameSettingsModel()
         {
             m_resolution = "800x600@59.94";

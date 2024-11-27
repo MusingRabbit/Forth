@@ -45,7 +45,7 @@ namespace Assets.Scripts.Actor
         private float m_torsoHitMultiplier;
 
         /// <summary>
-        /// Gets the actors health status.
+        /// Gets the actors health state (live, dying dead).
         /// </summary>
         public ActorHealthStatus Status
         {

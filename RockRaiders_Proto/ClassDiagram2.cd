@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ActorController">
+    <Position X="11.25" Y="2.75" Width="1.5" />
+    <AssociationLine Name="m_pickup" Type="Assets.Scripts.Actor.ActorPickup" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="9.096" />
+        <Point X="16.542" Y="9.096" Type="JumpStart" />
+        <Point X="16.708" Y="9.096" Type="JumpEnd" />
+        <Point X="17" Y="9.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_health" Type="Assets.Scripts.Actor.ActorHealth" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="8.503" />
+        <Point X="16.542" Y="8.503" Type="JumpStart" />
+        <Point X="16.708" Y="8.503" Type="JumpEnd" />
+        <Point X="17" Y="8.503" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_groundRay" Type="ActorGroundRay" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="7.596" />
+        <Point X="16.542" Y="7.596" Type="JumpStart" />
+        <Point X="16.708" Y="7.596" Type="JumpEnd" />
+        <Point X="17" Y="7.596" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_grounded" Type="Assets.Scripts.Actor.ActorGrounded" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="6.846" />
+        <Point X="16.542" Y="6.846" Type="JumpStart" />
+        <Point X="16.708" Y="6.846" Type="JumpEnd" />
+        <Point X="17" Y="6.846" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_crosshair" Type="Assets.Scripts.Actor.ActorCrosshair" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="5.244" />
+        <Point X="17" Y="5.244" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_controller" Type="Assets.Scripts.Input.PlayerInput" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="4.596" />
+        <Point X="17" Y="4.596" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_audio" Type="Assets.Scripts.Actor.ActorAudio" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="3.971" />
+        <Point X="17" Y="3.971" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_animController" Type="Assets.Scripts.Actor.ActorAnimController" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="3.096" />
+        <Point X="17" Y="3.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_floating" Type="Assets.Scripts.Actor.ActorFloating" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="3.75" />
+        <Point X="13.125" Y="3.75" />
+        <Point X="13.125" Y="6.096" />
+        <Point X="16.542" Y="6.096" Type="JumpStart" />
+        <Point X="16.708" Y="6.096" Type="JumpEnd" />
+        <Point X="17" Y="6.096" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAREQQIAgiADBQIhIAAAIYACEAAgAgCsTERAAAAIAgA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_animController" />
+      <Field Name="m_audio" />
+      <Field Name="m_controller" />
+      <Field Name="m_crosshair" />
+      <Field Name="m_floating" />
+      <Field Name="m_grounded" />
+      <Field Name="m_groundRay" />
+      <Field Name="m_health" />
+      <Field Name="m_pickup" />
+      <Field Name="m_state" />
+      <Field Name="m_rigidBody" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorAnimController" Collapsed="true">
+    <Position X="17" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AREgwSAGAAEgBQAABCCAEAEKCBIEEBDCIAASEgAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorAnimController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_animator" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorAudio" Collapsed="true">
+    <Position X="17" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorAudio.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Input.PlayerInput" Collapsed="true">
+    <Position X="17" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAiAQBJAQAABQEAUCEABEACAAAQAAAIgAAAA=</HashCode>
+      <FileName>Assets\Scripts\Input\PlayerInput.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorCrosshair" Collapsed="true">
+    <Position X="17" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQIAAEAACIJBQAAAAAAAAAAAIAAAAgAAAAAgAAAAQA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorCrosshair.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_actorCamera" />
+      <Field Name="m_state" />
+      <Property Name="ActorCamera" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorFloating" Collapsed="true">
+    <Position X="17" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAIACiCLhaIAAIABAAAGEAAIAgAgAQAAAAEAAQA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorFloating.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_actorCamera" />
+      <Property Name="ActorCamera" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorGrounded" Collapsed="true">
+    <Position X="17" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAUIAgIACiCJBRIggAABgAAGCAAAIAggAACAAAARATA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorGrounded.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_actorCamera" />
+      <Property Name="ActorCamera" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ActorGroundRay" Collapsed="true">
+    <Position X="17" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAAAACEABYAAACIAAAAwBAAIACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorGroundRay.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorHealth" Collapsed="true">
+    <Position X="17" Y="8" Width="1.5" />
+    <AssociationLine Name="m_actorAudio" Type="Assets.Scripts.Actor.ActorAudio" ManuallyRouted="true">
+      <Path>
+        <Point X="18.5" Y="8.142" />
+        <Point X="18.793" Y="8.142" />
+        <Point X="18.793" Y="3.846" />
+        <Point X="18.5" Y="3.846" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IAQAAgAFAiAgBQAgAQAEAAAIAAhEAAAAAIBAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorHealth.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_actorState" />
+      <Field Name="m_actorAudio" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorPickup" Collapsed="true">
+    <Position X="17" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQSAAgAACBIBQAAAAQDAAAECAAAAAQBEAEAQCIIAAE=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorPickup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_actorState" />
+      <Property Name="ActorInventory" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Actor.ActorState" Collapsed="true">
+    <Position X="17" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAUQDAECBKAEBQAAECAAMQAAEIJRgAEQEUIAAgAAABA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorState.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Inventory" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="UnityEngine.Animator" Collapsed="true">
+    <Position X="18.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Assets.Scripts.ActorCamera" Collapsed="true">
+    <Position X="22" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAKCABAIIAACACAyAAAAAQIAAoAIAAAAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\Camera\ActorCamera.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.ActorInventory" Collapsed="true">
+    <Position X="22" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AA0CEASAAIEEFQAFMCgEIAAAAICAIAAQYAgAAIAAARA=</HashCode>
+      <FileName>Assets\Scripts\Actor\ActorInventory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UnityEngine.Rigidbody" Collapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

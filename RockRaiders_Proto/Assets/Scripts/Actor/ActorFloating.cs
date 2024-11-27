@@ -5,6 +5,10 @@ using UnityEngine.ProBuilder;
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Actors' floating behaviour
+    /// Manages the actors behaviour when in a 'floating' state
+    /// </summary>
     public class ActorFloating : RRMonoBehaviour
     {
         /// <summary>
@@ -179,8 +183,9 @@ namespace Assets.Scripts.Actor
         {
             var moveInput = new Vector3(m_controller.MoveAxis.x, 0, m_controller.MoveAxis.y).normalized;
             var isThrusting = moveInput.magnitude > 0;
+            var maxSpeedExceeded = m_rigidBody.velocity.magnitude > m_maxSpeed;
 
-            if (isThrusting && m_rigidBody.velocity.magnitude <= m_maxSpeed)
+            if (isThrusting && !maxSpeedExceeded)
             {
                 var moveDir = this.transform.rotation * moveInput;
                 m_rigidBody.AddForce(moveDir * m_moveForce, ForceMode.Impulse);
@@ -199,12 +204,17 @@ namespace Assets.Scripts.Actor
         {
             if (this.UpdateRollRotation())
             {
-                var tgtRot = (this.transform.rotation * m_actorCamera.XRot);
-
-                this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, tgtRot, m_rotationSpeed * Time.deltaTime);
-
-                m_upVector = this.transform.up;
+                this.UpdatePitchRotation();
             }
+        }
+
+        private void UpdatePitchRotation()
+        {
+            var tgtRot = (this.transform.rotation * m_actorCamera.XRot);
+
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, tgtRot, m_rotationSpeed * Time.deltaTime);
+
+            m_upVector = this.transform.up;
         }
 
         /// <summary>
@@ -270,7 +280,7 @@ namespace Assets.Scripts.Actor
         /// </summary>
         public void ThrustUp()
         {
-            m_rigidBody.AddForce(this.transform.up.normalized * m_moveForce * Time.deltaTime, ForceMode.Impulse);
+            m_rigidBody.AddForce(this.transform.up.normalized * (m_moveForce * 0.3f), ForceMode.Impulse);
         }
         
         /// <summary>
@@ -278,7 +288,7 @@ namespace Assets.Scripts.Actor
         /// </summary>
         public void ThrustDown()
         {
-            m_rigidBody.AddForce(-this.transform.up.normalized * m_moveForce * Time.deltaTime, ForceMode.Impulse);
+            m_rigidBody.AddForce(-this.transform.up.normalized * (m_moveForce * 0.3f), ForceMode.Impulse);
         }
     }
 }

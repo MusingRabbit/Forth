@@ -9,6 +9,9 @@ using Unity.VisualScripting;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Weapon network data
+    /// </summary>
     public struct WeaponStateData : INetworkSerializable
     {
         public int AmmoCount;
@@ -19,12 +22,29 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Weapon network behaviour
+    /// </summary>
     public class WeaponNetwork : NetworkBehaviour
     {
+        /// <summary>
+        /// Weapon network data
+        /// </summary>
         private NetworkVariable<WeaponStateData> m_wpnNetState;
+
+        /// <summary>
+        /// Weapon component 
+        /// </summary>
         private Weapon m_weapon;
+
+        /// <summary>
+        /// Weapon update timer 
+        /// </summary>
         private Timer m_weaponTimer;
 
+        /// <summary>
+        /// called on load
+        /// </summary>
         private void Awake()
         {
             m_wpnNetState = new NetworkVariable<WeaponStateData>(writePerm: NetworkVariableWritePermission.Owner);
@@ -32,12 +52,20 @@ namespace Assets.Scripts.Network
             m_weaponTimer.AutoReset = false;
         }
 
+        /// <summary>
+        /// called before first frame
+        /// </summary>
         private void Start()
         {
             m_weapon = this.GetComponent<Weapon>();
             m_weaponTimer.Start();
         }
 
+        /// <summary>
+        /// called every frame
+        /// -> If is server and update timer has lasped
+        ///     -> notify all clients of weapons' ammo count 
+        /// </summary>
         private void Update()
         {
             m_weaponTimer.Tick();
@@ -53,7 +81,10 @@ namespace Assets.Scripts.Network
             }
         }
 
-
+        /// <summary>
+        /// sends notification to all clients to update weapon ammo count
+        /// </summary>
+        /// <param name="data"></param>
         [Rpc(SendTo.ClientsAndHost)]
         private void TransmitWeaponStateClientRpc(WeaponStateData data)
         {

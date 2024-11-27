@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Match
 {
+    /// <summary>
+    /// Interface for readonly player match data
+    /// </summary>
     public interface IReadonlyPayerMatchData
     {
         GameObject Player { get; }

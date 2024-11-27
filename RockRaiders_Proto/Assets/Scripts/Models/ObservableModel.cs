@@ -12,6 +12,13 @@ namespace Assets.Scripts.Models
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Sets field value of property and notifies any observer of any changes
+        /// </summary>
+        /// <typeparam name="T">Data type</typeparam>
+        /// <param name="field">Field reference</param>
+        /// <param name="value">New field value</param>
+        /// <param name="propertyName">Name of the property that has been changed</param>
         protected void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
             if (!(field?.Equals(value)) ?? true)

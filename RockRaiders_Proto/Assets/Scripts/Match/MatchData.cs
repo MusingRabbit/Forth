@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Assets.Scripts.Match
 {
+    /// <summary>
+    /// Match Data
+    /// </summary>
     public class MatchData
     {
         public MatchState MatchState { get; set; }
@@ -26,6 +29,9 @@ namespace Assets.Scripts.Match
         }
     }
 
+    /// <summary>
+    /// Readonly variant of Match Data
+    /// </summary>
     public class ReadonlyMatchData : IReadonlyMatchData
     {
         public MatchType MatchType { get; }
@@ -35,7 +41,10 @@ namespace Assets.Scripts.Match
         public float CurrentTime { get; }
         public Dictionary<Team, IReadonlyTeamData> Teams { get; }
 
-        
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="matchData">Match Data</param>
         public ReadonlyMatchData(MatchData matchData)
         {
             this.MatchState = matchData.MatchState;
@@ -52,6 +61,10 @@ namespace Assets.Scripts.Match
             }
         }
 
+        /// <summary>
+        /// Converts to network data
+        /// </summary>
+        /// <returns>Match data network object</returns>
         public MatchDataNet ToMatchDataNet()
         {
             var result = new MatchDataNet();
@@ -67,6 +80,11 @@ namespace Assets.Scripts.Match
             return result;
         }
 
+        /// <summary>
+        /// Gets the player with the highest score
+        /// </summary>
+        /// <param name="team">Team to filter players on</param>
+        /// <returns>Match data for the top player</returns>
         public IReadonlyPayerMatchData GetTopPlayerByTeam(Team team)
         {
             var result = this.Teams[team].Players.OrderByDescending(x => x.Value.Score).Select(x => x.Value).FirstOrDefault();

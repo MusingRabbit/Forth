@@ -12,6 +12,10 @@ public struct ActorGroundRayHitInfo
     public Quaternion Rotation;
 }
 
+/// <summary>
+/// Actor ground ray 
+/// Used for checking actors proximity to ground, as well as its orientation in relation to the player
+/// </summary>
 public class ActorGroundRay : RRMonoBehaviour
 {
     /// <summary>
@@ -51,22 +55,6 @@ public class ActorGroundRay : RRMonoBehaviour
             return m_rayHit;
         }
     }
-
-    //public float Height
-    //{
-    //    get
-    //    {
-    //        return m_height;
-    //    }
-    //}
-
-    //public RaycastHit HitInfo
-    //{
-    //    get
-    //    {
-    //        return m_hitInfo;
-    //    }
-    //}
 
     /// <summary>
     /// Gets the average rotation of the ground ray

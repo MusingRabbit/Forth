@@ -10,14 +10,25 @@ using UnityEngine.Playables;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Projectile spawn manager
+    /// </summary>
     public class ProjectileSpawnManager : NetworkBehaviour
     {
+        /// <summary>
+        /// Projectile prefab
+        /// </summary>
         [SerializeField]
         private GameObject m_projectilePrefab;
 
-
+        /// <summary>
+        /// Projectile component
+        /// </summary>
         private Projectile m_projectile;
 
+        /// <summary>
+        /// Gets the projectile prefabs' projectile component
+        /// </summary>
         public Projectile Projectile
         {
             get
@@ -26,11 +37,23 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// </summary>
         private void Start()
         {
             m_projectile = m_projectilePrefab.GetComponent<Projectile>();
         }
 
+        /// <summary>
+        /// Spawn a projectile
+        /// </summary>
+        /// <param name="weaponObj">Weapon that is spawning the projectile</param>
+        /// <param name="position">Position to spawn the projectile at</param>
+        /// <param name="rotation">Rotation of the projectile</param>
+        /// <param name="velocityOffset">Velocity offset (recoil/current velocity)</param>
+        /// <param name="muzzleVelocity">Velocity</param>
+        /// <returns></returns>
         public bool SpawnProjectile(GameObject weaponObj, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             if (IsOwner)
@@ -43,6 +66,12 @@ namespace Assets.Scripts.Network
             return false;
         }
 
+        /// <summary>
+        /// Despawns projectile
+        /// </summary>
+        /// <param name="projectile">Projectile to be removed</param>
+        /// <param name="collision">The collision responsible for removing this projectile</param>
+        /// <exception cref="InvalidOperationException">No NetworkObject component could be found</exception>
         public void DespawnProjectile(GameObject projectile, Collision collision)
         {
             var networkObject = projectile.GetComponent<NetworkObject>();
@@ -51,7 +80,7 @@ namespace Assets.Scripts.Network
 
             if (networkObject == null)
             {
-                throw new InvalidOperationException("Projectile does not have a NetworkComponent.");
+                throw new InvalidOperationException("Projectile does not have a NetworkObject.");
             }
 
             if (!IsOwner)
@@ -69,6 +98,11 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Despawns projectile
+        /// </summary>
+        /// <param name="projectile">Projectile to despawn</param>
+        /// <exception cref="InvalidOperationException">Projectile does not have a NetworkObject component</exception>
         public void DespawnProjectile(GameObject projectile)
         {
             var networkObject = projectile.GetComponent<NetworkObject>();
@@ -87,6 +121,11 @@ namespace Assets.Scripts.Network
 
         }
 
+        /// <summary>
+        /// Server request to despawn projectile
+        /// </summary>
+        /// <param name="networkObjId">Projectile network object id</param>
+        /// <param name="contactNetworkObjId">Network object id of object projectile has made contact with</param>
         [ServerRpc]
         private void DespawnProjectileServerRpc(ulong networkObjId, ulong contactNetworkObjId)
         {
@@ -96,20 +135,25 @@ namespace Assets.Scripts.Network
             {
                 var networkObject = GetNetworkObject(networkObjId);
 
-                if (networkObject == null)
-                {
-                    NotificationService.Instance.Warning($"No network object could be found for id : {NetworkObjectId}");
-                }
-                else
+                if (networkObject != null)
                 {
                     var projectileNet = networkObject.GetComponent<ProjectileNetwork>();
                     projectileNet.HitNetworkObjectId = contactNetworkObjId;
 
                     networkObject.Despawn(true);
                 }
+                else
+                {
+                    NotificationService.Instance.Warning($"No network object could be found for id : {NetworkObjectId}");
+                }
             }
         }
 
+        /// <summary>
+        /// Server request to despawn projectile
+        /// </summary>
+        /// <param name="networkObjId">projectile network object id</param>
+        /// <exception cref="NullReferenceException"></exception>
         [ServerRpc]
         private void DespawnProjectileServerRpc(ulong networkObjId)
         {
@@ -119,15 +163,26 @@ namespace Assets.Scripts.Network
             {
                 var networkObject = GetNetworkObject(networkObjId);
 
-                if (networkObject == null)
+                if (networkObject != null)
                 {
-                    throw new NullReferenceException($"No network object could be found for id : {NetworkObjectId}");
+                    networkObject.Despawn(true);
                 }
-
-                networkObject.Despawn(true);
+                else
+                {
+                    NotificationService.Instance.Warning($"No network object could be found for id : {NetworkObjectId}");
+                }
             }
         }
 
+        /// <summary>
+        /// Instantiates projectile
+        /// </summary>
+        /// <param name="weapon">Weapon assocaited with this projectile</param>
+        /// <param name="position">Position that the projectile is to be spawned at</param>
+        /// <param name="rotation">Rotation of the projectile</param>
+        /// <param name="velocityOffset">Velocity offset of the projectile</param>
+        /// <param name="muzzleVelocity">Velocity of the projectile</param>
+        /// <returns></returns>
         private GameObject CreateProjectile(Weapon weapon, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
         {
             var instance = GameObject.Instantiate(m_projectilePrefab);
@@ -147,6 +202,14 @@ namespace Assets.Scripts.Network
             return instance;
         }
 
+        /// <summary>
+        /// Server request to spawn projectile
+        /// </summary>
+        /// <param name="wpnNetObjId">Weapon network object id</param>
+        /// <param name="position">Position to spawn projectile at</param>
+        /// <param name="rotation">Rotation to orient to projectile to</param>
+        /// <param name="velocityOffset">Veloctiy offset</param>
+        /// <param name="muzzleVelocity">Velocity</param>
 
         [ServerRpc]
         private void SpawnProjectileServerRpc(ulong wpnNetObjId, Vector3 position, Quaternion rotation, Vector3 velocityOffset, float muzzleVelocity)
@@ -165,19 +228,6 @@ namespace Assets.Scripts.Network
 
             var projNet = projectile.GetComponent<ProjectileNetwork>();
             projNet.WeaponNetworkObjectId = wpnNetObjId;
-
-            //SpawnProjectileClientRpc(position, rotation, currVelocity, muzzleVelocity);
         }
-
-        //[ClientRpc]
-        //private void SpawnProjectileClientRpc(Vector3 position, Quaternion rotation, Vector3 currVelocity, float muzzleVelocity)
-        //{
-        //    if (this.IsOwner)
-        //    {
-        //        return;
-        //    }
-
-        //    this.CreateProjectile(position, rotation, currVelocity, muzzleVelocity);
-        //}
     }
 }

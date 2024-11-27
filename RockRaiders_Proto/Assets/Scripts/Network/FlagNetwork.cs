@@ -10,6 +10,9 @@ using Unity.Netcode;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Flag state network data
+    /// </summary>
     public struct FlagStateData : INetworkSerializable
     {
         public Team Team;
@@ -26,21 +29,41 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Flag network
+    /// </summary>
     public class FlagNetwork : NetworkBehaviour
     {
+        /// <summary>
+        /// Flag component
+        /// </summary>
         private Flag m_flag;
+
+        /// <summary>
+        /// Flag state network data
+        /// </summary>
         private NetworkVariable<FlagStateData> m_flagState;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public FlagNetwork()
         {
             m_flagState = new NetworkVariable<FlagStateData>(writePerm: NetworkVariableWritePermission.Server);
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// </summary>
         private void Start()
         {
             m_flag = this.GetComponent<Flag>();
         }
 
+        /// <summary>
+        /// Called every frame
+        /// Syncronises flag state accross network
+        /// </summary>
         private void Update()
         {
             if (IsOwner)
@@ -53,6 +76,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Sends state to network
+        /// </summary>
         private void SendState()
         {
             ulong ownerNetId = 0;
@@ -74,6 +100,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Updates flag state from network
+        /// </summary>
         private void UpdateFlagState()
         {
             var state = m_flagState.Value;
@@ -103,6 +132,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Server request to update network flag state
+        /// </summary>
+        /// <param name="data">Request data</param>
         [Rpc(SendTo.Server)]
         private void TransmitFlagStateServerRpc(FlagStateData data)
         {

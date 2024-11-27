@@ -42,6 +42,7 @@ namespace Assets.Scripts.Data
                 {
                     var text = File.ReadAllText(m_configFilePath);
                     result = XMLHelper.Deserialise<SettingsModel>(text);
+                    result.Session = new SessionSettingsModel();                // Don't load session settings from file.
                 }
             }
 

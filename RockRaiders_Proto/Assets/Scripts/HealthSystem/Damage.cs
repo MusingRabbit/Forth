@@ -2,14 +2,26 @@
 
 namespace Assets.Scripts.HealthSystem
 {
+    /// <summary>
+    /// Damage component
+    /// </summary>
     public class Damage : MonoBehaviour
     {
+        /// <summary>
+        /// Stores base damage
+        /// </summary>
         [SerializeField]
         private int m_baseDamage;
 
+        /// <summary>
+        /// Stores any multiplier to be applied
+        /// </summary>
         [SerializeField]
         private float m_multiplier;
 
+        /// <summary>
+        /// Gets or sets the base damage
+        /// </summary>
         public int Base
         {
             get
@@ -22,6 +34,9 @@ namespace Assets.Scripts.HealthSystem
             }
         }
 
+        /// <summary>
+        /// Gets or sets the multiplier
+        /// </summary>
         public float Multiplier
         {
             get
@@ -34,6 +49,9 @@ namespace Assets.Scripts.HealthSystem
             }
         }
 
+        /// <summary>
+        /// Gets the total damage
+        /// </summary>
         public int Total
         {
             get
@@ -42,6 +60,9 @@ namespace Assets.Scripts.HealthSystem
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Damage()
         {
             m_baseDamage = 1;

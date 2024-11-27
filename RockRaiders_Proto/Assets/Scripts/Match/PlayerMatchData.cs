@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Match
 {
+    /// <summary>
+    /// Player Match Data
+    /// </summary>
     public class PlayerMatchData
     {
         public ulong ClientId { get; set; }
@@ -14,6 +17,9 @@ namespace Assets.Scripts.Match
         public int Score { get; set; }
     }
 
+    /// <summary>
+    /// Readonly variant of player match data
+    /// </summary>
     public class ReadonlyPlayerMatchData : IReadonlyPayerMatchData
     {
         public GameObject Player { get; protected set; }
@@ -27,6 +33,10 @@ namespace Assets.Scripts.Match
             this.ClientId = value.ClientId;
         }
 
+        /// <summary>
+        /// Converts to network data
+        /// </summary>
+        /// <returns>Player match data network object</returns>
         public PayerMatchDataNet ToPayerMatchDataNet()
         {
             var result = new PayerMatchDataNet();

@@ -16,6 +16,10 @@ using Random = UnityEngine.Random;
 
 /// <summary>
 /// Controller component for actor entity.
+/// This component acts as the main / root component for actors. 
+/// This component manages the actor state, and all other components that an actor may have.
+/// It enables / disables floating and grounded behaviours depending on the output of the 'actor ground ray' component,
+/// as well as handling user input.
 /// </summary>
 public class ActorController : RRMonoBehaviour
 {
@@ -154,25 +158,19 @@ public class ActorController : RRMonoBehaviour
             this.ProcessControllerActions();
         }
 
-        if (m_state.GravBootsEnabled && m_groundRay.Hit) //If actor is touching a surface, and grav boots are enabled - enable actor grounded behaviour
-        {
-            m_state.FeetOnGround = true;
-            m_grounded.enabled = true;
-            m_floating.enabled = false;
-            m_state.IsFloating = false;
-        }
-        else // Actor is in a floating state
-        {
-            if (m_floating.enabled == false)
-            {
-                m_floating.ResetRoll();                     // Sets the 'up' vector to be whatever orientation the player is currently in.
-            }
+        var onGround = m_state.GravBootsEnabled && m_groundRay.Hit;
+        var justLeftGround = !onGround && !m_floating.enabled;
 
-            m_state.FeetOnGround = false;
-            m_grounded.enabled = false;
-            m_floating.enabled = true;
-            m_state.IsFloating = true;
+        if (justLeftGround)
+        {
+            m_floating.ResetRoll();                 // Player has just left ground -> Set the 'up' vector to be whatever orientation the player is currently in.
         }
+
+        m_grounded.enabled = onGround;              //Actor is touching a surface, and grav boots are enabled - enable actor grounded behaviour
+        m_state.FeetOnGround = onGround;            
+        m_floating.enabled = !onGround;             //Actor is not touching a surface - enable actor floating behaviour
+        m_state.IsFloating = !onGround;
+
 
         m_animController.PlayAnimationForActorState(m_state);   // Selects and plays the correct animation for the current actor state.
         this.Debug_DrawVelocityVector();
@@ -183,7 +181,7 @@ public class ActorController : RRMonoBehaviour
     /// </summary>
     private void LateUpdate()
     {
-        var canAnimate = !(m_state.IsDying || m_state.IsDying);
+        var canAnimate = !(m_state.IsDying || m_state.IsDead);
 
         if (canAnimate)
         {

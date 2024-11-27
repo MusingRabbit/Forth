@@ -3,13 +3,31 @@ using System;
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// Match settings 
+    /// </summary>
     public struct MatchSettings
     {
+        /// <summary>
+        /// Match score limit
+        /// </summary>
         public int ScoreLimit;
+
+        /// <summary>
+        /// Match type, (Deathmatch, Team deathmatch, Capture the flag)
+        /// </summary>
         public MatchType MatchType;
+
+        /// <summary>
+        /// Match time limit
+        /// </summary>
         public TimeSpan TimeLimit;
     }
 
+    /// <summary>
+    /// Session settings
+    /// Handles all of the settings configured for a particular session
+    /// </summary>
     public class SessionSettingsModel : ObservableModel
     {
         private string m_localPlayerName;
@@ -19,6 +37,9 @@ namespace Assets.Scripts
         private string m_serverName;
         private bool m_isHost;
 
+        /// <summary>
+        /// Gets or sets the player name for the local machine
+        /// </summary>
         public string LocalPlayerName
         {
             get
@@ -31,6 +52,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the server IP -> Connection IP of remote host
+        /// </summary>
         public string ServerIP
         {
             get
@@ -42,6 +66,10 @@ namespace Assets.Scripts
                 this.SetValue(ref m_serverIp, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the server port -> Target port of remote host
+        /// </summary>
         public ushort Port
         {
             get
@@ -53,6 +81,10 @@ namespace Assets.Scripts
                 this.SetValue(ref m_port, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the server name - not currently in use
+        /// </summary>
         public string ServerName
         {
             get
@@ -64,6 +96,10 @@ namespace Assets.Scripts
                 this.SetValue(ref m_serverName, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether is host
+        /// </summary>
         public bool IsHost
         {
             get
@@ -76,6 +112,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current level
+        /// </summary>
         public string Level
         {
             get
@@ -88,8 +127,14 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current match settings
+        /// </summary>
         public MatchSettings MatchSettings { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SessionSettingsModel()
         {
             m_port = 7777;
@@ -106,6 +151,11 @@ namespace Assets.Scripts
             m_localPlayerName = "PlayerName";
         }
 
+        /// <summary>
+        /// Gets the scene name for the selected match type and level
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Invalid match type</exception>
         public string GetSceneName()
         {
             switch (this.MatchSettings.MatchType)

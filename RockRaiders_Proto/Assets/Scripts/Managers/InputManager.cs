@@ -7,6 +7,9 @@ namespace Assets.Scripts.Network
 {
     public class InputManager : MonoBehaviour
     {
+        /// <summary>
+        /// Singleton instance
+        /// </summary>
         private static InputManager _instance;
 
         public static InputManager Instance
@@ -17,11 +20,20 @@ namespace Assets.Scripts.Network
             }
         }
 
-
+        /// <summary>
+        /// Player input 
+        /// </summary>
         [SerializeField]
         private PlayerInput m_controller;
+
+        /// <summary>
+        /// Settings
+        /// </summary>
         private SettingsModel m_settings;
 
+        /// <summary>
+        /// Gets the player input controller
+        /// </summary>
         public PlayerInput Controller
         {
             get
@@ -30,6 +42,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Gets the current settings
+        /// </summary>
         public SettingsModel Settings
         {
             get
@@ -42,10 +57,17 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public InputManager()
         {
         }
 
+        /// <summary>
+        /// Called on load
+        /// -> Handles singleton instantiation
+        /// </summary>
         private void Awake()
         {
             if (_instance == null)
@@ -64,7 +86,12 @@ namespace Assets.Scripts.Network
         {
         }
 
-        // Update is called once per frame
+        /// <summary>
+        /// Called every frame
+        /// -> Resets input controller
+        /// -> Processes inputs
+        /// -> Updates controller look axis
+        /// </summary>
         void Update()
         {
             if (m_controller != null)
@@ -75,39 +102,53 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Resets input controller
+        /// </summary>
         public void Reset()
         {
             m_controller?.Reset();
         }
 
-        public void RegisterPlayerController(PlayerInput controllerComponent)
+        /// <summary>
+        /// Registers player input controller with this input manager
+        /// </summary>
+        /// <param name="playerInput">Player input controller</param>
+        /// <exception cref="ArgumentNullException">player input cannot be null</exception>
+        public void RegisterPlayerController(PlayerInput playerInput)
         {
-            if (controllerComponent == null)
+            if (playerInput == null)
             {
-                throw new ArgumentNullException(nameof(controllerComponent));
+                throw new ArgumentNullException(nameof(playerInput));
             }
 
-            m_controller = controllerComponent;
+            m_controller = playerInput;
         }
 
+        /// <summary>
+        /// Updates the look axis of the controller from mouse x, and y axes. Applies any sensetivity modifiers
+        /// </summary>
         private void UpdateControllerLookAxis()
         {
-            //var currEvent = Event.current;
-            //var mousePos = UnityEngine.Input.mousePosition;
             var mouseX = UnityEngine.Input.GetAxis("Mouse X");
             var mouseY = UnityEngine.Input.GetAxis("Mouse Y");
             var multiplier = GetSensitivityMultiplier();
 
             m_controller.LookAxis = new Vector2(mouseX * multiplier, mouseY * multiplier);
-
-            //Debug.Log("Look Axis : " + m_controller.LookAxis);
         }
 
+        /// <summary>
+        /// Gets the sensetivity multiplier from game settings.
+        /// </summary>
+        /// <returns></returns>
         private float GetSensitivityMultiplier()
         {
             return m_settings.Game.MouseSensetivity * 10.0f;
         }
 
+        /// <summary>
+        /// Processes key inputs
+        /// </summary>
         private void ProcessInputs()
         {
             Vector2 moveAxis = Vector2.zero;

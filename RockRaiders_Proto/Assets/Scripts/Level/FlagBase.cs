@@ -26,31 +26,82 @@ namespace Assets.Scripts.Level
         }
     }
 
+    /// <summary>
+    /// Flag base
+    /// </summary>
     public class FlagBase : NetworkBehaviour
     {
+        /// <summary>
+        /// Flag prefab
+        /// </summary>
         [SerializeField]
         private GameObject m_flagPrefab;
 
+        /// <summary>
+        /// Flag base team
+        /// </summary>
         [SerializeField]
         private Team m_team;
 
+        /// <summary>
+        /// Flag base light component
+        /// </summary>
         [SerializeField]
         private Light m_light;
 
+        /// <summary>
+        /// Stores the flag component of the flag instance 
+        /// </summary>
         private Flag m_flag;
+
+        /// <summary>
+        /// Stores the flag stand
+        /// </summary>
         private FlagStand m_flagStand;
+
+        /// <summary>
+        /// Stores the flags' rigidbody component
+        /// </summary>
         private Rigidbody m_flagRb;
+
+        /// <summary>
+        /// Stores the flags' network object
+        /// </summary>
         private NetworkObject m_flagNetObj;
+
+        /// <summary>
+        /// Stores the box collider of the flag base
+        /// </summary>
         private BoxCollider m_boxCol;
 
+        /// <summary>
+        /// Flag reset timer
+        /// </summary>
         private Timer m_resetTimer;
+
+        /// <summary>
+        /// Flag reset timespan
+        /// </summary>
         private TimeSpan m_resetTimeSpan = TimeSpan.FromSeconds(30);
 
+        /// <summary>
+        /// Flag captured event
+        /// </summary>
         public event EventHandler<EventArgs> FlagCaptured;
 
+        /// <summary>
+        /// Flag base data
+        /// </summary>
         private NetworkVariable<FlagBaseData> m_baseData;
 
+        /// <summary>
+        /// Gets whether the flag is back at base.
+        /// </summary>
         private bool FlagAtBase => m_boxCol.bounds.Contains(m_flag.transform.position);
+        
+        /// <summary>
+        /// Gets the team of the flag base.
+        /// </summary>
         public Team Team
         {
             get
@@ -59,6 +110,9 @@ namespace Assets.Scripts.Level
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public FlagBase()
         {
             m_flagStand = new FlagStand();
@@ -68,7 +122,9 @@ namespace Assets.Scripts.Level
             m_resetTimer.OnTimerElapsed += ResetTimer_OnTimerElapsed;
         }
 
-        // Start is called before the first frame update
+        /// <summary>
+        /// Start is called before the first frame update
+        /// </summary>
         void Start()
         {
             m_boxCol = this.GetComponent<BoxCollider>();
@@ -96,7 +152,22 @@ namespace Assets.Scripts.Level
             }
         }
 
-        // Update is called once per frame
+        /// <summary>
+        /// Called every frame
+        ///     -> If is client 
+        ///         -> Get flag game object if no reference exists
+        ///     -> If is server
+        ///         -> Start reset timer if flag is picked up and not at base
+        ///         -> If flag is at base
+        ///             -> Resets the reset timer and flag stand
+        ///             -> Constrains flag movement
+        ///         -> Else
+        ///             -> If retreived 
+        ///                 -> Resets flag
+        ///             -> If Captured
+        ///                 -> Resets flag
+        ///                 -> Fires flag captured event
+        /// </summary>
         void Update()
         {
             if (this.IsClient)
@@ -161,6 +232,11 @@ namespace Assets.Scripts.Level
             }
         }
 
+        /// <summary>
+        /// Gets the flag by network object id
+        /// </summary>
+        /// <param name="networkObjId">network object id</param>
+        /// <returns>flag</returns>
         private Flag GetFlagByNetworkObjectId(ulong networkObjId)
         {
             Flag result = null;
@@ -174,6 +250,10 @@ namespace Assets.Scripts.Level
             return result;
         }
 
+        /// <summary>
+        /// Spawns flag for this base
+        /// </summary>
+        /// <returns>flag</returns>
         private Flag SpawnFlag()
         {
             var obj = GameObject.Instantiate(m_flagPrefab);
@@ -186,6 +266,9 @@ namespace Assets.Scripts.Level
             return flag;
         }
 
+        /// <summary>
+        /// Resets flag to this base
+        /// </summary>
         private void ResetFlag()
         {
             m_flag.Initialise();
@@ -200,6 +283,13 @@ namespace Assets.Scripts.Level
             m_flagStand.Flag = m_flag;
         }
 
+        /// <summary>
+        /// Called when object has entered the box collider of this base
+        ///     -> Checks to see whether the colliding object is a flag
+        ///     -> If the flag belongs to the other team, and own flag is at base
+        ///         -> Mark flag as having been captured
+        /// </summary>
+        /// <param name="other">Other collider</param>
         private void OnTriggerEnter(Collider other)
         {
             NotificationService.Instance.Info(other.name);
@@ -216,17 +306,19 @@ namespace Assets.Scripts.Level
             }
         }
 
+        /// <summary>
+        /// Called when reset timer lapses
+        /// </summary>
+        /// <param name="sender">Sender -> Reset timer</param>
+        /// <param name="e">Event args <see cref="Events.TimerElapsedEventArgs"/></param>
         private void ResetTimer_OnTimerElapsed(object sender, Events.TimerElapsedEventArgs e)
         {
-            //m_resetTimer.SetTimeSpan(m_resetTimeSpan, false);
             m_resetTimer.Stop();
 
             if (this.IsServer)
             {
                 var netTrans = m_flagNetObj.GetComponent<NetworkTransform>();
-                //netTrans.Interpolate = false;
                 this.ResetFlag();
-                //netTrans.Interpolate = true;
             }
         }
     }

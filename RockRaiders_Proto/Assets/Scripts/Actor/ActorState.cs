@@ -8,28 +8,94 @@ using Assets.Scripts.Network;
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Actor state
+    /// </summary>
     public class ActorState : RRMonoBehaviour
     {
+        /// <summary>
+        /// Flag indicating whether this state has been changed since last update
+        /// </summary>
         private bool m_stateChanged;
+
+        /// <summary>
+        /// Fired whenever a state change has been detected
+        /// </summary>
         public event EventHandler<OnStateChangedEventArgs> OnStateChanged;
 
+        /// <summary>
+        /// Stores a reference to the actors' health component
+        /// </summary>
         private ActorHealth m_health;
-        private ActorNetwork m_network;
+
+        /// <summary>
+        /// Stores the actors' team
+        /// </summary>
         private Team m_team;
+        
+        /// <summary>
+        /// Stores the actors' currently selected weapon
+        /// </summary>
         private SelectedWeapon m_selectedWeapon;
+
+        /// <summary>
+        /// Stores whether grav boots have been enabled or not
+        /// </summary>
         bool m_gravBootsEnabled;
+
+        /// <summary>
+        /// Stores whether actor is moving
+        /// </summary>
         private bool m_isMoving;
+
+        /// <summary>
+        /// Stores whether actor is floating
+        /// </summary>
         private bool m_isFloating;
+
+        /// <summary>
+        /// Stores whether actor has feet on the ground
+        /// </summary>
         private bool m_feetOnGround;
+
+        /// <summary>
+        /// Stores whether actor is currently crouched
+        /// </summary>
         private bool m_isCrouched;
+
+        /// <summary>
+        /// Stores whether actor is moving forward
+        /// </summary>
         private bool m_isMovingForward;
+
+        /// <summary>
+        /// Sores whether actor is dead
+        /// </summary>
         private bool m_isDead;
+
+        /// <summary>
+        /// Stores actor hitpoints that it retreives from Actors' health component
+        /// </summary>
         private int m_hp;
+
+        /// <summary>
+        /// Stores whether actor is in dying state (just been killed)
+        /// </summary>
         private bool m_isDying;
+
+        /// <summary>
+        /// Stores the actors' player name
+        /// </summary>
         private string m_playerName;
 
+        /// <summary>
+        /// Stores the game object that last hit this actor
+        /// </summary>
         private GameObject m_lastHitBy;
 
+        /// <summary>
+        /// Gets or sets the actor's team
+        /// </summary>
         public Team Team
         {
             get
@@ -46,6 +112,9 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets or sets the gameobject that last hit the actor
+        /// </summary>
         public GameObject LastHitBy
         {
             get
@@ -58,8 +127,14 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets the currently selected weapon
+        /// </summary>
         public SelectedWeapon SelectedWeapon => this.Inventory.SelectedWeapon;
         
+        /// <summary>
+        /// Gets or sets whether grav boots have been enabled.
+        /// </summary>
         public bool GravBootsEnabled
         {
             get
@@ -75,6 +150,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actor is moving
+        /// </summary>
         public bool IsMoving
         {
             get
@@ -90,6 +169,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actor is floating
+        /// </summary>
         public bool IsFloating
         {
             get
@@ -105,6 +188,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actors' feet are grounded.
+        /// </summary>
         public bool FeetOnGround
         {
             get
@@ -120,6 +207,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actor is crouched
+        /// </summary>
         public bool IsCrouched
         {
             get
@@ -135,6 +226,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actor is moving forward.
+        /// </summary>
         public bool IsMovingForward
         {
             get
@@ -150,6 +245,10 @@ namespace Assets.Scripts.Actor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether actor is dead.
+        /// </summary>
         public bool IsDead
         {
             get
@@ -162,6 +261,9 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether actor is dying.
+        /// </summary>
         public bool IsDying
         {
             get
@@ -174,6 +276,9 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets actor health
+        /// </summary>
         public int Health
         {
             get
@@ -182,6 +287,9 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets actors' player name
+        /// </summary>
         public string PlayerName
         {
             get
@@ -194,25 +302,40 @@ namespace Assets.Scripts.Actor
             }
         }
 
+        /// <summary>
+        /// Gets actors' inventory
+        /// </summary>
         public ActorInventory Inventory { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorState()
         {
 
         }
 
+        /// <summary>
+        /// Initialisation
+        /// </summary>
         public override void Initialise()
         {
             this.Inventory = this.GetComponent<ActorInventory>();
             m_health = this.GetComponent<ActorHealth>();
-            m_network = this.GetComponent<ActorNetwork>();
         }
 
+        /// <summary>
+        /// Called before first frame in scene
+        /// </summary>
         private void Start()
         {
             this.Initialise();
         }
 
+        /// <summary>
+        /// Called every frame
+        ///     -> Checks for any state changes and invokes on state changed event if so.
+        /// </summary>
         private void Update()
         {
             var isDying = m_health.Status == ActorHealthStatus.Dying;
@@ -240,12 +363,14 @@ namespace Assets.Scripts.Actor
 
             if (m_stateChanged)
             {
-                //NotificationService.Instance.Info($"State Changed : {m_playerName} |Dying:{this.IsDying}|Dead:{this.IsDead}|HP:{hp}");
                  this.OnStateChanged?.Invoke(this, new OnStateChangedEventArgs { Actor = this.gameObject, State = this  });
                 m_stateChanged = false;
             }
         }
 
+        /// <summary>
+        /// Resets all fields and flags belonging to this component
+        /// </summary>
         public override void Reset()
         {
 
@@ -260,6 +385,10 @@ namespace Assets.Scripts.Actor
             m_isDying = false;
         }
 
+        /// <summary>
+        /// Gets the currently selected weapon for this actor.
+        /// </summary>
+        /// <returns>Weapon game object</returns>
         public GameObject GetSelectedWeapon()
         {
             switch (this.SelectedWeapon)
@@ -271,41 +400,19 @@ namespace Assets.Scripts.Actor
                 case SelectedWeapon.Sidearm:
                     return this.Inventory.GetSideArm();
                 case SelectedWeapon.Pack:
-                    return null;
+                    return this.Inventory.GetPackItem();
             }
 
             return null;
         }
 
+        /// <summary>
+        /// Selects weapon
+        /// </summary>
+        /// <param name="weapon">Weapon to be selected</param>
         public void SelectWeapon(SelectedWeapon weapon)
         {
             this.Inventory.SelectWeapon(weapon);
-            //if (this.SelectedWeapon == weapon)
-            //{
-            //    return;
-            //}
-
-            //switch (weapon)
-            //{
-            //    case SelectedWeapon.Main:
-            //        if (this.Inventory.HasMainWeapon())
-            //        {
-            //            this.SelectedWeapon = SelectedWeapon.Main;
-            //            this.Inventory.SelectWeapon(SelectedWeapon.Main);
-            //        }
-            //        break;
-            //    case SelectedWeapon.Sidearm:
-            //        if (this.Inventory.HasSideArm())
-            //        {
-            //            this.SelectedWeapon = SelectedWeapon.Sidearm;
-            //            this.Inventory.SelectWeapon(SelectedWeapon.Sidearm);
-            //        }
-            //        break;
-            //    case SelectedWeapon.None:
-            //        this.SelectedWeapon = SelectedWeapon.None;
-            //        this.Inventory.SelectWeapon(SelectedWeapon.None);
-            //        break;
-            //}
         }
     }
 }

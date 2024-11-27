@@ -17,6 +17,10 @@ namespace Assets.Scripts.Actor
         public Quaternion TargetRotation;
     }
 
+    /// <summary>
+    /// Actor grounded behaviour
+    /// Manages the actors behaviour when in a 'grounded' state
+    /// </summary>
     internal class ActorGrounded : RRMonoBehaviour, IGravityWell
     {
         /// <summary>
@@ -236,9 +240,8 @@ namespace Assets.Scripts.Actor
             m_moveVector = new Vector3(moveX, 0.0f, moveZ);
 
             m_state.IsMoving = m_moveVector.magnitude > 0.0f;
-
-            m_jumpTimer.Tick();
             m_state.IsCrouched = m_crouch;
+            m_state.FeetOnGround = m_groundRay.Hit;
 
             if (m_groundRay.Hit)
             {
@@ -246,9 +249,8 @@ namespace Assets.Scripts.Actor
                 this.UpdateMovement();
             }
 
-            m_state.FeetOnGround = m_groundRay.Hit;
-
             m_crouch = false;
+            m_jumpTimer.Tick();
         }
 
         /// <summary>

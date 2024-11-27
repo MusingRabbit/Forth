@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Assets.Scripts.Network.GameManager">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="m_netManager" Type="Unity.Netcode.NetworkManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="2.781" />
+        <Point X="4.25" Y="2.781" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_spawnManager" Type="Assets.Scripts.Managers.ActorSpawnManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="5.096" />
+        <Point X="4.25" Y="5.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_settingsRepo" Type="Assets.Scripts.Data.SettingsRepository" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="5.781" />
+        <Point X="4.25" Y="5.781" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_weaponSpawnManager" Type="Assets.Scripts.Network.WeaponSpawnManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="4.346" />
+        <Point X="4.25" Y="4.346" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_matchManager" Type="Assets.Scripts.MatchManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="3.596" />
+        <Point X="4.25" Y="3.596" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_audioManager" Type="Assets.Scripts.AudioManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="1.875" />
+        <Point X="2.375" Y="1.875" />
+        <Point X="2.375" Y="1.096" />
+        <Point X="4.25" Y="1.096" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>OAVEhAADACUhAsQAEQAEAIgBAAAMGEQg1AYUAggBAkI=</HashCode>
+      <FileName>Assets\Scripts\Managers\GameManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_audioManager" />
+      <Field Name="m_inputManager" />
+      <Field Name="m_netManager" />
+      <Field Name="m_matchManager" />
+      <Field Name="m_weaponSpawnManager" />
+      <Field Name="m_spawnManager" />
+      <Field Name="m_settingsRepo" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Assets.Scripts.AudioManager" Collapsed="true">
+    <Position X="4.25" Y="0.75" Width="2" />
+    <AssociationLine Name="m_music" Type="Assets.Scripts.Sound" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="0.75" />
+        <Point X="5.25" Y="0.5" />
+        <Point X="6.5" Y="0.5" />
+        <Point X="6.5" Y="0.688" />
+        <Point X="13.25" Y="0.688" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAggAAAQAAEAEAAAAAAAAAogAAAAAAIEA=</HashCode>
+      <FileName>Assets\Scripts\Managers\AudioManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_settings" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="m_gameSounds" />
+      <Field Name="m_music" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Network.InputManager" Collapsed="true">
+    <Position X="4.25" Y="1.5" Width="2" />
+    <AssociationLine Name="Controller" Type="Assets.Scripts.Input.PlayerInput" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="2.062" />
+        <Point X="6.312" Y="2.062" />
+        <Point X="6.312" Y="6.906" />
+        <Point X="5.375" Y="6.906" />
+        <Point X="5.375" Y="7" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ABQEAACAASAABgIAAAAAAAAAAAAgAAAAwAAAAAAAEEA=</HashCode>
+      <FileName>Assets\Scripts\Managers\InputManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_settings" />
+      <Property Name="Controller" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Unity.Netcode.NetworkManager" Collapsed="true">
+    <Position X="4.25" Y="2.5" Width="2" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Assets.Scripts.MatchManager" Collapsed="true">
+    <Position X="4.25" Y="3.25" Width="2" />
+    <AssociationLine Name="m_flagBases" Type="Assets.Scripts.Level.FlagBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="3.562" />
+        <Point X="6.32" Y="3.579" />
+        <Point X="8.188" Y="3.579" />
+        <Point X="8.188" Y="5.124" />
+        <Point X="9.167" Y="5.124" Type="JumpStart" />
+        <Point X="9.333" Y="5.124" Type="JumpEnd" />
+        <Point X="10.865" Y="5.124" />
+        <Point X="10.865" Y="7.187" />
+        <Point X="11.25" Y="7.187" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="m_matchData" Type="Assets.Scripts.Match.MatchData" ManuallyRouted="true">
+      <Path>
+        <Point X="6.25" Y="3.562" />
+        <Point X="7.24" Y="3.562" />
+        <Point X="7.24" Y="3.552" />
+        <Point X="8.26" Y="3.552" />
+        <Point X="8.26" Y="5.806" />
+        <Point X="9.167" Y="5.806" Type="JumpStart" />
+        <Point X="9.333" Y="5.806" Type="JumpEnd" />
+        <Point X="10.781" Y="5.806" Type="JumpStart" />
+        <Point X="10.948" Y="5.806" Type="JumpEnd" />
+        <Point X="11.25" Y="5.806" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAREACQAICFBAwFQA5AEhIBgQEEQCAAASggAQEAEAFA=</HashCode>
+      <FileName>Assets\Scripts\Managers\MatchManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_matchData" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="m_players" />
+      <Field Name="m_flagBases" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Network.WeaponSpawnManager" Collapsed="true">
+    <Position X="4.25" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>EA4AAAAgACBgAAwACAgAAAAAAAQAAIAAAAEAgRDAAAA=</HashCode>
+      <FileName>Assets\Scripts\Network\Managers\WeaponSpawnManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="m_weaponSpawnData" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Managers.ActorSpawnManager" Collapsed="true">
+    <Position X="4.25" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>EBQFAACACCAiASUEQAACAQAAEEACMQSgQgQQAiAIAUA=</HashCode>
+      <FileName>Assets\Scripts\Managers\ActorSpawnManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_sceneSettings" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Assets.Scripts.Data.SettingsRepository" Collapsed="true">
+    <Position X="4.25" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAQAAAAAAAEAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Data\SettingsRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Managers.SceneSpawnSettings">
+    <Position X="8.5" Y="7" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Managers\ActorSpawnManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Network.WeaponSpawnPointData">
+    <Position X="6.5" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAEAAACEAgAAAAIAIAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Network\Managers\WeaponSpawnManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Match.PlayerMatchData">
+    <Position X="11.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAgAAAAAAAAAAAAAAAEAAAAQAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Match\PlayerMatchData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Match.MatchData">
+    <Position X="11.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAACCAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAgAAAAAQ=</HashCode>
+      <FileName>Assets\Scripts\Match\MatchData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Level.FlagBase">
+    <Position X="11.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAACAAAAIAAgAQAAgIGAQAAAEAUNAAAAAgAQA=</HashCode>
+      <FileName>Assets\Scripts\Level\FlagBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.UI.Models.SettingsModel">
+    <Position X="8.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Models\SettingsModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Input.PlayerInput">
+    <Position X="4.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAiAQBJAQAABQEAUCEABEACAAAQAAAIgAAAA=</HashCode>
+      <FileName>Assets\Scripts\Input\PlayerInput.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Assets.Scripts.Sound">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EABAAAAIAgAAAgAACIAAAAQAAAAAAAAAAAJBIAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Sound.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

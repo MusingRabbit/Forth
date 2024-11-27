@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Singleton behaviour
+/// </summary>
 public class Singleton : MonoBehaviour
 {
     private static Dictionary<uint, Singleton> _instances = new Dictionary<uint, Singleton>();

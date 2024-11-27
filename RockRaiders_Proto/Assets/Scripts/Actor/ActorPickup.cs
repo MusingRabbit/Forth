@@ -15,6 +15,9 @@ using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Actor
 {
+    /// <summary>
+    /// Actor's pickup behaviour
+    /// </summary>
     public class ActorPickup : RRMonoBehaviour
     {
         /// <summary>

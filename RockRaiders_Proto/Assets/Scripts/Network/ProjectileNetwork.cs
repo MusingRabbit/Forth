@@ -16,10 +16,24 @@ namespace Assets.Scripts.Network
 {
     internal class ProjectileNetwork : NetworkBehaviour
     {
+        /// <summary>
+        /// Weapon network object id
+        /// </summary>
         private NetworkVariable<ulong> m_wpnNetworkObjectId;
+
+        /// <summary>
+        /// Hit network object id
+        /// </summary>
         private NetworkVariable<ulong> m_hitNetworkObjectId;
+
+        /// <summary>
+        /// Projectile component
+        /// </summary>
         private Projectile m_projectile;
 
+        /// <summary>
+        /// Gets or sets the weapon network object id
+        /// </summary>
         public ulong WeaponNetworkObjectId
         {
             get
@@ -34,11 +48,14 @@ namespace Assets.Scripts.Network
                 }
                 else
                 {
-                    SetHitWeaponNetworkObjectIdServerRpc(value);
+                    SetWeaponNetworkObjectIdServerRpc(value);
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the network object id that is hit by the projectile
+        /// </summary>
         public ulong HitNetworkObjectId
         {
             get
@@ -62,27 +79,46 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ProjectileNetwork()
         {
             m_hitNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
             m_wpnNetworkObjectId = new NetworkVariable<ulong>(writePerm: NetworkVariableWritePermission.Server);
         }
 
+        /// <summary>
+        /// Called on load
+        /// </summary>
         private void Awake()
         {
             m_projectile = GetComponent<Projectile>();
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// </summary>
         private void Start()
         {
             m_projectile = GetComponent<Projectile>();
         }
 
+        /// <summary>
+        /// Called every frame
+        /// </summary>
         private void Update()
         {
 
         }
 
+        /// <summary>
+        /// Called when hit network object id has its value changed
+        /// Performs a lookup for the game object that is hit and 
+        /// sends out a player attacked notification if the object hit was a player
+        /// </summary>
+        /// <param name="previousValue"></param>
+        /// <param name="newValue"></param>
         private void OnHitNetworkObjectChanged(ulong previousValue, ulong newValue)
         {
             if (newValue != 0)
@@ -119,12 +155,22 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Called when network object id has changed
+        /// </summary>
+        /// <param name="oldVal"></param>
+        /// <param name="value"></param>
         private void OnNetworkObjectValueChanged(ulong oldVal, ulong value)
         {
             NotificationService.Instance.Info($"WeaponNetworkObjectId : {value}");
             SetWeaponNetworkObjectId(value);
         }
 
+        /// <summary>
+        /// Sets the weapon network object id
+        /// Updates the assocaited weapon for the projectile
+        /// </summary>
+        /// <param name="weaponObjId">Weapon network object id</param>
         public void SetWeaponNetworkObjectId(ulong weaponObjId)
         {
             if (IsServer)
@@ -141,11 +187,19 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Server request to change hit network object id
+        /// </summary>
+        /// <param name="value"></param>
         [Rpc(SendTo.Server)]
         private void SetHitNetworkObjectIdServerRpc(ulong value)
         {
             m_hitNetworkObjectId.Value = value;
         }
+        /// <summary>
+        /// Client notification to update network object id
+        /// </summary>
+        /// <param name="value"></param>
 
         [Rpc(SendTo.ClientsAndHost)]
         private void SetHitNetworkObjectIdClientRpc(ulong value)
@@ -153,12 +207,19 @@ namespace Assets.Scripts.Network
             OnHitNetworkObjectChanged(m_hitNetworkObjectId.Value, value);
         }
 
+        /// <summary>
+        /// Server request to update weapon object id
+        /// </summary>
+        /// <param name="value"></param>
         [Rpc(SendTo.Server)]
-        private void SetHitWeaponNetworkObjectIdServerRpc(ulong value)
+        private void SetWeaponNetworkObjectIdServerRpc(ulong value)
         {
             m_wpnNetworkObjectId.Value = value;
         }
 
+        /// <summary>
+        /// Called when entity is spawned
+        /// </summary>
         public override void OnNetworkSpawn()
         {
             m_hitNetworkObjectId.OnValueChanged += OnHitNetworkObjectChanged;

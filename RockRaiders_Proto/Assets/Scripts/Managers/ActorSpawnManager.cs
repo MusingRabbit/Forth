@@ -37,12 +37,19 @@ namespace Assets.Scripts.Managers
         }
     }
 
+    /// <summary>
+    /// Manages the spawning of player actors
+    /// </summary>
     public class ActorSpawnManager : NetworkBehaviour
     {
-        private bool m_isReady;
+        /// <summary>
+        /// Singleton static instance
+        /// </summary>
         private static ActorSpawnManager _instance;
-        private List<SpawnPoint> m_spawnPoints;
 
+        /// <summary>
+        /// Gets singleton static instance
+        /// </summary>
         public static ActorSpawnManager Instance
         {
             get
@@ -51,6 +58,52 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        /// <summary>
+        /// Flag to denote wheather the actor spawner can be used.
+        /// </summary>
+        private bool m_isReady;
+
+        /// <summary>
+        /// Stores a list of all available spawn points.
+        /// </summary>
+        private List<SpawnPoint> m_spawnPoints;
+
+        /// <summary>
+        /// Stores a reference to the camera manager game object
+        /// </summary>
+        [SerializeField]
+        private GameObject m_cameraManager;
+
+        /// <summary>
+        /// Stores a reference to the player prefab gameobject
+        /// </summary>
+        [SerializeField]
+        private GameObject m_playerPrefab;
+
+        /// <summary>
+        /// Stores a reference to the camera prefab gameobject
+        /// </summary>
+        [SerializeField]
+        private GameObject m_cameraPrefab;
+
+        /// <summary>
+        /// Stores a list of all networked clients
+        /// </summary>
+        private Dictionary<ulong, NetworkObject> m_clients;
+
+        /// <summary>
+        /// Stores a set of clientId's pending spawn
+        /// </summary>
+        private HashSet<ulong> m_pendingSpawn;
+
+        /// <summary>
+        /// Stores a set of clientId's pending despawn
+        /// </summary>
+        private HashSet<ulong> m_pendingDespawn;
+
+        /// <summary>
+        /// Gets the player prefab
+        /// </summary>
         public GameObject PlayerPrefab
         {
             get
@@ -59,52 +112,47 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        /// <summary>
+        /// Invoked whenever a player actor has been spawned
+        /// </summary>
         public event EventHandler<OnActorSpawnedArgs> OnActorSpawn;
+
+        /// <summary>
+        /// Invoked whenever a player actor has been despawned
+        /// </summary>
         public event EventHandler<OnActorDespawnedArgs> OnActorDespawn;
 
-
-        [SerializeField]
-        private GameObject m_cameraManager;
-
-        [SerializeField]
-        private GameObject m_playerPrefab;
-
-        [SerializeField]
-        private GameObject m_cameraPrefab;
-
-        private Dictionary<ulong, NetworkObject> m_clients;
-
-        private HashSet<ulong> m_pendingSpawn;
-        private HashSet<ulong> m_pendingDespawn;
-
-        //[SerializeField]
-        //private GameManager m_gameManager;
-
+        /// <summary>
+        /// Scene spawn settings.
+        /// </summary>
         [Header("Scene Settings (Leave blank in splash screen)", order = 2)]
         [SerializeField]
         private SceneSpawnSettings m_sceneSettings;
 
-
-
-        // private static Dictionary<ulong, string> playerNameDictionary;
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorSpawnManager()
         {
             m_spawnPoints = new List<SpawnPoint>();
             m_sceneSettings = new SceneSpawnSettings();
-            //m_clients = new Dictionary<ulong, NetworkObject>();
             m_pendingSpawn = new HashSet<ulong>();
             m_pendingDespawn = new HashSet<ulong>();
             m_clients = new Dictionary<ulong, NetworkObject>();
-
-            //playerNameDictionary = new Dictionary<ulong, string>();
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// </summary>
         private void Start()
         {
 
         }
 
+        /// <summary>
+        /// Called on load
+        ///     -> Sets singleton instance and 'do not destroy on load' flags
+        /// </summary>
         private void Awake()
         {
             if (_instance == null)
@@ -119,30 +167,14 @@ namespace Assets.Scripts.Managers
                 _instance.Initialise();
                 Destroy(base.gameObject);
             }
-
-            
         }
 
-        public void Initialise()
-        {
-            m_spawnPoints.Clear();
-            m_spawnPoints = this.GetAllSpawnPointsForScene(SceneManager.GetActiveScene());
-        }
-
-        private List<SpawnPoint> GetAllSpawnPointsForScene(Scene scene)
-        {
-            var result = new List<SpawnPoint>();
-            var rootObjs = scene.GetRootGameObjects();
-
-            foreach (var obj in rootObjs)
-            {
-                var spawnPoints = obj.GetComponentsInChildren<SpawnPoint>();
-                result.AddRange(spawnPoints);
-            }
-
-            return result;
-        }
-
+        /// <summary>
+        /// Called every frame.
+        ///-> Checks if ready
+        ///-> If ready 
+        ///    -> Process all clients pending spawn and despawn.
+        /// </summary>
         private void Update()
         {
             var activeScene = SceneManager.GetActiveScene();
@@ -158,7 +190,6 @@ namespace Assets.Scripts.Managers
                 foreach (var clientId in m_pendingSpawn)
                 {
                     this.SpawnClient(clientId);
-                    //this.SpawnPlayer(clientId);
                 }
 
                 m_pendingDespawn.Clear();
@@ -166,39 +197,83 @@ namespace Assets.Scripts.Managers
             }
         }
 
+
+        /// <summary>
+        /// Initialisation
+        ///     -> Refreshes spawn points for all spawn points in active scene
+        /// </summary>
+        public void Initialise()
+        {
+            m_spawnPoints.Clear();
+            m_spawnPoints = this.GetAllSpawnPointsForScene(SceneManager.GetActiveScene());
+        }
+
+        /// <summary>
+        /// Gets all spawn points for a given scene.
+        /// </summary>
+        /// <param name="scene">Scene</param>
+        /// <returns>A list of spawn points that are contained within that scene.</returns>
+        private List<SpawnPoint> GetAllSpawnPointsForScene(Scene scene)
+        {
+            var result = new List<SpawnPoint>();
+            var rootObjs = scene.GetRootGameObjects();
+
+            foreach (var obj in rootObjs)
+            {
+                var spawnPoints = obj.GetComponentsInChildren<SpawnPoint>();
+                result.AddRange(spawnPoints);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Add client id to pending spawn set
+        /// </summary>
+        /// <param name="clientId">Client Id</param>
         public void SpawnPlayer(ulong clientId)
         {
             m_pendingSpawn.Add(clientId);
         }
 
+        /// <summary>
+        /// Adds client id to pending despawn set
+        /// </summary>
+        /// <param name="clientId">client id</param>
         public void DespawnPlayer(ulong clientId)
         {
             m_pendingDespawn.Add(clientId);
         }
 
+        /// <summary>
+        /// Makes a request to the server to spawn the local player
+        /// </summary>
         public void SpawnLocalPlayer()
         {
-            //m_network.SpawnClientServerRpc();
-            //this.OnServerSpawnPlayerCalled?.Invoke(this, EventArgs.Empty);
-            //SpawnPlayerServerRpc();
             this.SpawnClientServerRpc();
         }
 
+        /// <summary>
+        /// Makes a request to the server to despawn the local player
+        /// </summary>
         public void DespawnLocalPlayer()
         {
-            //m_network.DespawnClientServerRpc();
-            //this.OnServerDespawnPlayerCalled?.Invoke(this, EventArgs.Empty);
-            //DespawnPlayerServerRpc();
-
             this.DespawnClientServerRpc();
         }
 
+        /// <summary>
+        /// Makes server requests to despawn and then spawn the local player
+        /// </summary>
         public void RespawnLocalPlayer()
         {
             DespawnLocalPlayer();
             SpawnLocalPlayer();
         }
 
+        /// <summary>
+        /// Calls initialise on instantiated actor objects where .Start() has not been called.
+        /// </summary>
+        /// <param name="actor">Actor to initialise</param>
         private void InitialiseBehaviours(GameObject actor)
         {
             var behaviours = actor.GetComponents<RRMonoBehaviour>();
@@ -209,6 +284,14 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        /// <summary>
+        /// Spawns client for client Id
+        /// -> Instantiates player object
+        /// -> Initialises player object
+        /// -> Spawns player object on the network
+        /// -> Add player to m_clients dictionary
+        /// </summary>
+        /// <param name="clientId"></param>
         public void SpawnClient(ulong clientId)
         {
             NotificationService.Instance.Info($"ClientId: {clientId}");
@@ -228,6 +311,14 @@ namespace Assets.Scripts.Managers
             m_clients[clientId] = playerNet;
         }
 
+        /// <summary>
+        /// Despawns client for client Id
+        /// -> Checks to see if client can be despawned from the network
+        ///     -> If has access to network manager, clientId is registered with this actor spawn manager, and if the spawnedObjects of the netowork manager contains the network object id for the client player object.
+        ///         -> Despawn client player object
+        ///     -> Remove client from clients dictionary
+        /// </summary>
+        /// <param name="clientId"></param>
         public void DespawnClient(ulong clientId)
         {
             NotificationService.Instance.Info($"ClientId: {clientId}");
@@ -259,6 +350,9 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        /// <summary>
+        /// Respawns all clients within the clients dictionary.
+        /// </summary>
         public void RespawnAllClients()
         {
             if (this.IsServer)
@@ -273,20 +367,33 @@ namespace Assets.Scripts.Managers
             }
         }
 
+        /// <summary>
+        /// Sends a request to server to spawn the client
+        /// Adds request to servers' pendingspawn set
+        /// </summary>
+        /// <param name="clientId">client id</param>
         [ServerRpc(RequireOwnership = false)]
         private void SpawnClientServerRpc(ulong clientId)
         {
             m_pendingSpawn.Add(clientId);
-            //m_spawnManager.SpawnPlayer(clientId);
         }
 
+        /// <summary>
+        /// Sends a request to server to despawn the client
+        /// Adds request to servers' pending despawn set
+        /// </summary>
+        /// <param name="clientId">client id</param>
         [ServerRpc(RequireOwnership = false)]
         private void DespawnClientServerRpc(ulong clientId)
         {
             m_pendingDespawn.Add(clientId);
-            //m_spawnManager.DespawnPlayer(clientId);
         }
 
+        /// <summary>
+        /// Sends a request to server to spawn the client
+        /// Adds request to servers' pendingspawn set
+        /// </summary>
+        /// <param name="rpcParams">Server RPC Params</param>
         [ServerRpc(RequireOwnership = false)]
         private void SpawnClientServerRpc(ServerRpcParams rpcParams = default)
         {
@@ -295,6 +402,12 @@ namespace Assets.Scripts.Managers
             //m_spawnManager.SpawnPlayer(senderClientId);
         }
 
+
+        /// <summary>
+        /// Sends a request to server to despawn the client
+        /// Adds request to servers' pending despawn set
+        /// </summary>
+        /// <param name="rpcParams">Server RPC Params</param>
         [ServerRpc(RequireOwnership = false)]
         private void DespawnClientServerRpc(ServerRpcParams rpcParams = default)
         {
@@ -303,17 +416,27 @@ namespace Assets.Scripts.Managers
             //m_spawnManager.DespawnPlayer(senderClientId);
         }
 
+        /// <summary>
+        /// Sets up a network component for the provided actor entity.
+        /// </summary>
+        /// <param name="actor">Actor entity / gameobject</param>
+        /// <exception cref="ArgumentNullException">actor cannot be null.</exception>
         public void SetupActorNetworkComponent(GameObject actor)
         {
             if (actor == null)
             {
-                throw new NullReferenceException(nameof(actor));
+                throw new ArgumentNullException(nameof(actor));
             }
 
             var cmpActorNetwork = actor.GetComponent<ActorNetwork>();
             cmpActorNetwork.ActorSpawnManager = this;
         }
 
+        /// <summary>
+        /// Registers entity with input manager
+        /// </summary>
+        /// <param name="actor">Actor / entity to be registered</param>
+        /// <exception cref="NullReferenceException">actor cannot be null</exception>
         public void RegisterActorOnInputManager(GameObject actor)
         {
             if (actor == null)
@@ -325,11 +448,23 @@ namespace Assets.Scripts.Managers
             InputManager.Instance.RegisterPlayerController(controller);
         }
 
+        /// <summary>
+        /// Creates a camera for the provided actor / entity
+        /// </summary>
+        /// <param name="actor">Actor / Entity</param>
+        /// <param name="isLocal">Flag indicating whether the player is local (to this machine) or not</param>
+        /// <exception cref="ArgumentNullException">actor cannot be null</exception>
+        ///  /// <exception cref="NullReferenceException">Camera manager has not been set</exception>
         public void CreateActorCamera(GameObject actor, bool isLocal)
         {
+            if (actor == null)
+            {
+                throw new ArgumentNullException(nameof(actor));
+            }
+
             if (m_cameraManager == null)
             {
-                throw new NullReferenceException("No 'CameraSystem' has been set.");
+                throw new NullReferenceException("No 'CameraManager' has been set.");
             }
 
             var cameraSystem = m_cameraManager.GetComponent<CameraManager>();
@@ -337,8 +472,6 @@ namespace Assets.Scripts.Managers
             var cameraObj = GameObject.Instantiate(m_cameraPrefab);
             var actorCamera = cameraObj.GetComponent<ActorCamera>();
             actorCamera.Target = actor;
-            //actorCamera.Offset = new Vector2(0.5f, 0.5f);
-            //actorCamera.Distance = 1.0f;
 
             cameraObj.AddComponent<Camera>();
 
@@ -356,11 +489,26 @@ namespace Assets.Scripts.Managers
             cameraSystem.AddCamera(camera, isLocal);
         }
 
+        /// <summary>
+        /// Assigns the actor of the UI Overlay.
+        /// </summary>
+        /// <param name="actor">actor entity to be assigned</param>
+        /// <exception cref="ArgumentNullException">actor cannot be null</exception>
         public void SetupUIOverlay(GameObject actor)
         {
+            if (actor == null)
+            {
+                throw new ArgumentNullException(nameof(actor));
+            }
+
             m_sceneSettings.UIGameOverlay.Actor = actor.GetComponent<ActorController>();
         }
 
+        /// <summary>
+        /// Fetches a spawn point at random for the given actor
+        /// </summary>
+        /// <param name="actor">actor / entity</param>
+        /// <returns>A spawn point gameobject</returns>
         public GameObject GetSpawnPoint(GameObject actor)
         {
             var state = actor.GetComponent<ActorState>();
@@ -375,6 +523,17 @@ namespace Assets.Scripts.Managers
             return null;
         }
 
+        /// <summary>
+        /// Prepares an actor for a local player.
+        ///     -> Initialise 
+        ///     -> Sets up network component
+        ///     -> Adds player to input manager
+        ///     -> Creates a camera for the player
+        ///     -> Assigns the player to the overlay UI, so that it displays information relating to the current actor
+        ///     -> Moves the player actor to the spawn point
+        ///     -> Notifies any subscribers
+        /// </summary>
+        /// <param name="actor">The actor to be prepared following spawn</param>
         public void PrepareLocalPlayerActor(GameObject actor)
         {
             this.InitialiseBehaviours(actor);
@@ -388,6 +547,15 @@ namespace Assets.Scripts.Managers
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
         }
 
+        /// <summary>
+        /// Prepares an actor for a remote player.
+        ///     -> Initialise 
+        ///     -> Sets up network component
+        ///     -> Creates a camera for the actor
+        ///     -> Moves the actor to the spawn point
+        ///     -> Notifies any subscribers
+        /// </summary>
+        /// <param name="actor">The actor to be prepared following spawn</param>
         public void PrepareRemotePlayerActor(GameObject actor)
         {
             this.InitialiseBehaviours(actor);
@@ -398,6 +566,10 @@ namespace Assets.Scripts.Managers
             this.OnActorSpawn?.Invoke(this, new OnActorSpawnedArgs(actor));
         }
 
+        /// <summary>
+        /// Gets a spawn point and moves the provided actor to that spawn point.
+        /// </summary>
+        /// <param name="actor">actor / entity to be spawned</param>
         public void MoveActorToSpawnPoint(GameObject actor)
         {
             var spawnPoint = this.GetSpawnPoint(actor);

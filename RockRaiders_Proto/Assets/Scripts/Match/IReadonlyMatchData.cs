@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.Match
 {
+    /// <summary>
+    /// Readonly interface for match data
+    /// </summary>
     public interface IReadonlyMatchData
     {
         float CurrentTime { get; }

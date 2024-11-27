@@ -148,7 +148,7 @@ namespace Assets.Scripts.Network
 
         private void Update()
         {
-            if (m_matchManager.GameManager?.InGame ?? false)
+            if (m_matchManager.InGame)
             {
                 m_updateTimer.Tick();
             }

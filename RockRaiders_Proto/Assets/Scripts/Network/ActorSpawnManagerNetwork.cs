@@ -7,26 +7,34 @@ using UnityEngine;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Actor network spawn manager
+    /// </summary>
     public class ActorSpawnManagerNetwork : NetworkBehaviour
     {
+        /// <summary>
+        /// Reference to spawn manager
+        /// </summary>
         private ActorSpawnManager m_spawnManager;
+
+        /// <summary>
+        /// Set of all network objects pending spawn
+        /// </summary>
         private HashSet<ulong> m_pendingSpawn;
+
+        /// <summary>
+        /// Set of all network objects pending despawn
+        /// </summary>
         private HashSet<ulong> m_pendingDespawn;
 
+        /// <summary>
+        /// Dictionary of all clients
+        /// </summary>
         private Dictionary<ulong, NetworkObject> m_clients;
 
-        public ActorSpawnManager SpawnManager
-        {
-            get
-            {
-                return m_spawnManager;
-            }
-            set
-            {
-                m_spawnManager = value;
-            }
-        }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorSpawnManagerNetwork()
         {
             m_pendingSpawn = new HashSet<ulong>();
@@ -34,15 +42,17 @@ namespace Assets.Scripts.Network
             m_clients = new Dictionary<ulong, NetworkObject>();
         }
 
-
+        /// <summary>
+        /// Called before first frame in scene
+        /// </summary>
         private void Start()
         {
             m_spawnManager = this.GetComponent<ActorSpawnManager>();
-
-            //m_spawnManager.OnServerSpawnPlayerCalled += this.SpawnManager_OnSpawnPlayerCalled;
-            //m_spawnManager.OnServerDespawnPlayerCalled += this.SpawnManager_OnDespawnPlayerCalled;
         }
 
+        /// <summary>
+        /// Called every frame
+        /// </summary>
         private void Update()
         {
             if (this.IsServer)
@@ -63,6 +73,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Spawns client by client id
+        /// </summary>
+        /// <param name="clientId">client id</param>
         public void SpawnClient(ulong clientId)
         {
             if (!this.IsServer)
@@ -88,6 +102,10 @@ namespace Assets.Scripts.Network
             m_clients[clientId] = playerNet;
         }
 
+        /// <summary>
+        /// Initialises behaviours
+        /// </summary>
+        /// <param name="actor">Actor</param>
         private void InitialiseBehaviours(GameObject actor)
         {
             var behaviours = actor.GetComponents<RRMonoBehaviour>();
@@ -98,6 +116,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Despawns client
+        /// </summary>
+        /// <param name="clientId">client id</param>
         public void DespawnClient(ulong clientId)
         {
             if (!this.IsServer)
@@ -121,6 +143,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Respawns all clients within member client list
+        /// </summary>
         public void RespawnAllClients()
         {
             if (this.IsServer)
@@ -133,54 +158,46 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Server request to spawn client by client id
+        /// </summary>
+        /// <param name="clientId"></param>
         [ServerRpc(RequireOwnership = false)]
         public void SpawnClientServerRpc(ulong clientId)
         {
             m_pendingSpawn.Add(clientId);
-            //m_spawnManager.SpawnPlayer(clientId);
         }
 
+        /// <summary>
+        /// Server request to despawn client by client id
+        /// </summary>
+        /// <param name="clientId"></param>
         [ServerRpc(RequireOwnership = false)]
         public void DespawnClientServerRpc(ulong clientId)
         {
             m_pendingDespawn.Add(clientId);
-            //m_spawnManager.DespawnPlayer(clientId);
         }
 
+        /// <summary>
+        /// Server request to spawn client 
+        /// </summary>
+        /// <param name="rpcParams"></param>
         [ServerRpc(RequireOwnership = false)]
         public void SpawnClientServerRpc(ServerRpcParams rpcParams = default)
         {
             ulong senderClientId = rpcParams.Receive.SenderClientId;
             m_pendingSpawn.Add(senderClientId);
-            //m_spawnManager.SpawnPlayer(senderClientId);
         }
 
+        /// <summary>
+        /// Server request to despawn client
+        /// </summary>
+        /// <param name="rpcParams"></param>
         [ServerRpc(RequireOwnership = false)]
         public void DespawnClientServerRpc(ServerRpcParams rpcParams = default)
         {
             ulong senderClientId = rpcParams.Receive.SenderClientId;
             m_pendingDespawn.Add(senderClientId);
-            //m_spawnManager.DespawnPlayer(senderClientId);
-        }
-
-        private void SpawnManager_OnDespawnPlayerCalled(object sender, EventArgs e)
-        {
-            this.DespawnClientServerRpc();
-        }
-
-        private void SpawnManager_OnSpawnPlayerCalled(object sender, EventArgs e)
-        {
-            this.SpawnClientServerRpc();
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            base.OnNetworkDespawn();
         }
     }
 }

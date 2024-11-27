@@ -3,6 +3,9 @@ using System;
 
 namespace Assets.Scripts.HealthSystem
 {
+    /// <summary>
+    /// Used for storing (you guessed it) hit points. 
+    /// </summary>
     public class Hitpoints
     {
         public event EventHandler<EventArgs> OnHitpointsDepleated;
@@ -51,8 +54,6 @@ namespace Assets.Scripts.HealthSystem
 
         public void SetHitPoints(int amount)
         {
-            //NotificationService.Instance.Info(amount);
-
             if (m_currentHp != amount)
             {
                 m_currentHp = amount;
@@ -72,8 +73,6 @@ namespace Assets.Scripts.HealthSystem
 
         public void AddHitPoints(int amount)
         {
-            //NotificationService.Instance.Info(amount);
-
             var newHp = m_currentHp + amount;
             var maxHp = m_maxHp <= newHp;
 
@@ -92,8 +91,6 @@ namespace Assets.Scripts.HealthSystem
 
         public void RemoveHitPoints(int amount)
         {
-            //NotificationService.Instance.Info(amount);
-
             var newHp = m_currentHp - amount;
             var nilHp = newHp <= 0;
 

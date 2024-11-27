@@ -8,15 +8,31 @@ using UnityEngine.Playables;
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// Audio manager
+    /// </summary>
     public class AudioManager : MonoBehaviour
     {
+        /// <summary>
+        /// Stores a reference to the settings model
+        /// </summary>
         private SettingsModel m_settings;
 
+        /// <summary>
+        /// Keeps a list of all music sounds to be played by this audio manager
+        /// </summary>
         [SerializeField]
         private Sound[] m_music;
 
+        /// <summary>
+        /// Keeps a list of all game sounds to be played by this audio manager.
+        /// </summary>
         private List<Sound> m_gameSounds;
 
+        /// <summary>
+        /// Gets or sets the settings. 
+        /// On set -> Applies settings
+        /// </summary>
         public SettingsModel Settings
         {
             get
@@ -36,11 +52,17 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AudioManager()
         {
             m_gameSounds = new List<Sound>();
         }
 
+        /// <summary>
+        /// Called on load
+        /// </summary>
         private void Awake()
         {
             foreach (var sound in m_music)
@@ -64,6 +86,33 @@ namespace Assets.Scripts
             this.PlayMusic("Theme");
         }
 
+        /// <summary>
+        /// Called every frame
+        /// </summary>
+        private void Update()
+        {
+            var sounds = new List<Sound>();
+
+            for (int i = 0; i < m_gameSounds.Count; i++)
+            {
+                Sound sound = m_gameSounds[i];
+                if (sound.Source == null)
+                {
+                    sounds.Add(sound);
+                }
+            }
+
+            foreach (var s in sounds)
+            {
+                m_gameSounds.Remove(s);
+            }
+        }
+
+        /// <summary>
+        /// Search for and play the music specified (if found)
+        /// </summary>
+        /// <param name="name">The name of the track to be played.</param>
+        /// <returns>Track found & play started? (true / false)</returns>
         public bool PlayMusic(string name)
         {
             var result = false;
@@ -93,25 +142,12 @@ namespace Assets.Scripts
             return result;
         }
 
-        private void Update()
-        {
-            var sounds = new List<Sound>();
 
-            for (int i = 0; i < m_gameSounds.Count; i++)
-            {
-                Sound sound = m_gameSounds[i];
-                if (sound.Source == null)
-                {
-                    sounds.Add(sound);
-                }
-            }
-
-            foreach(var s in sounds)
-            {
-                m_gameSounds.Remove(s);
-            }
-        }
-
+        /// <summary>
+        /// Search for and stop the music specified (if found)
+        /// </summary>
+        /// <param name="name">The name of the track to be played.</param>
+        /// <returns>Track found & play stopped? (true / false)</returns>
         public bool Stop(string name)
         {
             var result = false;
@@ -133,6 +169,9 @@ namespace Assets.Scripts
             return result;
         }
 
+        /// <summary>
+        /// Updates the volume of all game and music sounds to match that of the settings 
+        /// </summary>
         private void UpdateVolume()
         {
             foreach (var sound in m_music)
@@ -152,12 +191,22 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Adds a game sound to be managed by this audio manager
+        /// </summary>
+        /// <param name="sound">Sound to be managed</param>
         public void AddGameSound(Sound sound)
         {
             m_gameSounds.Add(sound);
             sound.Source.volume = sound.Volume * m_settings.Game.SoundVolume;
         }
 
+        /// <summary>
+        /// Called whenever a game setting property has been changed.
+        /// -> Updates volume
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Property event args</param>
         private void GameSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             this.UpdateVolume();

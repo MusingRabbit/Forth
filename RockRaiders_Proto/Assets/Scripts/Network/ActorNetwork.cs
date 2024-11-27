@@ -14,6 +14,10 @@ using UnityEngine;
 
 namespace Assets.Scripts.Network
 {
+    /// <summary>
+    /// Actor state data
+    /// Network data for the actor state
+    /// </summary>
     public struct ActorStateData : INetworkSerializable, IEquatable<ActorStateData>
     {
         public bool IsReady;
@@ -52,6 +56,10 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Actor control data
+    /// Network data for actor user input
+    /// </summary>
     public struct ActorControlData : INetworkSerializable
     {
         public Vector3 CrosshairPosition;
@@ -64,6 +72,10 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Actor transform data
+    /// Network data for actor transform
+    /// </summary>
     public struct ActorTransformData : INetworkSerializable
     {
         public Vector3 Position;
@@ -76,6 +88,10 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Player network data
+    /// Miscellaneous player network data
+    /// </summary>
     public struct PlayerNetData : INetworkSerializable
     {
         public FixedString128Bytes PlayerName;
@@ -86,6 +102,10 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Set Parent Data
+    /// Network data for setting child/parent relationships between objects (NOT IN USE)
+    /// </summary>
     internal struct SetParentRpcData : INetworkSerializable
     {
         public ulong ParentNetworkId;
@@ -101,27 +121,85 @@ namespace Assets.Scripts.Network
         }
     }
 
+    /// <summary>
+    /// Actor Network
+    /// </summary>
     public class ActorNetwork : NetworkBehaviour
     {
+        /// <summary>
+        /// Actor network data
+        /// </summary>
         private NetworkVariable<PlayerNetData> m_playerData;
+
+        /// <summary>
+        /// Actor network state
+        /// </summary>
         private NetworkVariable<ActorStateData> m_actorState;
+
+        /// <summary>
+        /// Actor network control
+        /// </summary>
         private NetworkVariable<ActorControlData> m_actorControl;
+
+        /// <summary>
+        /// Actor network transform
+        /// </summary>
         private NetworkVariable<ActorTransformData> m_actorTransform;
 
+        /// <summary>
+        /// Actor input component
+        /// </summary>
         private PlayerInput m_controller;
+
+        /// <summary>
+        /// Actor controller component
+        /// </summary>
         private ActorController m_actorController;
+
+        /// <summary>
+        /// Actor grounded component
+        /// </summary>
         private ActorGrounded m_actorGrounded;
+
+        /// <summary>
+        /// Actor health component
+        /// </summary>
         private ActorHealth m_health;
+
+        /// <summary>
+        /// Actor manager component
+        /// </summary>
         private ActorSpawnManager m_actorManager;
+
+        /// <summary>
+        /// Actor state component
+        /// </summary>
         private ActorState m_state;
+
+        /// <summary>
+        /// Actor painter component
+        /// </summary>
         private ActorPainter m_paint;
+
+        /// <summary>
+        /// Actor crosshair component
+        /// </summary>
         private ActorCrosshair m_crosshair;
 
-        private Timer m_updateHealthTimer;
+        /// <summary>
+        /// Timer for updating actor state
+        /// </summary>
+        private Timer m_updateStateTimer;
 
+        /// <summary>
+        /// If the current actor has server authentication
+        /// </summary>
         [SerializeField]
         private bool m_serverAuth;
 
+        /// <summary>
+        /// Gets or sets the actor spawn manager
+        /// </summary>
         public ActorSpawnManager ActorSpawnManager
         {
             get
@@ -134,12 +212,18 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActorNetwork()
         {
-            m_updateHealthTimer = new Timer(TimeSpan.FromSeconds(0.125f));
-            m_updateHealthTimer.AutoReset = false;
+            m_updateStateTimer = new Timer(TimeSpan.FromSeconds(0.125f));
+            m_updateStateTimer.AutoReset = false;
         }
 
+        /// <summary>
+        /// Called on load
+        /// </summary>
         private void Awake()
         {
             var permission = NetworkVariableWritePermission.Server;//this.IsServer ? NetworkVariableWritePermission.Server : NetworkVariableWritePermission.Owner;
@@ -150,6 +234,10 @@ namespace Assets.Scripts.Network
             m_playerData = new NetworkVariable<PlayerNetData>(writePerm: NetworkVariableWritePermission.Owner);
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// -> Gets all required components
+        /// </summary>
         private void Start()
         {
             m_state = this.GetComponent<ActorState>();
@@ -164,14 +252,21 @@ namespace Assets.Scripts.Network
                 m_controller = this.GetComponent<PlayerInput>();
             }
 
-            m_updateHealthTimer.Start();
+            m_updateStateTimer.Start();
 
             this.PrepareActor();
         }
 
+        /// <summary>
+        /// Called every frame
+        /// -> If Owner
+        ///     -> Sends current state
+        /// -> Else
+        ///     -> Updates the actor 
+        /// </summary>
         private void Update()
         {
-            m_updateHealthTimer.Tick();
+            m_updateStateTimer.Tick();
 
             if (this.IsOwner)
             {
@@ -183,6 +278,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Updates the actors' transform with values stored in network state
+        /// </summary>
         private void UpdateActorTransform()
         {
             var state = m_actorTransform.Value;
@@ -191,6 +289,9 @@ namespace Assets.Scripts.Network
             this.transform.rotation = state.Rotation;
         }
 
+        /// <summary>
+        /// Updates actors' control input with values from the network state
+        /// </summary>
         private void UpdateActorControl()
         {
             var state = m_actorControl.Value;
@@ -201,6 +302,9 @@ namespace Assets.Scripts.Network
             m_controller.SetStateFromNetPlayerInput(state.Controller);
         }
 
+        /// <summary>
+        /// Updates actor state with values stored in network state 
+        /// </summary>
         private void UpdateActorState()
         {
             var state = m_actorState.Value;
@@ -225,12 +329,18 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Updates actor health with values store in network state
+        /// </summary>
         private void UpdateActorHealth()
         {
             var state = m_actorState.Value;
             m_health.Hitpoints.SetHitPoints(state.Hitpoints);
         }
 
+        /// <summary>
+        /// Updates actor with values stored in network state
+        /// </summary>
         private void UpdateActor()
         {
             var playerData = m_playerData.Value;
@@ -246,15 +356,18 @@ namespace Assets.Scripts.Network
                 
                 this.UpdateActorControl();
 
-                if (m_updateHealthTimer.Elapsed)
+                if (m_updateStateTimer.Elapsed)
                 {
-                    m_updateHealthTimer.ResetTimer();
+                    m_updateStateTimer.ResetTimer();
                     this.UpdateActorHealth();
                     this.UpdateActorState();
                 }
             }
         }
 
+        /// <summary>
+        /// Resets this actor network component
+        /// </summary>
         public void Reset()
         {
             if (this.IsOwner)
@@ -268,6 +381,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Gets the current actor state from local machine
+        /// </summary>
+        /// <returns>Actor state data</returns>
         private ActorStateData GetActorState()
         {
             return new ActorStateData
@@ -283,6 +400,10 @@ namespace Assets.Scripts.Network
             };
         }
 
+        /// <summary>
+        /// Gets actor transform from local machine
+        /// </summary>
+        /// <returns></returns>
         private ActorTransformData GetActorTransform()
         {
             return new ActorTransformData
@@ -292,6 +413,10 @@ namespace Assets.Scripts.Network
             };
         }
 
+        /// <summary>
+        /// Gets actor user input from local machine
+        /// </summary>
+        /// <returns>Actor control data <see cref="ActorControlData"/></returns>
         private ActorControlData GetActorControl()
         {
             return new ActorControlData
@@ -301,54 +426,9 @@ namespace Assets.Scripts.Network
             };
         }
 
-        public void SetState(ActorStateData state)
-        {
-            m_actorState.Value = state;
-        }
-
-        private void SendActorTransform()
-        {
-            var state = this.GetActorTransform();
-
-            if (this.IsServer)
-            {
-                m_actorTransform.Value = state;
-            }
-            else
-            {
-                this.TransmitActorTransformServerRpc(this.OwnerClientId, m_actorTransform.Value);
-            }
-        }
-
-        private void SendActorControl()
-        {
-            var state = this.GetActorControl();
-
-            if (this.IsServer)
-            {
-                m_actorControl.Value = state;
-            }
-            else
-            {
-                this.TransmitActorControlServerRpc(this.OwnerClientId, m_actorControl.Value);
-            }
-        }
-
-        private void SendActorState()
-        {
-            var state = this.GetActorState();
-
-            if (this.IsServer)
-            {
-                m_actorState.Value = state;
-            }
-            else
-            {
-                this.TransmitActorStateServerRpc(this.OwnerClientId, m_actorState.Value);
-            }
-        }
-
-
+        /// <summary>
+        /// Updates network with data retreived from local machine.
+        /// </summary>
         private void SendState()
         {
             var playerNetData = new PlayerNetData { PlayerName = GameManager.Instance.Settings.Game.PlayerName ?? string.Empty };
@@ -375,6 +455,11 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Sets parent/child relationship over network
+        /// </summary>
+        /// <param name="child">Child game object</param>
+        /// <param name="parent">Parent game object</param>
         public void SetParent(GameObject child, GameObject parent)
         {
             if (!this.IsOwner)
@@ -402,7 +487,10 @@ namespace Assets.Scripts.Network
         }
 
 
-
+        /// <summary>
+        /// Sends a request to set the parent/child relationship of two objects
+        /// </summary>
+        /// <param name="data">Request data</param>
         [Rpc(SendTo.Server)]
         private void SetParentServerRpc(SetParentRpcData data)
         {
@@ -423,6 +511,11 @@ namespace Assets.Scripts.Network
             childNetObj.transform.parent = parentNetObj.gameObject.transform;
         }
 
+        /// <summary>
+        /// Sends a server request to update player network data
+        /// reqest is then bounced back to all clients
+        /// </summary>
+        /// <param name="playerNetData"></param>
         [Rpc(SendTo.Server)]
         private void TransmitPlayerNetDataServerRpc(PlayerNetData playerNetData)
         {
@@ -430,6 +523,11 @@ namespace Assets.Scripts.Network
             this.SendPlayerNetDataToClientRpc(playerNetData);
         }
 
+        /// <summary>
+        /// Sends server request to update server transform for provided client
+        /// </summary>
+        /// <param name="ownerClientId">Client ID</param>
+        /// <param name="clientState">Transformation data</param>
         [Rpc(SendTo.Server)]
         private void TransmitActorTransformServerRpc(ulong ownerClientId, ActorTransformData clientState)
         {
@@ -454,6 +552,11 @@ namespace Assets.Scripts.Network
             m_actorTransform.Value = serverState;
         }
 
+        /// <summary>
+        /// Sends server request to update actor control on server for client id
+        /// </summary>
+        /// <param name="ownerClientId">client id</param>
+        /// <param name="clientState">Request data -> Input control</param>
         [Rpc(SendTo.Server)]
         private void TransmitActorControlServerRpc(ulong ownerClientId, ActorControlData clientState)
         {
@@ -465,7 +568,11 @@ namespace Assets.Scripts.Network
             m_actorControl.Value = serverState;
         }
 
-
+        /// <summary>
+        /// Sends server request to update actor state on server for client id
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="clientState">Request data -> Actor state</param>
         [Rpc(SendTo.Server)]
         private void TransmitActorStateServerRpc(ulong clientId, ActorStateData clientState)
         {
@@ -533,6 +640,10 @@ namespace Assets.Scripts.Network
             m_actorState.Value = serverState;
         }
 
+        /// <summary>
+        /// Client RPC -> Updates player network data
+        /// </summary>
+        /// <param name="playerNetData">Response Data</param>
         [Rpc(SendTo.ClientsAndHost)]
         private void SendPlayerNetDataToClientRpc(PlayerNetData playerNetData)
         {
@@ -542,6 +653,10 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Client update -> Updates actor transform
+        /// </summary>
+        /// <param name="actorState">Response Data</param>
         [Rpc(SendTo.ClientsAndHost)]
         private void SendCorrectedActorTransformToClientRpc(ActorTransformData actorState)
         {
@@ -549,6 +664,10 @@ namespace Assets.Scripts.Network
             this.transform.rotation = actorState.Rotation;
         }
 
+        /// <summary>
+        /// Client update -> Updates actor state
+        /// </summary>
+        /// <param name="actorState">Response Data</param>
         [Rpc(SendTo.ClientsAndHost)]
         private void SendCorrectedActorStateToClientRpc(ActorStateData actorState)
         {
@@ -573,6 +692,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Called when actor has been despawened
+        /// </summary>
         public override void OnNetworkDespawn()
         {
             var childComponents = this.GetComponents<RRMonoBehaviour>();
@@ -585,6 +707,9 @@ namespace Assets.Scripts.Network
             base.OnNetworkDespawn();
         }
 
+        /// <summary>
+        /// Prepares player actor
+        /// </summary>
         private void PrepareActor()
         {
             if (m_actorManager == null)
@@ -606,6 +731,9 @@ namespace Assets.Scripts.Network
             }
         }
 
+        /// <summary>
+        /// Called when actor has been spawned 
+        /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();

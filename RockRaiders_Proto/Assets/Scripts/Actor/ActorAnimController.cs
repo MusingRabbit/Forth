@@ -5,6 +5,7 @@ namespace Assets.Scripts.Actor
 {
     /// <summary>
     /// Animation controller for actor entity.
+    /// This behaviour is responsible for selecting the correct animation for any given actor state.
     /// </summary>
     public class ActorAnimController : RRMonoBehaviour
     {

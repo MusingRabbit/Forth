@@ -4,8 +4,14 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// Spawn Point
+    /// </summary>
     public class SpawnPoint : MonoBehaviour
     {
+        /// <summary>
+        /// Team this spawn point belongs to
+        /// </summary>
         [SerializeField]
         private Team m_team;
 
@@ -17,11 +23,18 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SpawnPoint()
         {
             m_team = Team.None;
         }
 
+        /// <summary>
+        /// Called before first frame
+        /// -> Hides debug mesh placeholder
+        /// </summary>
         private void Start()
         {
             var debugMeshObj = this.gameObject.FindChild("DebugMesh");
@@ -29,6 +42,9 @@ namespace Assets.Scripts
             meshRenderer.enabled = false;
         }
 
+        /// <summary>
+        /// Called every frame
+        /// </summary>
         private void Update()
         {
             
